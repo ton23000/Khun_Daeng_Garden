@@ -1,171 +1,170 @@
-export interface Tree {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    category: string;
-    status: 'AVAILABLE' | 'BOOKED' | 'SOLD';
-    images: string[];
-    tags: string[];
-    growthTime?: string;
-}
+import { PrismaClient } from '@prisma/client'
 
-export const MOCK_TREES: Tree[] = [
-    // หมวดไม้ราคาประหยัด
+const prisma = new PrismaClient()
+
+const MOCK_TREES = [
     {
-        id: '1',
         name: 'กระดุมทอง',
         description: 'ไม้ดอกสีเหลืองสดใส ปลูกง่าย โตไว เหมาะสำหรับประดับสวน',
         price: 35,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้ดอก', 'ราคาประหยัด'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้ดอก,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์'
     },
     {
-        id: '2',
         name: 'ดาวเรือง',
         description: 'ดอกไม้มงคล สีเหลืองอร่าม นิยมปลูกเพื่อความสวยงามและบูชาพระ',
         price: 35,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้ดอก', 'มงคล', 'ราคาประหยัด'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้ดอก,มงคล,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์'
     },
     {
-        id: '3',
         name: 'ฤาษีผสม',
         description: 'ไม้ใบสวยงาม มีสีสันหลากหลาย เลี้ยงง่าย',
         price: 50,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้ใบ', 'ราคาประหยัด'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้ใบ,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์'
     },
-    // หมวดไม้มงคลยอดนิยม
     {
-        id: '4',
         name: 'หนึ่งจักรวาล',
         description: 'ไม้มงคลงามสง่า เสริมบารมี',
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้มงคล', 'ยอดนิยม'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้มงคล,ยอดนิยม',
         growthTime: '1–2 อาทิตย์'
     },
     {
-        id: '5',
         name: 'ดอนญ่าควีนสิริกิติ์',
         description: 'ดอกสวยงาม สีชมพูอ่อนหวาน',
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้มงคล', 'ไม้ดอก'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้มงคล,ไม้ดอก',
         growthTime: '1–2 อาทิตย์'
     },
     {
-        id: '6',
         name: 'ชวนชม',
         description: 'ไม้อวบน้ำ ดอกสวย ทนแล้งดี',
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้มงคล', 'ทนแล้ง'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้มงคล,ทนแล้ง',
         growthTime: '1–2 อาทิตย์'
     },
     {
-        id: '7',
         name: 'สมปรารถนา',
         description: 'ชื่อมงคล ปลูกแล้วสมหวังดั่งใจ',
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้มงคล'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้มงคล',
         growthTime: '1–2 อาทิตย์'
     },
     {
-        id: '8',
         name: 'อุดมโชค',
         description: 'เสริมโชคลาภ เงินทองไหลมาเทมา',
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้มงคล', 'โชคลาภ'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้มงคล,โชคลาภ',
         growthTime: '1–2 อาทิตย์'
     },
     {
-        id: '9',
         name: 'พญาคล้าทอง',
         description: 'ไม้ใบสวย มีลวดลายเป็นเอกลักษณ์',
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้มงคล', 'ไม้ใบ'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้มงคล,ไม้ใบ',
         growthTime: '1–2 อาทิตย์'
     },
     {
-        id: '10',
         name: 'กวักพระพรหม',
         description: 'ไม้มงคลหายาก เสริมสิริมงคล',
         price: 350,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้มงคล', 'หายาก'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้มงคล,หายาก',
         growthTime: '1–2 อาทิตย์'
     },
-    // หมวดไม้พรีเมียม / ไม้สะสม
     {
-        id: '11',
         name: 'สมปรารถนา (พรีเมียม)',
         description: 'ฟอร์มสวย คัดพิเศษ สำหรับนักสะสม',
         price: 350,
         category: 'ไม้พรีเมียม',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้พรีเมียม', 'ไม้สะสม'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้พรีเมียม,ไม้สะสม',
         growthTime: '1–2 อาทิตย์'
     },
     {
-        id: '12',
         name: 'เทพราชา',
         description: 'ราชาแห่งไม้สะสม สง่างาม ทรงคุณค่า',
         price: 650,
         category: 'ไม้พรีเมียม',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้พรีเมียม', 'ไม้สะสม'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้พรีเมียม,ไม้สะสม',
         growthTime: '1–2 อาทิตย์'
     },
     {
-        id: '13',
         name: 'เงินหนา',
         description: 'ใบหนาสวย คล้ายเหรียญเงิน เสริมความมั่งคั่ง',
         price: 990,
         category: 'ไม้พรีเมียม',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้พรีเมียม', 'ไม้สะสม', 'โชคลาภ'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้พรีเมียม,ไม้สะสม,โชคลาภ',
         growthTime: '1–2 อาทิตย์'
     },
     {
-        id: '14',
         name: 'มรดกโลก',
         description: 'ไม้หายากระดับตำนาน ควรค่าแก่การครอบครอง',
         price: 1500,
         category: 'ไม้พรีเมียม',
         status: 'AVAILABLE',
-        images: ['/placeholder-tree.jpg'],
-        tags: ['ไม้พรีเมียม', 'ไม้สะสม', 'หายาก'],
+        images: JSON.stringify(['/placeholder-tree.jpg']),
+        tags: 'ไม้พรีเมียม,ไม้สะสม,หายาก',
         growthTime: '1–2 อาทิตย์'
     }
-];
+]
+
+async function main() {
+    console.log('Start seeding...')
+
+    // Clear existing data (optional, be careful in prod)
+    // await prisma.tree.deleteMany()
+
+    for (const tree of MOCK_TREES) {
+        await prisma.tree.create({
+            data: tree,
+        })
+    }
+    console.log(`Seeded ${MOCK_TREES.length} trees`)
+}
+
+main()
+    .then(async () => {
+        await prisma.$disconnect()
+    })
+    .catch(async (e) => {
+        console.error(e)
+        await prisma.$disconnect()
+        process.exit(1)
+    })

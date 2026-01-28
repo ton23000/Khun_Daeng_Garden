@@ -3,9 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import PaymentModal from '@/components/PaymentModal';
 
 export default function BookingSuccessPage() {
     const [booking, setBooking] = useState<any>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [uploadSuccess, setUploadSuccess] = useState(false);
 
     useEffect(() => {
         const data = localStorage.getItem('last_booking');
@@ -13,6 +16,28 @@ export default function BookingSuccessPage() {
             setBooking(JSON.parse(data));
         }
     }, []);
+
+    const handleUpload = (fileData: string) => {
+        if (!booking) return;
+
+        // Update local status just for this view
+        const updatedBooking = { ...booking, status: 'PAID_VERIFYING', slipUrl: fileData };
+        setBooking(updatedBooking);
+        setUploadSuccess(true);
+        setIsModalOpen(false);
+
+        // Update in DB (localStorage)
+        const allBookingsStr = localStorage.getItem('khun_daeng_bookings');
+        if (allBookingsStr) {
+            const allBookings = JSON.parse(allBookingsStr);
+            const idx = allBookings.findIndex((b: any) => b.id === booking.id);
+            if (idx !== -1) {
+                allBookings[idx] = updatedBooking;
+                localStorage.setItem('khun_daeng_bookings', JSON.stringify(allBookings));
+            }
+        }
+        localStorage.setItem('last_booking', JSON.stringify(updatedBooking));
+    };
 
     if (!booking) return null;
 
@@ -45,12 +70,26 @@ export default function BookingSuccessPage() {
                     <span>ยอดมัดจำที่ต้องโอน</span>
                     <span style={{ color: 'var(--primary)' }}>฿ {booking.deposit.toLocaleString()}</span>
                 </div>
+
+                {uploadSuccess && (
+                    <div style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: '#dcfce7', color: '#166534', borderRadius: '0.375rem', fontSize: '0.875rem', textAlign: 'center' }}>
+                        ✅ แนบสลิปเรียบร้อยแล้ว รอการตรวจสอบ
+                    </div>
+                )}
             </div>
 
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                 <Link href="/"><Button variant="outline">กลับหน้าหลัก</Button></Link>
-                <Button variant="primary">แนบสลิปการโอนเงิน</Button>
+                {!uploadSuccess && (
+                    <Button variant="primary" onClick={() => setIsModalOpen(true)}>แนบสลิปการโอนเงิน</Button>
+                )}
             </div>
+
+            <PaymentModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onUpload={handleUpload}
+            />
         </div>
     );
 }

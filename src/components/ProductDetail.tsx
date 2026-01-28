@@ -37,6 +37,12 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                         ฿ {tree.price.toLocaleString()}
                     </p>
 
+                    {tree.growthTime && (
+                        <p style={{ marginBottom: '1rem', color: '#4b5563' }}>
+                            <strong>ระยะเวลาเติบโต:</strong> {tree.growthTime}
+                        </p>
+                    )}
+
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
                         {tree.tags.map(tag => (
                             <span key={tag} style={{ backgroundColor: '#f3f4f6', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem' }}>

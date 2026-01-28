@@ -29,6 +29,7 @@ model Tree {
   category    String
   status      String   @default("AVAILABLE") // AVAILABLE, BOOKED, SOLD
   tags        String   // Comma separated tags
+  growthTime  String?  // e.g. "1-2 weeks"
   bookings    BookingItem[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

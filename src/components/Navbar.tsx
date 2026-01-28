@@ -14,14 +14,77 @@ export function Navbar() {
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
     const [showNotifications, setShowNotifications] = useState(false);
 
+    // Dropdown States
+    const [showServices, setShowServices] = useState(false);
+    const [showAbout, setShowAbout] = useState(false);
+
+    const dropdownStyle: React.CSSProperties = {
+        position: 'absolute',
+        top: '100%',
+        left: 0,
+        backgroundColor: 'white',
+        border: '1px solid #e5e7eb',
+        borderRadius: '0.5rem',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        zIndex: 50,
+        minWidth: '200px',
+        padding: '0.5rem 0'
+    };
+
+    const linkStyle: React.CSSProperties = {
+        display: 'block',
+        padding: '0.5rem 1rem',
+        color: '#374151',
+        textDecoration: 'none',
+        fontSize: '0.875rem'
+    };
+
     return (
         <nav className="container" style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', position: 'relative' }}>
             <Link href="/" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--primary)' }}>
                 Khun Daeng Garden
             </Link>
+
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <Link href="/"><Button variant="ghost">หน้าหลัก</Button></Link>
-                <Link href="/shop"><Button variant="ghost">ร้านค้า</Button></Link>
+                <Link href="/promotion"><Button variant="ghost">โปรโมชั่น</Button></Link>
+                <Link href="/shop"><Button variant="ghost">ค้นหาสินค้า</Button></Link>
+
+                {/* Services Dropdown */}
+                <div
+                    style={{ position: 'relative' }}
+                    onMouseEnter={() => setShowServices(true)}
+                    onMouseLeave={() => setShowServices(false)}
+                >
+                    <Link href="/services">
+                        <Button variant="ghost">บริการของเรา ▾</Button>
+                    </Link>
+                    {showServices && (
+                        <div style={dropdownStyle}>
+                            <Link href="/services#ordering" style={linkStyle}>วิธีการสั่งซื้อ</Link>
+                            <Link href="/services#planting" style={linkStyle}>คำปรึกษาการปลูก</Link>
+                            <Link href="/services#garden" style={linkStyle}>บริการจัดสวน</Link>
+                            <Link href="/services#faq" style={linkStyle}>บริการตอบคำถาม</Link>
+                        </div>
+                    )}
+                </div>
+
+                {/* About Dropdown */}
+                <div
+                    style={{ position: 'relative' }}
+                    onMouseEnter={() => setShowAbout(true)}
+                    onMouseLeave={() => setShowAbout(false)}
+                >
+                    <Link href="/about">
+                        <Button variant="ghost">เกี่ยวกับเรา ▾</Button>
+                    </Link>
+                    {showAbout && (
+                        <div style={dropdownStyle}>
+                            <Link href="/about#history" style={linkStyle}>ประวัติร้าน</Link>
+                            <Link href="/about#contact" style={linkStyle}>ติดต่อเรา</Link>
+                        </div>
+                    )}
+                </div>
 
                 <Link href="/cart">
                     <Button variant="outline" style={{ position: 'relative' }}>
@@ -112,6 +175,10 @@ export function Navbar() {
                         <Link href="/profile" style={{ fontSize: '0.875rem', fontWeight: 'bold', color: 'var(--primary)' }}>
                             คุณ{user.nickname || user.name}
                         </Link>
+                        {/* Admin Link if role is admin */}
+                        {user.role === 'admin' && (
+                            <Link href="/admin"><Button variant="ghost" size="sm" style={{ color: '#166534' }}>ระบบหลังบ้าน</Button></Link>
+                        )}
                         <Button variant="ghost" size="sm" onClick={logout}>ออกจากระบบ</Button>
                     </div>
                 ) : (

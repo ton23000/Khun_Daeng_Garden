@@ -9,11 +9,13 @@ export interface User {
     phone: string;
     email: string;
     password?: string;
+    role?: 'user' | 'admin';
 }
 
 interface AuthContextType {
     user: User | null;
     login: (identifier: string, password: string) => boolean;
+    loginAdmin: (password: string) => boolean;
     register: (name: string, nickname: string, phone: string, email: string, password: string) => { success: boolean; error?: string };
     resetPassword: (identifier: string) => boolean;
     logout: () => void;
@@ -45,8 +47,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (foundUser) {
             const { password, ...safeUser } = foundUser;
-            setUser(safeUser as User);
-            localStorage.setItem('khun_daeng_user', JSON.stringify(safeUser));
+            // Default role is user for normal login
+            const userWithRole = { ...safeUser, role: 'user' as const };
+            setUser(userWithRole);
+            localStorage.setItem('khun_daeng_user', JSON.stringify(userWithRole));
+            return true;
+        }
+        return false;
+    };
+
+    const loginAdmin = (password: string) => {
+        // Hardcoded admin for demo
+        if (password === 'admin1234') {
+            const adminUser: User = {
+                name: 'Admin',
+                nickname: 'Admin',
+                phone: '0000000000',
+                email: 'admin@khundaeng.com',
+                role: 'admin'
+            };
+            setUser(adminUser);
+            localStorage.setItem('khun_daeng_user', JSON.stringify(adminUser));
             return true;
         }
         return false;
@@ -95,7 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, resetPassword, logout }}>
+        <AuthContext.Provider value={{ user, login, loginAdmin, register, resetPassword, logout }}>
             {children}
         </AuthContext.Provider>
     );
