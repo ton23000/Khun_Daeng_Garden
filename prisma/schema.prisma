@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String   @unique
+  email     String?
+  password  String
+  role      String   @default("USER") // ADMIN, USER
+  bookings  Booking[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tree {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  images      String   // JSON string of image URLs
+  category    String
+  status      String   @default("AVAILABLE") // AVAILABLE, BOOKED, SOLD
+  tags        String   // Comma separated tags
+  bookings    BookingItem[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Booking {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  items       BookingItem[]
+  pickupDate  DateTime
+  totalPrice  Float
+  deposit     Float
+  status      String   @default("PENDING") // PENDING, PAID, COMPLETED, CANCELLED
+  refCode     String   @unique
+  slipUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BookingItem {
+  id        String   @id @default(uuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  treeId    String
+  tree      Tree     @relation(fields: [treeId], references: [id])
+}
