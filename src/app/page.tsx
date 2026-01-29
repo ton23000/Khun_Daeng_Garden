@@ -1,12 +1,17 @@
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { MOCK_TREES } from '@/data/mockData';
 import Link from 'next/link';
 import { ArrowRight, Leaf, ShieldCheck, Truck } from 'lucide-react';
+import { prisma } from '@/lib/prisma';
 
-export default function Home() {
-  const featuredTrees = MOCK_TREES.slice(0, 3);
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  const featuredTrees = await prisma.tree.findMany({
+    take: 3,
+    orderBy: { createdAt: 'desc' }
+  });
 
   return (
     <main>
@@ -92,26 +97,39 @@ export default function Home() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-          {featuredTrees.map((tree) => (
-            <Card key={tree.id}>
-              <div style={{ height: '220px', backgroundColor: '#e5e7eb', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {/* Image Placeholder */}
-                <span style={{ color: '#9ca3af' }}>รูปภาพสินค้า</span>
-              </div>
-              <CardHeader>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <CardTitle>{tree.name}</CardTitle>
-                  <span style={{ fontWeight: 'bold', color: 'var(--primary)' }}>฿ {tree.price.toLocaleString()}</span>
+          {featuredTrees.map((tree) => {
+            // Parse images safely
+            let images: string[] = [];
+            try {
+              images = JSON.parse(tree.images);
+            } catch (e) {
+              images = ['/placeholder-tree.jpg'];
+            }
+
+            return (
+              <Card key={tree.id}>
+                <div style={{ height: '220px', backgroundColor: '#e5e7eb', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  <img
+                    src={images[0] || '/placeholder-tree.jpg'}
+                    alt={tree.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
                 </div>
-                <CardDescription>{tree.category}</CardDescription>
-              </CardHeader>
-              <CardFooter>
-                <Link href={`/trees/${tree.id}`} style={{ width: '100%' }}>
-                  <Button fullWidth variant="outline">ดูรายละเอียด</Button>
-                </Link>
-              </CardFooter>
-            </Card>
-          ))}
+                <CardHeader>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <CardTitle>{tree.name}</CardTitle>
+                    <span style={{ fontWeight: 'bold', color: 'var(--primary)' }}>฿ {tree.price.toLocaleString()}</span>
+                  </div>
+                  <CardDescription>{tree.category}</CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Link href={`/trees/${tree.id}`} style={{ width: '100%' }}>
+                    <Button fullWidth variant="outline">ดูรายละเอียด</Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            )
+          })}
         </div>
       </section>
 

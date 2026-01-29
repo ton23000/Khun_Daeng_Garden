@@ -15,9 +15,9 @@ export interface User {
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
-    login: (identifier: string, password: string) => boolean;
-    loginAdmin: (password: string) => boolean;
-    register: (name: string, nickname: string, phone: string, email: string, password: string) => { success: boolean; error?: string };
+    login: (identifier: string, password: string) => Promise<boolean>;
+    loginAdmin: (password: string) => Promise<boolean>;
+    register: (name: string, nickname: string, phone: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
     resetPassword: (identifier: string) => boolean;
     logout: () => void;
 }
@@ -42,78 +42,65 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
     }, []);
 
-    const login = (identifier: string, password: string) => {
-        const db = localStorage.getItem('khun_daeng_db_users');
-        let users: User[] = db ? JSON.parse(db) : [];
+    const login = async (identifier: string, password: string) => {
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identifier, password })
+            });
 
-        // Check if identifier matches phone OR email
-        const foundUser = users.find(u =>
-            (u.phone === identifier || u.email === identifier) &&
-            u.password === password
-        );
+            const data = await res.json();
+            if (!res.ok) {
+                alert(data.error || 'Login failed');
+                return false;
+            }
 
-        if (foundUser) {
-            const { password, ...safeUser } = foundUser;
-            // Default role is user for normal login
-            const userWithRole = { ...safeUser, role: 'user' as const };
-            setUser(userWithRole);
-            localStorage.setItem('khun_daeng_user', JSON.stringify(userWithRole));
+            setUser(data.user);
+            localStorage.setItem('khun_daeng_user', JSON.stringify(data.user));
             return true;
+        } catch (error) {
+            console.error('Login error', error);
+            alert('Internal Server Error');
+            return false;
         }
-        return false;
     };
 
-    const loginAdmin = (password: string) => {
-        // Hardcoded admin for demo
-        if (password === 'admin1234') {
-            const adminUser: User = {
-                name: 'Admin',
-                nickname: 'Admin',
-                phone: '0000000000',
-                email: 'admin@khundaeng.com',
-                role: 'admin'
-            };
-            setUser(adminUser);
-            localStorage.setItem('khun_daeng_user', JSON.stringify(adminUser));
-            return true;
-        }
-        return false;
+    const loginAdmin = async (password: string) => {
+        // Re-use standard login for admin, relying on backend to check or keep special logic
+        // But for minimal friction, let's just use the same login function
+        return login('admin', password);
     };
 
-    const register = (name: string, nickname: string, phone: string, email: string, password: string) => {
-        // Save to "Database"
-        const db = localStorage.getItem('khun_daeng_db_users');
-        let users: User[] = db ? JSON.parse(db) : [];
+    const register = async (name: string, nickname: string, phone: string, email: string, password: string) => {
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, nickname, phone, email, password })
+            });
 
-        // Check duplicates
-        if (users.find(u => u.phone === phone)) {
-            return { success: false, error: 'เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว' };
+            const data = await res.json();
+            if (!res.ok) {
+                return { success: false, error: data.error };
+            }
+
+            // Auto login
+            setUser(data.user);
+            localStorage.setItem('khun_daeng_user', JSON.stringify(data.user));
+            router.push('/');
+            return { success: true };
+
+        } catch (error) {
+            console.error('Register error', error);
+            return { success: false, error: 'Internal Server Error' };
         }
-        if (users.find(u => u.email === email)) {
-            return { success: false, error: 'อีเมลนี้ถูกใช้งานแล้ว' };
-        }
-        if (users.find(u => u.nickname === nickname)) {
-            return { success: false, error: 'ชื่อเล่นนี้ถูกใช้งานแล้ว' };
-        }
-
-        const newUser = { name, nickname, phone, email, password };
-        users.push(newUser);
-        localStorage.setItem('khun_daeng_db_users', JSON.stringify(users));
-
-        // Auto login
-        const { password: _, ...safeUser } = newUser;
-        setUser(safeUser as User);
-        localStorage.setItem('khun_daeng_user', JSON.stringify(safeUser));
-        router.push('/');
-
-        return { success: true };
     };
 
     const resetPassword = (identifier: string) => {
-        const db = localStorage.getItem('khun_daeng_db_users');
-        let users: User[] = db ? JSON.parse(db) : [];
-        const foundUser = users.find(u => u.phone === identifier || u.email === identifier);
-        return !!foundUser;
+        // TODO: Implement real reset password API
+        alert('Feature not implemented yet (Mock: Password reset for ' + identifier + ')');
+        return true;
     };
 
     const logout = () => {

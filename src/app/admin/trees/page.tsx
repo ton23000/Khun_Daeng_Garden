@@ -104,13 +104,18 @@ export default function AdminTreesPage() {
             }
 
             if (res.ok) {
+                alert(editingTree ? 'แก้ไขข้อมูลต้นไม้เรียบร้อยแล้ว' : 'เพิ่มต้นไม้ใหม่เรียบร้อยแล้ว');
                 setIsModalOpen(false);
                 setEditingTree(null);
                 resetForm();
                 fetchTrees();
+            } else {
+                const errorData = await res.json();
+                alert(`เกิดข้อผิดพลาด: ${errorData.error || 'ไม่สามารถบันทึกข้อมูลได้'}`);
             }
         } catch (error) {
             console.error('Failed to save', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
         }
     };
 
@@ -255,7 +260,51 @@ export default function AdminTreesPage() {
                                     </div>
                                 </div>
                                 <Input label="ระยะเวลาเติบโต (เช่น 1-2 อาทิตย์)" value={formData.growthTime} onChange={e => setFormData({ ...formData, growthTime: e.target.value })} />
-                                <Input label="URL รูปภาพ (คั่นด้วยจุลภาค)" value={formData.images} onChange={e => setFormData({ ...formData, images: e.target.value })} placeholder="/tree1.jpg, /tree2.jpg" />
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium">รูปภาพ</label>
+                                    <div style={{ border: '2px dashed #d1d5db', borderRadius: '0.5rem', padding: '1.5rem', textAlign: 'center', position: 'relative' }}>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+
+                                                const formData = new FormData();
+                                                formData.append('file', file);
+
+                                                try {
+                                                    const res = await fetch('/api/upload', {
+                                                        method: 'POST',
+                                                        body: formData
+                                                    });
+                                                    if (res.ok) {
+                                                        const data = await res.json();
+                                                        setFormData(prev => ({ ...prev, images: data.url }));
+                                                    } else {
+                                                        alert('Upload failed');
+                                                    }
+                                                } catch (error) {
+                                                    console.error('Error uploading:', error);
+                                                    alert('Error uploading file');
+                                                }
+                                            }}
+                                            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer', zIndex: 10 }}
+                                        />
+                                        {formData.images ? (
+                                            <div className="relative">
+                                                <img src={formData.images.split(',')[0]} alt="Preview" style={{ maxHeight: '150px', margin: '0 auto', borderRadius: '0.5rem' }} />
+                                                <p className="text-xs text-gray-500 mt-2">คลิกเพื่อเปลี่ยนรูป</p>
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <span className="text-2xl">📷</span>
+                                                <p className="text-sm text-gray-500">คลิกเพื่ออัปโหลดรูปภาพ</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {/* Fallback for manual URL if needed, hidden for now or standard input */}
+                                </div>
 
                                 <div>
                                     <label className="block text-sm font-medium mb-1">Tags</label>
