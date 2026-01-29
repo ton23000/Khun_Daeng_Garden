@@ -63,7 +63,7 @@ export function Navbar() {
                         <div style={dropdownStyle}>
                             <Link href="/services#ordering" style={linkStyle}>วิธีการสั่งซื้อ</Link>
                             <Link href="/services#planting" style={linkStyle}>คำปรึกษาการปลูก</Link>
-                            <Link href="/services#garden" style={linkStyle}>บริการจัดสวน</Link>
+
                             <Link href="/services#faq" style={linkStyle}>บริการตอบคำถาม</Link>
                         </div>
                     )}

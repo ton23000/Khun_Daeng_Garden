@@ -7,10 +7,14 @@ import { Button } from '@/components/ui/Button';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const { user, logout } = useAuth();
+    const { user, logout, isLoading } = useAuth();
 
     if (pathname === '/admin/login') {
         return <>{children}</>;
+    }
+
+    if (isLoading) {
+        return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
     }
 
     // Simple protection check (AuthContext redirect handles the rest usually)
@@ -31,13 +35,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </div>
 
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <Link href="/admin" style={{
+                    <Link href="/admin/dashboard" style={{
                         display: 'block',
                         padding: '0.75rem 1rem',
                         borderRadius: '0.5rem',
-                        color: pathname === '/admin' ? '#166534' : '#374151',
-                        backgroundColor: pathname === '/admin' ? '#dcfce7' : 'transparent',
-                        fontWeight: pathname === '/admin' ? 500 : 400,
+                        color: pathname === '/admin/dashboard' ? '#166534' : '#374151',
+                        backgroundColor: pathname === '/admin/dashboard' ? '#dcfce7' : 'transparent',
+                        fontWeight: pathname === '/admin/dashboard' ? 500 : 400,
                         textDecoration: 'none'
                     }}>
                         Dashboard

@@ -49,29 +49,7 @@ export default function ServicesPage() {
                     </CardContent>
                 </Card>
 
-                {/* บริการจัดสวน */}
-                <Card id="garden">
-                    <CardHeader>
-                        <CardTitle style={{ fontSize: '1.5rem' }}>บริการจัดสวน</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div style={{ lineHeight: '1.8' }}>
-                            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>รับออกแบบและจัดสวนตามงบประมาณ โดยทีมงานมืออาชีพ</h3>
-                            <p style={{ marginTop: '1rem' }}>
-                                เราให้บริการออกแบบและจัดสวนแบบครบวงจร ตั้งแต่การวางแผน การเลือกพันธุ์ไม้ ไปจนถึงการติดตั้งและดูแลรักษา
-                            </p>
-                            <div style={{ marginTop: '1rem', backgroundColor: '#f0fdf4', padding: '1rem', borderRadius: '0.5rem' }}>
-                                <p style={{ fontWeight: 'bold', color: '#166534' }}>บริการของเรา:</p>
-                                <ul style={{ marginLeft: '1.5rem', marginTop: '0.5rem' }}>
-                                    <li>ออกแบบสวนตามสไตล์ที่ต้องการ</li>
-                                    <li>จัดวางต้นไม้และตกแต่งสวน</li>
-                                    <li>ติดตั้งระบบน้ำและไฟในสวน</li>
-                                    <li>บริการดูแลรักษาสวนรายเดือน</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+
 
                 {/* FAQ */}
                 <Card id="faq">

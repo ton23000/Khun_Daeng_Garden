@@ -14,6 +14,7 @@ export interface User {
 
 interface AuthContextType {
     user: User | null;
+    isLoading: boolean;
     login: (identifier: string, password: string) => boolean;
     loginAdmin: (password: string) => boolean;
     register: (name: string, nickname: string, phone: string, email: string, password: string) => { success: boolean; error?: string };
@@ -25,14 +26,20 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
     // Check storage on mount
     useEffect(() => {
         const storedUser = localStorage.getItem('khun_daeng_user');
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (e) {
+                localStorage.removeItem('khun_daeng_user');
+            }
         }
+        setIsLoading(false);
     }, []);
 
     const login = (identifier: string, password: string) => {
@@ -116,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, loginAdmin, register, resetPassword, logout }}>
+        <AuthContext.Provider value={{ user, isLoading, login, loginAdmin, register, resetPassword, logout }}>
             {children}
         </AuthContext.Provider>
     );

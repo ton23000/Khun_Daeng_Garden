@@ -13,8 +13,9 @@ const updateSchema = z.object({
     growthTime: z.string().optional()
 });
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
     try {
+        const params = await props.params;
         const id = params.id;
         const body = await request.json();
         const validated = updateSchema.parse(body);
@@ -40,8 +41,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
     try {
+        const params = await props.params;
         const id = params.id;
         await prisma.tree.delete({
             where: { id }

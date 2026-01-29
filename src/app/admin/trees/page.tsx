@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+import { TagInput } from '@/components/TagInput';
 
 interface Tree {
     id: string;
@@ -21,11 +22,15 @@ interface Tree {
 
 export default function AdminTreesPage() {
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, isLoading: isAuthLoading } = useAuth();
     const [trees, setTrees] = useState<Tree[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTree, setEditingTree] = useState<Tree | null>(null);
+
+    // Derived state for suggestions
+    const allTags = Array.from(new Set(trees.flatMap(t => t.tags || [])));
+    const allCategories = Array.from(new Set(trees.map(t => t.category)));
 
     // Form State
     const [formData, setFormData] = useState({
@@ -34,17 +39,18 @@ export default function AdminTreesPage() {
         price: 0,
         category: '',
         images: '', // Comma separated for simplicity in this demo
-        tags: '',   // Comma separated
+        tags: [] as string[],
         growthTime: ''
     });
 
     useEffect(() => {
+        if (isAuthLoading) return; // Wait for auth to load
         if (!user || user.role !== 'admin') {
             router.push('/admin/login');
             return;
         }
         fetchTrees();
-    }, [user, router]);
+    }, [user, isAuthLoading, router]);
 
     const fetchTrees = async () => {
         try {
@@ -78,7 +84,7 @@ export default function AdminTreesPage() {
         const payload = {
             ...formData,
             images: formData.images.split(',').map(s => s.trim()).filter(s => s),
-            tags: formData.tags.split(',').map(s => s.trim()).filter(s => s)
+            tags: formData.tags // Already an array
         };
 
         try {
@@ -109,7 +115,7 @@ export default function AdminTreesPage() {
     };
 
     const resetForm = () => {
-        setFormData({ name: '', description: '', price: 0, category: '', images: '', tags: '', growthTime: '' });
+        setFormData({ name: '', description: '', price: 0, category: '', images: '', tags: [], growthTime: '' });
     };
 
     const openEdit = (tree: Tree) => {
@@ -120,7 +126,7 @@ export default function AdminTreesPage() {
             price: tree.price,
             category: tree.category,
             images: tree.images.join(','),
-            tags: tree.tags.join(','),
+            tags: tree.tags || [],
             growthTime: tree.growthTime || ''
         });
         setIsModalOpen(true);
@@ -131,6 +137,11 @@ export default function AdminTreesPage() {
         resetForm();
         setIsModalOpen(true);
     };
+
+    // Show loading state while checking auth
+    if (isAuthLoading) {
+        return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    }
 
     return (
         <div>
@@ -147,6 +158,7 @@ export default function AdminTreesPage() {
                                 <th style={{ padding: '1rem' }}>รูปภาพ</th>
                                 <th style={{ padding: '1rem' }}>ชื่อ</th>
                                 <th style={{ padding: '1rem' }}>หมวดหมู่</th>
+                                <th style={{ padding: '1rem' }}>Tags</th>
                                 <th style={{ padding: '1rem' }}>ระยะเวลา</th>
                                 <th style={{ padding: '1rem' }}>ราคา</th>
                                 <th style={{ padding: '1rem' }}>สถานะ</th>
@@ -155,9 +167,9 @@ export default function AdminTreesPage() {
                         </thead>
                         <tbody>
                             {isLoading ? (
-                                <tr><td colSpan={6} style={{ padding: '2rem', textAlign: 'center' }}>Loading...</td></tr>
+                                <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>Loading...</td></tr>
                             ) : trees.length === 0 ? (
-                                <tr><td colSpan={6} style={{ padding: '2rem', textAlign: 'center' }}>ไม่มีข้อมูลต้นไม้</td></tr>
+                                <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>ไม่มีข้อมูลต้นไม้</td></tr>
                             ) : (
                                 trees.map(tree => (
                                     <tr key={tree.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
@@ -166,6 +178,14 @@ export default function AdminTreesPage() {
                                         </td>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{tree.name}</td>
                                         <td style={{ padding: '1rem' }}>{tree.category}</td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div className="flex flex-wrap gap-1">
+                                                {tree.tags?.slice(0, 3).map(t => (
+                                                    <span key={t} className="text-xs bg-gray-100 px-1 rounded">{t}</span>
+                                                ))}
+                                                {tree.tags?.length > 3 && <span className="text-xs text-gray-500">+{tree.tags.length - 3}</span>}
+                                            </div>
+                                        </td>
                                         <td style={{ padding: '1rem' }}>{tree.growthTime || '-'}</td>
                                         <td style={{ padding: '1rem' }}>฿{tree.price.toLocaleString()}</td>
                                         <td style={{ padding: '1rem' }}>
@@ -216,11 +236,35 @@ export default function AdminTreesPage() {
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                     <Input label="ราคา (บาท)" type="number" value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} required />
-                                    <Input label="หมวดหมู่" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required />
+
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">หมวดหมู่</label>
+                                        <input
+                                            list="categories"
+                                            value={formData.category}
+                                            onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                            placeholder="เลือกหรือพิมพ์หมวดหมู่ใหม่"
+                                            required
+                                        />
+                                        <datalist id="categories">
+                                            {allCategories.map(cat => (
+                                                <option key={cat} value={cat} />
+                                            ))}
+                                        </datalist>
+                                    </div>
                                 </div>
                                 <Input label="ระยะเวลาเติบโต (เช่น 1-2 อาทิตย์)" value={formData.growthTime} onChange={e => setFormData({ ...formData, growthTime: e.target.value })} />
                                 <Input label="URL รูปภาพ (คั่นด้วยจุลภาค)" value={formData.images} onChange={e => setFormData({ ...formData, images: e.target.value })} placeholder="/tree1.jpg, /tree2.jpg" />
-                                <Input label="Tags (คั่นด้วยจุลภาค)" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder="มงคล, ไม้ดอก" />
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Tags</label>
+                                    <TagInput
+                                        value={formData.tags}
+                                        onChange={tags => setFormData({ ...formData, tags })}
+                                        suggestions={allTags}
+                                    />
+                                </div>
 
                                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
                                     <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>ยกเลิก</Button>
