@@ -262,21 +262,35 @@ export default function AdminTreesPage() {
                                 <Input label="ระยะเวลาเติบโต (เช่น 1-2 อาทิตย์)" value={formData.growthTime} onChange={e => setFormData({ ...formData, growthTime: e.target.value })} />
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium">รูปภาพ</label>
-                                    <div style={{ border: '2px dashed #d1d5db', borderRadius: '0.5rem', padding: '1.5rem', textAlign: 'center', position: 'relative' }}>
+                                    <label
+                                        style={{
+                                            border: '2px dashed #d1d5db',
+                                            borderRadius: '0.5rem',
+                                            padding: '1.5rem',
+                                            textAlign: 'center',
+                                            display: 'block',
+                                            cursor: 'pointer',
+                                            backgroundColor: '#f9fafb',
+                                            transition: 'all 0.2s'
+                                        }}
+                                        className="hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    >
                                         <input
                                             type="file"
                                             accept="image/*"
+                                            style={{ display: 'none' }}
                                             onChange={async (e) => {
                                                 const file = e.target.files?.[0];
                                                 if (!file) return;
 
-                                                const formData = new FormData();
-                                                formData.append('file', file);
+                                                const uploadFormData = new FormData();
+                                                uploadFormData.append('file', file);
 
                                                 try {
+                                                    // Show loading state if possible (optional here for simplicity)
                                                     const res = await fetch('/api/upload', {
                                                         method: 'POST',
-                                                        body: formData
+                                                        body: uploadFormData
                                                     });
                                                     if (res.ok) {
                                                         const data = await res.json();
@@ -289,21 +303,32 @@ export default function AdminTreesPage() {
                                                     alert('Error uploading file');
                                                 }
                                             }}
-                                            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer', zIndex: 10 }}
                                         />
+
                                         {formData.images ? (
                                             <div className="relative">
-                                                <img src={formData.images.split(',')[0]} alt="Preview" style={{ maxHeight: '150px', margin: '0 auto', borderRadius: '0.5rem' }} />
-                                                <p className="text-xs text-gray-500 mt-2">คลิกเพื่อเปลี่ยนรูป</p>
+                                                <img
+                                                    src={formData.images.split(',')[0]}
+                                                    alt="Preview"
+                                                    style={{
+                                                        maxHeight: '150px',
+                                                        margin: '0 auto',
+                                                        borderRadius: '0.5rem',
+                                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                                                    }}
+                                                />
+                                                <div style={{ marginTop: '0.5rem', color: '#4b5563', fontSize: '0.875rem' }}>
+                                                    <span style={{ fontWeight: 'bold' }}>คลิกเพื่อเปลี่ยนรูป</span>
+                                                </div>
                                             </div>
                                         ) : (
                                             <div>
-                                                <span className="text-2xl">📷</span>
-                                                <p className="text-sm text-gray-500">คลิกเพื่ออัปโหลดรูปภาพ</p>
+                                                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📷</div>
+                                                <p className="text-sm text-gray-500 font-medium">คลิกเพื่ออัปโหลดรูปภาพ</p>
+                                                <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
                                             </div>
                                         )}
-                                    </div>
-                                    {/* Fallback for manual URL if needed, hidden for now or standard input */}
+                                    </label>
                                 </div>
 
                                 <div>
