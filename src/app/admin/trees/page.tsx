@@ -38,7 +38,7 @@ export default function AdminTreesPage() {
         description: '',
         price: 0,
         category: '',
-        images: '', // Comma separated for simplicity in this demo
+        images: [] as string[], // Changed to array
         tags: [] as string[],
         growthTime: ''
     });
@@ -67,7 +67,7 @@ export default function AdminTreesPage() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this tree?')) return;
+        if (!confirm('คุณแน่ใจหรือไม่ที่จะลบต้นไม้นี้?')) return;
 
         try {
             const res = await fetch(`/api/trees/${id}`, { method: 'DELETE' });
@@ -83,8 +83,8 @@ export default function AdminTreesPage() {
         e.preventDefault();
         const payload = {
             ...formData,
-            images: formData.images.split(',').map(s => s.trim()).filter(s => s),
-            tags: formData.tags // Already an array
+            images: formData.images, // Already an array
+            tags: formData.tags
         };
 
         try {
@@ -120,7 +120,7 @@ export default function AdminTreesPage() {
     };
 
     const resetForm = () => {
-        setFormData({ name: '', description: '', price: 0, category: '', images: '', tags: [], growthTime: '' });
+        setFormData({ name: '', description: '', price: 0, category: '', images: [], tags: [], growthTime: '' });
     };
 
     const openEdit = (tree: Tree) => {
@@ -130,7 +130,7 @@ export default function AdminTreesPage() {
             description: tree.description,
             price: tree.price,
             category: tree.category,
-            images: tree.images.join(','),
+            images: tree.images || [],
             tags: tree.tags || [],
             growthTime: tree.growthTime || ''
         });
@@ -143,9 +143,16 @@ export default function AdminTreesPage() {
         setIsModalOpen(true);
     };
 
+    const removeImage = (indexToRemove: number) => {
+        setFormData(prev => ({
+            ...prev,
+            images: prev.images.filter((_, index) => index !== indexToRemove)
+        }));
+    };
+
     // Show loading state while checking auth
     if (isAuthLoading) {
-        return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+        return <div className="flex justify-center items-center min-h-screen">กำลังโหลด...</div>;
     }
 
     return (
@@ -172,7 +179,7 @@ export default function AdminTreesPage() {
                         </thead>
                         <tbody>
                             {isLoading ? (
-                                <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>Loading...</td></tr>
+                                <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>กำลังโหลด...</td></tr>
                             ) : trees.length === 0 ? (
                                 <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>ไม่มีข้อมูลต้นไม้</td></tr>
                             ) : (
@@ -180,6 +187,7 @@ export default function AdminTreesPage() {
                                     <tr key={tree.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                                         <td style={{ padding: '1rem' }}>
                                             <img src={tree.images[0] || '/placeholder-tree.jpg'} alt={tree.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '0.25rem' }} />
+                                            {tree.images.length > 1 && <span className="text-xs text-gray-500 ml-1">+{tree.images.length - 1}</span>}
                                         </td>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{tree.name}</td>
                                         <td style={{ padding: '1rem' }}>{tree.category}</td>
@@ -199,7 +207,7 @@ export default function AdminTreesPage() {
                                                 backgroundColor: tree.status === 'AVAILABLE' ? '#dcfce7' : '#f3f4f6',
                                                 color: tree.status === 'AVAILABLE' ? '#166534' : '#374151'
                                             }}>
-                                                {tree.status}
+                                                {tree.status === 'AVAILABLE' ? 'พร้อมขาย' : 'ไม่ว่าง'}
                                             </span>
                                         </td>
                                         <td style={{ padding: '1rem' }}>
@@ -222,7 +230,7 @@ export default function AdminTreesPage() {
                     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
                     backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50
                 }}>
-                    <Card style={{ width: '90%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto' }}>
+                    <Card style={{ width: '90%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
                         <CardHeader>
                             <CardTitle>{editingTree ? 'แก้ไขต้นไม้' : 'เพิ่มต้นไม้ใหม่'}</CardTitle>
                         </CardHeader>
@@ -261,7 +269,7 @@ export default function AdminTreesPage() {
                                 </div>
                                 <Input label="ระยะเวลาเติบโต (เช่น 1-2 อาทิตย์)" value={formData.growthTime} onChange={e => setFormData({ ...formData, growthTime: e.target.value })} />
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-medium">รูปภาพ</label>
+                                    <label className="block text-sm font-medium">รูปภาพ ({formData.images.length} รูป)</label>
                                     <label
                                         style={{
                                             border: '2px dashed #d1d5db',
@@ -278,23 +286,30 @@ export default function AdminTreesPage() {
                                         <input
                                             type="file"
                                             accept="image/*"
+                                            multiple
                                             style={{ display: 'none' }}
                                             onChange={async (e) => {
-                                                const file = e.target.files?.[0];
-                                                if (!file) return;
+                                                const files = e.target.files;
+                                                if (!files || files.length === 0) return;
 
                                                 const uploadFormData = new FormData();
-                                                uploadFormData.append('file', file);
+                                                for (let i = 0; i < files.length; i++) {
+                                                    uploadFormData.append('file', files[i]);
+                                                }
 
                                                 try {
-                                                    // Show loading state if possible (optional here for simplicity)
                                                     const res = await fetch('/api/upload', {
                                                         method: 'POST',
                                                         body: uploadFormData
                                                     });
                                                     if (res.ok) {
                                                         const data = await res.json();
-                                                        setFormData(prev => ({ ...prev, images: data.url }));
+                                                        if (data.urls) {
+                                                            setFormData(prev => ({ ...prev, images: [...prev.images, ...data.urls] }));
+                                                        } else if (data.url) {
+                                                            // Fallback for single file response just in case
+                                                            setFormData(prev => ({ ...prev, images: [...prev.images, data.url] }));
+                                                        }
                                                     } else {
                                                         alert('Upload failed');
                                                     }
@@ -304,31 +319,35 @@ export default function AdminTreesPage() {
                                                 }
                                             }}
                                         />
-
-                                        {formData.images ? (
-                                            <div className="relative">
-                                                <img
-                                                    src={formData.images.split(',')[0]}
-                                                    alt="Preview"
-                                                    style={{
-                                                        maxHeight: '150px',
-                                                        margin: '0 auto',
-                                                        borderRadius: '0.5rem',
-                                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                                                    }}
-                                                />
-                                                <div style={{ marginTop: '0.5rem', color: '#4b5563', fontSize: '0.875rem' }}>
-                                                    <span style={{ fontWeight: 'bold' }}>คลิกเพื่อเปลี่ยนรูป</span>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div>
-                                                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📷</div>
-                                                <p className="text-sm text-gray-500 font-medium">คลิกเพื่ออัปโหลดรูปภาพ</p>
-                                                <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
-                                            </div>
-                                        )}
+                                        <div>
+                                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📷</div>
+                                            <p className="text-sm text-gray-500 font-medium">คลิกเพื่อเพิ่มรูปภาพ (เลือกได้หลายรูป)</p>
+                                            <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+                                        </div>
                                     </label>
+
+                                    {/* Image Previews */}
+                                    {formData.images.length > 0 && (
+                                        <div className="grid grid-cols-4 gap-2 mt-4">
+                                            {formData.images.map((imgUrl, index) => (
+                                                <div key={index} className="relative group">
+                                                    <img
+                                                        src={imgUrl}
+                                                        alt={`Preview ${index}`}
+                                                        className="w-full h-24 object-cover rounded-md border border-gray-200"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeImage(index)}
+                                                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        title="ลบรูปนี้"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div>

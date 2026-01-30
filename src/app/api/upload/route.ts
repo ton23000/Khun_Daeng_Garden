@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
@@ -5,19 +6,13 @@ import { join } from 'path';
 export async function POST(request: Request) {
     try {
         const data = await request.formData();
-        const file: File | null = data.get('file') as unknown as File;
+        const files = data.getAll('file') as unknown as File[];
 
-        if (!file) {
-            return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+        if (!files || files.length === 0) {
+            return NextResponse.json({ error: 'No files uploaded' }, { status: 400 });
         }
 
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-
-        // Create unique filename
-        const timestamp = Date.now();
-        const cleanName = file.name.replace(/\s+/g, '-').toLowerCase();
-        const filename = `${timestamp}-${cleanName}`;
+        const uploadedUrls: string[] = [];
 
         // Ensure uploads directory exists
         const uploadDir = join(process.cwd(), 'public', 'uploads');
@@ -27,12 +22,27 @@ export async function POST(request: Request) {
             // Ignore if exists
         }
 
-        const path = join(uploadDir, filename);
+        for (const file of files) {
+            const bytes = await file.arrayBuffer();
+            const buffer = Buffer.from(bytes);
 
-        await writeFile(path, buffer);
-        console.log(`Saved file to ${path}`);
+            // Create unique filename
+            const timestamp = Date.now();
+            // Add a random suffix to avoid collisions with same-time uploads
+            const randomSuffix = Math.round(Math.random() * 1000);
+            const cleanName = file.name.replace(/\s+/g, '-').toLowerCase();
+            const filename = `${timestamp}-${randomSuffix}-${cleanName}`;
 
-        return NextResponse.json({ url: `/uploads/${filename}` });
+            const path = join(uploadDir, filename);
+
+            await writeFile(path, buffer);
+            console.log(`Saved file to ${path}`);
+
+            // Use the dynamic API route we created in the previous step
+            uploadedUrls.push(`/api/uploads/${filename}`);
+        }
+
+        return NextResponse.json({ urls: uploadedUrls });
     } catch (error) {
         console.error('Error uploading file:', error);
         return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
