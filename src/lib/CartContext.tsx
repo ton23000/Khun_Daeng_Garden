@@ -1,7 +1,18 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Tree } from '@/data/mockData';
+
+export interface Tree {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    category: string;
+    status: string;
+    images: string[];
+    tags: string[];
+    growthTime?: string | null;
+}
 
 export interface CartItem extends Tree {
     instanceId: string;

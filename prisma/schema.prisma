@@ -36,6 +36,7 @@ model Tree {
   updatedAt   DateTime @updatedAt
 }
 
+
 model Booking {
   id          String   @id @default(uuid())
   userId      String
@@ -44,9 +45,10 @@ model Booking {
   pickupDate  DateTime
   totalPrice  Float
   deposit     Float
-  status      String   @default("PENDING") // PENDING, PAID, COMPLETED, CANCELLED
+  status      String   @default("PENDING") // PENDING, PAID, PREPARING, READY, COMPLETED, CANCELLED
   refCode     String   @unique
   slipUrl     String?
+  note        String?  // Admin note or user note
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -57,4 +59,6 @@ model BookingItem {
   booking   Booking  @relation(fields: [bookingId], references: [id])
   treeId    String
   tree      Tree     @relation(fields: [treeId], references: [id])
+  quantity  Int
+  price     Float    // Snapshot price at time of booking
 }

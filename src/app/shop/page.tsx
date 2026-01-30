@@ -1,27 +1,66 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
+import { ShopControls } from '@/components/ShopControls';
+import { Prisma } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ShopPage() {
+export default async function ShopPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+    const params = await searchParams;
+    const category = params.category as string | undefined;
+    const sort = params.sort as string | undefined;
+    const q = params.q as string | undefined;
+
+    // Filter Logic
+    const where: Prisma.TreeWhereInput = {
+        status: { not: 'SOLD' } // Optional: Hide sold items? Or keep them. Let's show everything for now but user can filter.
+    };
+
+    if (category) {
+        where.category = category;
+    }
+
+    if (q) {
+        where.name = { contains: q }; // Case insensitive usually requires mode: 'insensitive' if DB supports it. 
+        // Prisma SQLite default collision is case-sensitive, but often configured otherwise. 
+        // For simplicity we just use contains.
+    }
+
+    // Sort Logic
+    let orderBy: Prisma.TreeOrderByWithRelationInput = { createdAt: 'desc' };
+    if (sort === 'price_asc') {
+        orderBy = { price: 'asc' };
+    } else if (sort === 'price_desc') {
+        orderBy = { price: 'desc' };
+    } else if (sort === 'newest') {
+        orderBy = { createdAt: 'desc' };
+    }
+
+    // Fetch Data
     const trees = await prisma.tree.findMany({
-        orderBy: { createdAt: 'desc' }
+        where,
+        orderBy
     });
+
+    // Get all categories for filter
+    const categoriesData = await prisma.tree.findMany({
+        select: { category: true },
+        distinct: ['category']
+    });
+    const categories = categoriesData.map(c => c.category).filter(Boolean);
 
     return (
         <div className="container" style={{ padding: '2rem 1rem' }}>
             <header style={{ marginBottom: '2rem', textAlign: 'center' }}>
                 <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>รายการต้นไม้ทั้งหมด</h1>
-                <div style={{ maxWidth: '400px', margin: '0 auto', display: 'flex', gap: '0.5rem' }}>
-                    <Input placeholder="ค้นหาต้นไม้..." />
-                    <Button>ค้นหา</Button>
-                </div>
+                <p style={{ color: '#6b7280', marginBottom: '2rem' }}>เลือกชมและจับจองต้นไม้ที่คุณชื่นชอบ</p>
             </header>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
+            <ShopControls categories={categories} />
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.5rem' }}>
                 {trees.map((tree) => {
                     // Parse images safely
                     let images: string[] = [];
@@ -32,12 +71,12 @@ export default async function ShopPage() {
                     }
 
                     return (
-                        <Card key={tree.id}>
-                            <div style={{ height: '200px', backgroundColor: '#e5e7eb', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                        <Card key={tree.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                            <div style={{ height: '220px', backgroundColor: '#f9fafb', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '1rem' }}>
                                 <img
                                     src={images[0] || '/placeholder-tree.jpg'}
                                     alt={tree.name}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                                 />
                             </div>
                             <CardHeader>

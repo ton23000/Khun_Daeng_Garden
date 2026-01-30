@@ -41,7 +41,7 @@ export function Navbar() {
 
     return (
         <nav className="container" style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', position: 'relative' }}>
-            <Link href="/" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--primary)' }}>
+            <Link href="/" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--secondary)' }}>
                 Khun Daeng Garden
             </Link>
 

@@ -330,17 +330,18 @@ export default function AdminTreesPage() {
                                     {formData.images.length > 0 && (
                                         <div className="grid grid-cols-4 gap-2 mt-4">
                                             {formData.images.map((imgUrl, index) => (
-                                                <div key={index} className="relative group">
+                                                <div key={index} className="relative group" style={{ width: '100px', height: '100px', border: '1px solid #e5e7eb', borderRadius: '0.5rem', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb' }}>
                                                     <img
                                                         src={imgUrl}
                                                         alt={`Preview ${index}`}
-                                                        className="w-full h-24 object-cover rounded-md border border-gray-200"
+                                                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
                                                     />
                                                     <button
                                                         type="button"
                                                         onClick={() => removeImage(index)}
                                                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                                                         title="ลบรูปนี้"
+                                                        style={{ cursor: 'pointer' }}
                                                     >
                                                         ✕
                                                     </button>

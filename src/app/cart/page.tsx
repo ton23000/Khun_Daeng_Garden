@@ -27,7 +27,7 @@ export default function CartPage() {
 
     const canSubmit = items.length > 0 && items.every(item => item.pickupDate);
 
-    const handleBooking = (e: React.FormEvent) => {
+    const handleBooking = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!canSubmit) {
             alert('กรุณาระบุวันรับของให้ครบทุกรายการ');
@@ -40,35 +40,44 @@ export default function CartPage() {
             return;
         }
 
-        const bookingId = Math.random().toString(36).substr(2, 9).toUpperCase();
-        const bookingDetails = {
-            id: bookingId,
-            userId: user.phone, // fallback to phone for ID if needed, or user Object id logic
-            // Ideally we use a persistent immutable ID, but user.phone is our key for now.
-            userName: user.name,
-            items: items,
-            totalPrice,
-            deposit,
-            status: 'PENDING',
-            dateCreated: new Date().toISOString()
-        };
+        try {
+            const res = await fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: user.phone,
+                    userName: user.name,
+                    items: items.map(item => ({
+                        treeId: item.id,
+                        treeName: item.name,
+                        quantity: item.quantity,
+                        price: item.price,
+                        pickupDate: item.pickupDate
+                    })),
+                    totalPrice,
+                    deposit
+                })
+            });
 
-        // Save Booking
-        const existingBookingsStr = localStorage.getItem('khun_daeng_bookings');
-        const existingBookings = existingBookingsStr ? JSON.parse(existingBookingsStr) : [];
-        existingBookings.push(bookingDetails);
-        localStorage.setItem('khun_daeng_bookings', JSON.stringify(existingBookings));
-        localStorage.setItem('last_booking', JSON.stringify(bookingDetails));
+            if (!res.ok) {
+                throw new Error('Failed to create booking');
+            }
 
-        // Trigger Notification
-        addNotification(
-            user.phone, // match user ID in notifications to be consistent
-            `การจอง #${bookingId} ของคุณได้รับการบันทึกแล้ว กรุณาชำระเงินมัดจำ`,
-            'success'
-        );
+            const booking = await res.json();
+            localStorage.setItem('last_booking', JSON.stringify(booking));
 
-        clearCart();
-        router.push('/booking-success');
+            addNotification(
+                user.phone,
+                `การจอง #${booking.refCode} ของคุณได้รับการบันทึกแล้ว กรุณาชำระเงินมัดจำ`,
+                'success'
+            );
+
+            clearCart();
+            router.push('/booking-success');
+        } catch (error) {
+            console.error('Booking error:', error);
+            alert('เกิดข้อผิดพลาดในการจอง กรุณาลองใหม่อีกครั้ง');
+        }
     };
 
     if (items.length === 0) {
@@ -97,7 +106,13 @@ export default function CartPage() {
                     {items.map((item) => (
                         <Card key={item.instanceId} style={{ display: 'flex', flexDirection: 'column', padding: '1rem' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                <div style={{ width: '80px', height: '80px', backgroundColor: '#e5e7eb', borderRadius: '0.375rem', flexShrink: 0 }}></div>
+                                <div style={{ width: '80px', height: '80px', backgroundColor: '#f9fafb', borderRadius: '0.375rem', flexShrink: 0, padding: '0.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e5e7eb' }}>
+                                    <img
+                                        src={item.images?.[0] || '/placeholder-tree.jpg'}
+                                        alt={item.name}
+                                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                    />
+                                </div>
                                 <div style={{ marginLeft: '1rem', flexGrow: 1 }}>
                                     <h3 style={{ fontWeight: 'bold' }}>{item.name}</h3>
                                     <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>{item.category}</p>

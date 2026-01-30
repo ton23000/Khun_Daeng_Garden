@@ -78,8 +78,9 @@ export default function BookingSuccessPage() {
                 )}
             </div>
 
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href="/"><Button variant="outline">กลับหน้าหลัก</Button></Link>
+                <Link href="/orders"><Button variant="outline">ดูออเดอร์ของฉัน</Button></Link>
                 {!uploadSuccess && (
                     <Button variant="primary" onClick={() => setIsModalOpen(true)}>แนบสลิปการโอนเงิน</Button>
                 )}

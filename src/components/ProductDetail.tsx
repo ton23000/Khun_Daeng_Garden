@@ -1,16 +1,29 @@
 'use client';
 
-import { Tree } from '@/data/mockData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { useCart } from '@/lib/CartContext';
 import { useState } from 'react';
 
+// Define Interface locally or import from shared types
+interface Tree {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    category: string;
+    status: string;
+    images: string[];
+    tags: string[];
+    growthTime?: string | null;
+}
+
 export default function ProductDetail({ tree }: { tree: Tree }) {
     const { addItem } = useCart();
     const [quantity, setQuantity] = useState(1);
     const [isAdded, setIsAdded] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(tree.images[0] || '/placeholder-tree.jpg');
 
     const handleAdd = () => {
         addItem(tree, quantity);
@@ -24,10 +37,56 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                 ← กลับไปหน้าร้านค้า
             </Link>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 1fr', gap: '2rem' }}>
-                {/* Left: Image */}
-                <div style={{ backgroundColor: '#e5e7eb', borderRadius: '0.5rem', minHeight: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    รูปภาพขนาดใหญ่
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                {/* Left: Image Gallery */}
+                <div>
+                    <div style={{
+                        backgroundColor: '#e5e7eb',
+                        borderRadius: '0.5rem',
+                        overflow: 'hidden',
+                        marginBottom: '1rem',
+                        aspectRatio: '1/1',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <img
+                            src={selectedImage}
+                            alt={tree.name}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'contain',
+                                maxHeight: '500px'
+                            }}
+                        />
+                    </div>
+                    {/* Thumbnails */}
+                    {tree.images.length > 1 && (
+                        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                            {tree.images.map((img, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setSelectedImage(img)}
+                                    style={{
+                                        border: selectedImage === img ? '2px solid var(--primary)' : '2px solid transparent',
+                                        borderRadius: '0.25rem',
+                                        overflow: 'hidden',
+                                        minWidth: '60px',
+                                        width: '60px',
+                                        height: '60px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <img
+                                        src={img}
+                                        alt={`${tree.name} ${index + 1}`}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Right: Details & Booking */}

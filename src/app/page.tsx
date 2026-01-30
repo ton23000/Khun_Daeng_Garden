@@ -18,7 +18,7 @@ export default async function Home() {
       {/* Hero Section */}
       <section style={{
         position: 'relative',
-        backgroundColor: 'var(--primary)',
+        backgroundColor: 'var(--secondary)',
         color: 'white',
         padding: '6rem 0',
         overflow: 'hidden'
@@ -28,21 +28,21 @@ export default async function Home() {
 
         <div className="container" style={{ position: 'relative', textAlign: 'center' }}>
           <h1 style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '1.5rem', lineHeight: '1.1', color: 'white' }}>
-            สวนคุณแดง <span style={{ color: 'var(--secondary)' }}>พรีเมียม</span>
+            สวนคุณแดง <span style={{ color: 'var(--primary)' }}>พรีเมียม</span>
           </h1>
           <p style={{ fontSize: '1.25rem', maxWidth: '600px', margin: '0 auto 2.5rem', opacity: 0.9 }}>
             ศูนย์รวมพันธุ์ไม้มงคล ไม้ด่าง และไม้เศรษฐกิจคัดพิเศษ <br />
             เลี้ยงดูด้วยใจ ส่งมอบให้คุณด้วยคุณภาพ
           </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/shop">
-              <Button size="lg" style={{ backgroundColor: 'var(--accent)', color: 'var(--primary-foreground)', border: 'none' }}>
+              <Button size="lg" style={{ backgroundColor: 'var(--primary)', color: 'white', border: 'none' }}>
                 เลือกชมต้นไม้ทั้งหมด
               </Button>
             </Link>
-            <Link href="/register">
+            <Link href="/orders">
               <Button size="lg" variant="outline" style={{ borderColor: 'white', color: 'white' }}>
-                สมัครสมาชิก
+                ดูออเดอร์ของฉัน
               </Button>
             </Link>
           </div>
@@ -96,7 +96,7 @@ export default async function Home() {
           </Link>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2rem' }}>
           {featuredTrees.map((tree) => {
             // Parse images safely
             let images: string[] = [];
@@ -107,12 +107,12 @@ export default async function Home() {
             }
 
             return (
-              <Card key={tree.id}>
-                <div style={{ height: '220px', backgroundColor: '#e5e7eb', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+              <Card key={tree.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div style={{ height: '220px', backgroundColor: '#f9fafb', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '1rem' }}>
                   <img
                     src={images[0] || '/placeholder-tree.jpg'}
                     alt={tree.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                   />
                 </div>
                 <CardHeader>
