@@ -26,6 +26,7 @@ interface Booking {
     deposit: number;
     pickupDate: string;
     note: string | null;
+    slipUrl: string | null;
     createdAt: string;
     user: {
         name: string;
@@ -45,6 +46,7 @@ export default function AdminOrdersPage() {
         pickupDate: '',
         note: ''
     });
+    const [viewingSlip, setViewingSlip] = useState<string | null>(null);
 
     useEffect(() => {
         if (isAuthLoading) return;
@@ -150,13 +152,14 @@ export default function AdminOrdersPage() {
                                 <th style={{ padding: '1rem' }}>รายการ</th>
                                 <th style={{ padding: '1rem' }}>ยอดรวม</th>
                                 <th style={{ padding: '1rem' }}>วันรับของ</th>
+                                <th style={{ padding: '1rem' }}>สลิป</th>
                                 <th style={{ padding: '1rem' }}>สถานะ</th>
                                 <th style={{ padding: '1rem' }}>จัดการ</th>
                             </tr>
                         </thead>
                         <tbody>
                             {bookings.length === 0 ? (
-                                <tr><td colSpan={7} style={{ padding: '2rem', textAlign: 'center' }}>ไม่มีออเดอร์</td></tr>
+                                <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>ไม่มีออเดอร์</td></tr>
                             ) : (
                                 bookings.map(booking => (
                                     <tr key={booking.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
@@ -182,6 +185,20 @@ export default function AdminOrdersPage() {
                                                 />
                                             ) : (
                                                 new Date(booking.pickupDate).toLocaleDateString('th-TH')
+                                            )}
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            {booking.slipUrl ? (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() => setViewingSlip(booking.slipUrl)}
+                                                    style={{ fontSize: '0.75rem' }}
+                                                >
+                                                    🖼️ ดูสลิป
+                                                </Button>
+                                            ) : (
+                                                <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>ยังไม่มี</span>
                                             )}
                                         </td>
                                         <td style={{ padding: '1rem' }}>
@@ -221,6 +238,70 @@ export default function AdminOrdersPage() {
                     </table>
                 </CardContent>
             </Card>
+
+            {/* Slip Viewer Modal */}
+            {viewingSlip && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 9999,
+                        padding: '2rem'
+                    }}
+                    onClick={() => setViewingSlip(null)}
+                >
+                    <div
+                        style={{
+                            position: 'relative',
+                            maxWidth: '90%',
+                            maxHeight: '90%',
+                            backgroundColor: 'white',
+                            borderRadius: '0.5rem',
+                            padding: '1rem'
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setViewingSlip(null)}
+                            style={{
+                                position: 'absolute',
+                                top: '-1rem',
+                                right: '-1rem',
+                                backgroundColor: 'white',
+                                border: 'none',
+                                borderRadius: '50%',
+                                width: '2.5rem',
+                                height: '2.5rem',
+                                fontSize: '1.5rem',
+                                cursor: 'pointer',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            ✕
+                        </button>
+                        <img
+                            src={viewingSlip}
+                            alt="Payment Slip"
+                            style={{
+                                maxWidth: '100%',
+                                maxHeight: '80vh',
+                                objectFit: 'contain',
+                                borderRadius: '0.375rem'
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

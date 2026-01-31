@@ -26,6 +26,7 @@ interface Booking {
     deposit: number;
     pickupDate: string;
     note: string | null;
+    slipUrl: string | null;
     createdAt: string;
     items: BookingItem[];
 }
@@ -35,6 +36,7 @@ export default function MyOrdersPage() {
     const { user, isLoading: isAuthLoading } = useAuth();
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [uploadingSlip, setUploadingSlip] = useState<string | null>(null);
 
     useEffect(() => {
         if (isAuthLoading) return;
@@ -57,6 +59,52 @@ export default function MyOrdersPage() {
             console.error('Failed to fetch bookings', error);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleSlipUpload = async (bookingId: string, file: File) => {
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('ไฟล์มีขนาดใหญ่เกินไป (สูงสุด 5MB)');
+            return;
+        }
+
+        setUploadingSlip(bookingId);
+
+        try {
+            // Convert to base64
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                const base64String = reader.result as string;
+
+                // Update booking with slip URL
+                const res = await fetch(`/api/bookings/${bookingId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ slipUrl: base64String })
+                });
+
+                if (res.ok) {
+                    alert('อัปโหลดสลิปสำเร็จ! รอการตรวจสอบจากทางร้าน');
+                    fetchBookings();
+                } else {
+                    alert('เกิดข้อผิดพลาดในการอัปโหลดสลิป');
+                }
+            };
+            reader.readAsDataURL(file);
+        } catch (error) {
+            console.error('Failed to upload slip', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        } finally {
+            setUploadingSlip(null);
         }
     };
 
@@ -200,6 +248,94 @@ export default function MyOrdersPage() {
                                                     </span>
                                                 </div>
                                             </div>
+
+                                            {/* Payment Info */}
+                                            {booking.status === 'PENDING' && (
+                                                <div style={{
+                                                    marginTop: '1rem',
+                                                    padding: '1rem',
+                                                    backgroundColor: '#fef3c7',
+                                                    borderRadius: '0.5rem',
+                                                    border: '2px solid #fbbf24'
+                                                }}>
+                                                    <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#92400e' }}>
+                                                        💰 ข้อมูลการชำระเงิน
+                                                    </h4>
+                                                    <div style={{ fontSize: '0.875rem', color: '#78350f' }}>
+                                                        <p style={{ marginBottom: '0.25rem' }}>ธนาคาร: <strong>ไทยพาณิชย์</strong></p>
+                                                        <p style={{ marginBottom: '0.25rem' }}>เลขที่บัญชี: <strong>123-456-7890</strong></p>
+                                                        <p style={{ marginBottom: '0.25rem' }}>ชื่อบัญชี: <strong>คุณแดงการ์เด้น</strong></p>
+                                                        <p style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>
+                                                            ยอดที่ต้องชำระ: ฿{booking.deposit.toLocaleString()}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Slip Upload Section */}
+                                            {booking.status === 'PENDING' && !booking.slipUrl && (
+                                                <div style={{ marginTop: '1rem' }}>
+                                                    <label
+                                                        htmlFor={`slip-upload-${booking.id}`}
+                                                        style={{
+                                                            display: 'block',
+                                                            width: '100%',
+                                                            padding: '0.75rem',
+                                                            backgroundColor: '#10b981',
+                                                            color: 'white',
+                                                            borderRadius: '0.5rem',
+                                                            textAlign: 'center',
+                                                            cursor: uploadingSlip === booking.id ? 'not-allowed' : 'pointer',
+                                                            fontWeight: 'bold',
+                                                            opacity: uploadingSlip === booking.id ? 0.6 : 1
+                                                        }}
+                                                    >
+                                                        {uploadingSlip === booking.id ? '⏳ กำลังอัปโหลด...' : '📤 อัปโหลดสลิปการโอนเงิน'}
+                                                    </label>
+                                                    <input
+                                                        id={`slip-upload-${booking.id}`}
+                                                        type="file"
+                                                        accept="image/*"
+                                                        style={{ display: 'none' }}
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) handleSlipUpload(booking.id, file);
+                                                        }}
+                                                        disabled={uploadingSlip === booking.id}
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {/* Show uploaded slip */}
+                                            {booking.slipUrl && (
+                                                <div style={{
+                                                    marginTop: '1rem',
+                                                    padding: '1rem',
+                                                    backgroundColor: '#f0fdf4',
+                                                    borderRadius: '0.5rem',
+                                                    border: '2px solid #10b981'
+                                                }}>
+                                                    <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#065f46' }}>
+                                                        ✅ สลิปการโอนเงิน
+                                                    </h4>
+                                                    <img
+                                                        src={booking.slipUrl}
+                                                        alt="Payment Slip"
+                                                        style={{
+                                                            maxWidth: '100%',
+                                                            maxHeight: '300px',
+                                                            objectFit: 'contain',
+                                                            borderRadius: '0.375rem',
+                                                            border: '1px solid #d1d5db',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        onClick={() => window.open(booking.slipUrl!, '_blank')}
+                                                    />
+                                                    <p style={{ fontSize: '0.75rem', color: '#065f46', marginTop: '0.5rem', textAlign: 'center' }}>
+                                                        คลิกที่รูปเพื่อดูขนาดเต็ม
+                                                    </p>
+                                                </div>
+                                            )}
 
                                             {booking.note && (
                                                 <div style={{

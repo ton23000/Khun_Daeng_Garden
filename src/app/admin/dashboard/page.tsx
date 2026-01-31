@@ -211,7 +211,14 @@ export default function DashboardPage() {
                                         <td style={{ padding: '1rem' }}>฿{booking.totalPrice.toLocaleString()}</td>
                                         <td style={{ padding: '1rem' }}>
                                             {booking.slipUrl ? (
-                                                <Button size="sm" variant="outline" onClick={() => setViewingSlip(booking.slipUrl)}>ดูสลิป</Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', borderColor: '#bbf7d0', color: '#166534' }}
+                                                    onClick={() => setViewingSlip(booking.slipUrl)}
+                                                >
+                                                    📎 ดูสลิป
+                                                </Button>
                                             ) : (
                                                 <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>-</span>
                                             )}

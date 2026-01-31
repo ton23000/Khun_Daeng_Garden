@@ -26,26 +26,36 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     const { user } = useAuth();
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
-    // Load notifications from local storage
-    useEffect(() => {
-        const saved = localStorage.getItem('khun_daeng_notifications');
-        if (saved) {
-            setNotifications(JSON.parse(saved));
+    // Fetch notifications from API
+    const fetchNotifications = async () => {
+        if (!user) return;
+        try {
+            const userId = user.phone; // Assuming phone is used as ID based on current logic
+            const res = await fetch(`/api/notifications?userId=${userId}`);
+            if (res.ok) {
+                const data = await res.json();
+                setNotifications(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch notifications', error);
         }
-    }, []);
+    };
 
-    // Save on change
+    // Initial load and polling
     useEffect(() => {
-        localStorage.setItem('khun_daeng_notifications', JSON.stringify(notifications));
-    }, [notifications]);
+        if (user) {
+            fetchNotifications();
+            const interval = setInterval(fetchNotifications, 10000); // Poll every 10s
+            return () => clearInterval(interval);
+        } else {
+            setNotifications([]);
+        }
+    }, [user]);
 
-    const userNotifications = user
-        ? notifications.filter(n => n.userId === user.phone || n.userId === user.email).reverse()
-        : [];
+    const unreadCount = notifications.filter(n => !n.read).length;
 
-    const unreadCount = userNotifications.filter(n => !n.read).length;
-
-    const addNotification = (userId: string, message: string, type: Notification['type'] = 'info') => {
+    const addNotification = async (userId: string, message: string, type: Notification['type'] = 'info') => {
+        // Optimistic update
         const newNote: Notification = {
             id: Math.random().toString(36).substr(2, 9),
             userId,
@@ -54,22 +64,54 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             date: new Date().toISOString(),
             type
         };
-        setNotifications(prev => [...prev, newNote]);
+        setNotifications(prev => [newNote, ...prev]);
+
+        // Persist to API (optional if mostly server-generated, but good for client consistency)
+        try {
+            await fetch('/api/notifications', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, message, type })
+            });
+            fetchNotifications(); // Refresh to get real ID
+        } catch (error) {
+            console.error('Failed to save notification', error);
+        }
     };
 
-    const markAsRead = (id: string) => {
+    const markAsRead = async (id: string) => {
+        // Optimistic update
         setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+
+        try {
+            await fetch('/api/notifications', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, read: true })
+            });
+        } catch (error) {
+            console.error('Failed to mark as read', error);
+        }
     };
 
-    const markAllAsRead = () => {
+    const markAllAsRead = async () => {
         if (!user) return;
-        setNotifications(prev => prev.map(n =>
-            (n.userId === user.phone || n.userId === user.email) ? { ...n, read: true } : n
-        ));
+        // Optimistic update
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+
+        try {
+            await fetch('/api/notifications', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.phone, all: true })
+            });
+        } catch (error) {
+            console.error('Failed to mark all as read', error);
+        }
     };
 
     return (
-        <NotificationContext.Provider value={{ notifications: userNotifications, unreadCount, addNotification, markAsRead, markAllAsRead }}>
+        <NotificationContext.Provider value={{ notifications, unreadCount, addNotification, markAsRead, markAllAsRead }}>
             {children}
         </NotificationContext.Provider>
     );

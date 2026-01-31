@@ -38,8 +38,8 @@ export async function POST(request: Request) {
             await writeFile(path, buffer);
             console.log(`Saved file to ${path}`);
 
-            // Use the dynamic API route we created in the previous step
-            uploadedUrls.push(`/api/uploads/${filename}`);
+            // Return direct path to public folder
+            uploadedUrls.push(`/uploads/${filename}`);
         }
 
         return NextResponse.json({ urls: uploadedUrls });
