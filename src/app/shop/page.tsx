@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { ShopControls } from '@/components/ShopControls';
+import { ScrollAnimation } from '@/components/ScrollAnimation';
 import { Prisma } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
@@ -53,65 +54,80 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
 
     return (
         <div className="container" style={{ padding: '2rem 1rem' }}>
-            <header style={{ marginBottom: '2rem', textAlign: 'center' }}>
-                <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>รายการต้นไม้ทั้งหมด</h1>
-                <p style={{ color: '#6b7280', marginBottom: '2rem' }}>เลือกชมและจับจองต้นไม้ที่คุณชื่นชอบ</p>
-            </header>
+            <ScrollAnimation animation="fade-up">
+                <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
+                    <span style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '0.5rem' }}>Shop Collection</span>
+                    <h1 style={{ fontSize: '3rem', marginBottom: '1rem', fontFamily: 'var(--font-playfair), serif', fontWeight: 'bold', color: 'var(--foreground)' }}>สินค้ามาใหม่</h1>
+                    <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>เลือกชมและจองต้นไม้ที่คุณชื่นชอบ</p>
+                </header>
+            </ScrollAnimation>
 
             <ShopControls categories={categories} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.5rem' }}>
-                {trees.map((tree) => {
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+                {trees.map((tree, index) => {
                     // Parse images safely
-                    let images: string[] = [];
+                    let imageUrl = '/placeholder-tree.jpg';
                     try {
-                        images = JSON.parse(tree.images);
+                        const images = JSON.parse(tree.images);
+                        if (images && images.length > 0) {
+                            imageUrl = images[0];
+                        }
                     } catch (e) {
-                        images = ['/placeholder-tree.jpg'];
+                        // Use placeholder if parsing fails
                     }
 
                     return (
-                        <Card key={tree.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                            <div style={{ height: '220px', backgroundColor: '#f9fafb', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '1rem' }}>
-                                <img
-                                    src={images[0] || '/placeholder-tree.jpg'}
-                                    alt={tree.name}
-                                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                                />
-                            </div>
-                            <CardHeader>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                                    <CardTitle>{tree.name}</CardTitle>
-                                    {tree.status === 'BOOKED' && (
-                                        <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '4px', backgroundColor: '#fef3c7', color: '#d97706' }}>
-                                            จองแล้ว
-                                        </span>
-                                    )}
-                                </div>
-                                <CardDescription>{tree.category}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <p style={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'var(--primary)' }}>
-                                    ฿ {tree.price.toLocaleString()}
-                                </p>
-                                <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#4b5563', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                    {tree.description}
-                                </p>
-                            </CardContent>
-                            <CardFooter>
-                                <Link href={`/trees/${tree.id}`} style={{ width: '100%' }}>
-                                    <Button fullWidth variant={tree.status === 'AVAILABLE' ? 'primary' : 'outline'} disabled={tree.status !== 'AVAILABLE'}>
-                                        {tree.status === 'AVAILABLE' ? 'ดูรายละเอียด' : 'ถูกจองแล้ว'}
-                                    </Button>
-                                </Link>
-                            </CardFooter>
-                        </Card>
+                        <ScrollAnimation key={tree.id} animation="fade-up" delay={index * 100}>
+                            <Link href={`/trees/${tree.id}`} className="group" style={{ textDecoration: 'none' }}>
+                                <Card style={{
+                                    border: 'none',
+                                    boxShadow: 'none',
+                                    backgroundColor: '#f9fafb',
+                                    overflow: 'hidden',
+                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                    cursor: 'pointer',
+                                    opacity: tree.status === 'AVAILABLE' ? 1 : 0.7
+                                }}
+                                    className="hover:shadow-xl hover:-translate-y-2"
+                                >
+                                    <div style={{ position: 'relative', height: '320px', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                                        <img
+                                            src={imageUrl}
+                                            alt={tree.name}
+                                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                        />
+
+                                        {/* Status Badge */}
+                                        {tree.status === 'BOOKED' && (
+                                            <div style={{ position: 'absolute', top: '15px', left: '15px', backgroundColor: '#fef3c7', color: '#d97706', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                                จองแล้ว
+                                            </div>
+                                        )}
+
+                                        {/* Heart Icon */}
+                                        <div style={{ position: 'absolute', top: '15px', right: '15px', backgroundColor: 'white', padding: '8px', borderRadius: '50%', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--primary)' }}>
+                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
+                                        <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', marginBottom: '0.5rem', color: '#1f2937' }}>{tree.name}</h3>
+                                        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>{tree.category}</p>
+                                        <p style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '1rem' }}>⭐⭐⭐⭐⭐</p>
+                                        <p style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--primary)' }}>฿{tree.price.toLocaleString()}</p>
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                        </ScrollAnimation>
                     );
                 })}
             </div>
             {trees.length === 0 && (
                 <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
-                    ยังไม่มีรายการต้นไม้ในขณะนี้
+                    <p style={{ fontSize: '1.125rem' }}>ยังไม่มีรายการต้นไม้ในขณะนี้</p>
                 </div>
             )}
         </div>

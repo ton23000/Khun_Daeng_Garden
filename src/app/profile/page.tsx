@@ -112,6 +112,25 @@ export default function ProfilePage() {
                         )}
                     </CardContent>
                 </Card>
+
+                {/* Logout Button */}
+                <Card>
+                    <CardContent style={{ padding: '2rem', textAlign: 'center' }}>
+                        <Link href="/logout" style={{ textDecoration: 'none', display: 'block' }}>
+                            <Button
+                                variant="outline"
+                                fullWidth
+                                style={{
+                                    color: '#ef4444',
+                                    borderColor: '#ef4444',
+                                    fontWeight: 'bold'
+                                }}
+                            >
+                                ออกจากระบบ
+                            </Button>
+                        </Link>
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );

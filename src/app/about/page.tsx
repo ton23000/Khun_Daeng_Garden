@@ -1,19 +1,24 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { ScrollAnimation } from '@/components/ScrollAnimation';
 
 export default function AboutPage() {
     return (
         <div className="container" style={{ padding: '2rem' }}>
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#166534' }}>เกี่ยวกับร้านสวนคุณแดง</h1>
+            <ScrollAnimation animation="fade-up">
+                <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#166534' }}>เกี่ยวกับร้านสวนคุณแดง</h1>
+            </ScrollAnimation>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                <section>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>ประวัติร้าน</h2>
-                    <p style={{ lineHeight: '1.6', color: '#374151' }}>
-                        ร้านสวนคุณแดง เริ่มต้นจากความรักในการปลูกต้นไม้ และสะสมพันธุ์ไม้สวยงาม ทั้งไม้มงคล ไม้ดอก และไม้ประดับ
-                        เราคัดสรรต้นไม้คุณภาพดี แข็งแรง เพื่อส่งต่อความสุขสีเขียวให้กับลูกค้าทุกท่าน
-                        ด้วยประสบการณ์กว่า 10 ปี เราพร้อมให้คำแนะนำในการดูแลรักษา เพื่อให้ต้นไม้ของคุณเติบโตอย่างสวยงาม
-                    </p>
-                </section>
+                <ScrollAnimation animation="fade-up" delay={100}>
+                    <section>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>ประวัติร้าน</h2>
+                        <p style={{ lineHeight: '1.6', color: '#374151' }}>
+                            ร้านสวนคุณแดง เริ่มต้นจากความรักในการปลูกต้นไม้ และสะสมพันธุ์ไม้สวยงาม ทั้งไม้มงคล ไม้ดอก และไม้ประดับ
+                            เราคัดสรรต้นไม้คุณภาพดี แข็งแรง เพื่อส่งต่อความสุขสีเขียวให้กับลูกค้าทุกท่าน
+                            ด้วยประสบการณ์กว่า 10 ปี เราพร้อมให้คำแนะนำในการดูแลรักษา เพื่อให้ต้นไม้ของคุณเติบโตอย่างสวยงาม
+                        </p>
+                    </section>
+                </ScrollAnimation>
 
                 <section>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>ติดต่อเรา</h2>

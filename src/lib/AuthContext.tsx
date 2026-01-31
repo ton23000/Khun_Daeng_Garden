@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export interface User {
+    id: string;
     name: string;
     nickname: string;
     phone: string;
@@ -103,10 +104,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return true;
     };
 
-    const logout = () => {
+    const logout = async () => {
+        try {
+            // Call logout API to clear server-side cookie
+            await fetch('/api/logout', {
+                method: 'POST',
+            });
+        } catch (error) {
+            console.error('Logout API error:', error);
+        }
+
+        // Clear client-side state
         setUser(null);
         localStorage.removeItem('khun_daeng_user');
-        router.push('/login');
+        router.push('/');
+        router.refresh();
     };
 
     return (

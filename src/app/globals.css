@@ -1,28 +1,28 @@
 :root {
-  /* Khun Daeng Garden - Soft Pastel Palette */
-  --primary: #f87171;
-  /* Pastel Red/Coral for "Daeng" - Very soft warm red */
+  /* Khun Daeng Garden - New Soft Pastel Palette */
+  --primary: #f5a5a5;
+  /* Coral Pink - Main Action Color */
   --primary-foreground: #ffffff;
 
-  --secondary: #2d6a4f;
-  /* Deep Forest Green - darker green for plants */
+  --secondary: #5a8a5a;
+  /* Medium Green - Secondary Accents */
   --secondary-foreground: #ffffff;
 
-  --accent: #fbbf24;
-  /* Soft Yellow/Amber - gentle earthy accent */
-  --accent-foreground: #ffffff;
+  --accent: #ffd4d4;
+  /* Very Light Pink - Soft backgrounds */
+  --accent-foreground: #8b4545;
 
-  --background: #fefcf9;
-  /* Warm off-white with slight cream tint */
-  --foreground: #292524;
-  /* Warm dark brown-gray */
+  --background: #d4e8d4;
+  /* Light Sage Green Background */
+  --foreground: #2d5a2d;
+  /* Dark Green - Text */
 
   --card: #ffffff;
-  --card-foreground: #292524;
+  --card-foreground: #2d5a2d;
 
-  --border: #e7e5e4;
-  --input: #e7e5e4;
-  --ring: #f87171;
+  --border: #a8d4a8;
+  --input: #a8d4a8;
+  --ring: #f5a5a5;
 
   --radius: 0.5rem;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);

@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
     const { items, removeItem, updateQuantity, updateDate, clearCart } = useCart();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const { addNotification } = useNotification();
     const router = useRouter();
 
@@ -34,8 +34,9 @@ export default function CartPage() {
             return;
         }
 
-        if (!user) {
-            alert('กรุณาเข้าสู่ระบบก่อนทำการจอง');
+        if (!user || !user.id) {
+            alert('ข้อมูลผู้ใช้งานไม่ถูกต้อง กรุณาเข้าสู่ระบบใหม่อีกครั้ง');
+            if (user) logout(); // Logout to clear invalid session
             router.push('/login');
             return;
         }
@@ -45,7 +46,7 @@ export default function CartPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    userId: user.phone,
+                    userId: user.id, // Use UUID
                     userName: user.name,
                     items: items.map(item => ({
                         treeId: item.id,
@@ -60,7 +61,9 @@ export default function CartPage() {
             });
 
             if (!res.ok) {
-                throw new Error('Failed to create booking');
+                const errorData = await res.json();
+                console.error('Booking failed:', errorData);
+                throw new Error(errorData.error || 'Failed to create booking');
             }
 
             const booking = await res.json();

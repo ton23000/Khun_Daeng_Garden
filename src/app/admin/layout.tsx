@@ -82,7 +82,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             Signed in as: <br /><strong>{user.name}</strong>
                         </div>
                     )}
-                    <Button variant="outline" fullWidth onClick={logout}>ออกจากระบบ</Button>
+                    <Link href="/logout" style={{ textDecoration: 'none', display: 'block' }}>
+                        <Button variant="outline" fullWidth>ออกจากระบบ</Button>
+                    </Link>
                 </div>
             </aside>
 

@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/Input';
 import Link from 'next/link';
 import { ArrowRight, Leaf, ShieldCheck, Truck } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
+import { ScrollAnimation } from '@/components/ScrollAnimation';
+import { ParallaxSection } from '@/components/ParallaxSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,140 +20,325 @@ export default async function Home() {
       {/* Hero Section */}
       <section style={{
         position: 'relative',
-        backgroundColor: 'var(--secondary)',
-        color: 'white',
-        padding: '6rem 0',
+        backgroundColor: '#fefcf9',
+        padding: '4rem 0 6rem',
         overflow: 'hidden'
       }}>
-        {/* Abstract Pattern overlay */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at 20% 50%, white 0%, transparent 50%)' }}></div>
+        {/* Background Decorative Circle */}
+        <div style={{
+          position: 'absolute',
+          top: '-10%',
+          right: '-10%',
+          width: '600px',
+          height: '600px',
+          backgroundColor: '#e6f5e6',
+          borderRadius: '50%',
+          zIndex: 0
+        }}></div>
 
-        <div className="container" style={{ position: 'relative', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '1.5rem', lineHeight: '1.1', color: 'white' }}>
-            สวนคุณแดง <span style={{ color: 'var(--primary)' }}>พรีเมียม</span>
-          </h1>
-          <p style={{ fontSize: '1.25rem', maxWidth: '600px', margin: '0 auto 2.5rem', opacity: 0.9 }}>
-            ศูนย์รวมพันธุ์ไม้มงคล ไม้ด่าง และไม้เศรษฐกิจคัดพิเศษ <br />
-            เลี้ยงดูด้วยใจ ส่งมอบให้คุณด้วยคุณภาพ
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/shop">
-              <Button size="lg" style={{ backgroundColor: 'var(--primary)', color: 'white', border: 'none' }}>
-                เลือกชมต้นไม้ทั้งหมด
-              </Button>
-            </Link>
-            <Link href="/orders">
-              <Button size="lg" variant="outline" style={{ borderColor: 'white', color: 'white' }}>
-                ดูออเดอร์ของฉัน
-              </Button>
-            </Link>
-          </div>
+        <div className="container" style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 1fr', gap: '4rem', alignItems: 'center' }}>
+          {/* Text Content */}
+          <ScrollAnimation animation="fade-up">
+            <div style={{ gridColumn: 'span 1' }}>
+              <span style={{ color: '#6b7280', fontSize: '0.9rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1rem', display: 'block' }}>
+                #Greenery For Life
+              </span>
+              <h1 style={{
+                fontFamily: 'var(--font-playfair), serif',
+                fontSize: '4.5rem',
+                fontWeight: '700',
+                lineHeight: '1.1',
+                color: 'var(--foreground)',
+                marginBottom: '1.5rem'
+              }}>
+                Everyone loves <br />
+                a <span style={{ fontStyle: 'italic', fontWeight: '400', color: 'var(--primary)' }}>beautiful</span> garden
+              </h1>
+              <p style={{ fontSize: '1.1rem', color: '#6b7280', marginBottom: '2.5rem', lineHeight: '1.6' }}>
+                ค้นพบความสุขในการปลูกต้นไม้กับเรา แหล่งรวมพันธุ์ไม้คัดพิเศษ <br />
+                พร้อมคำแนะนำจากผู้เชี่ยวชาญ เพื่อสวนสวยในบ้านคุณ
+              </p>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <Link href="/shop">
+                  <Button size="lg" style={{
+                    backgroundColor: 'var(--primary)',
+                    color: 'white',
+                    borderRadius: '50px',
+                    padding: '0 2rem'
+                  }}>
+                    Shop Now ➔
+                  </Button>
+                </Link>
+                <Link href="/services">
+                  <Button size="lg" variant="outline" style={{
+                    borderRadius: '50px',
+                    padding: '0 2rem',
+                    borderColor: 'var(--foreground)',
+                    color: 'var(--foreground)'
+                  }}>
+                    Explore Now ➔
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </ScrollAnimation>
+
+          {/* Image Content with Parallax */}
+          <ParallaxSection speed={0.3}>
+            <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+              <div style={{
+                width: '400px',
+                height: '500px',
+                backgroundColor: '#e5e7eb',
+                borderRadius: '20px',
+                backgroundImage: 'url("https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=80&w=2449&auto=format&fit=crop")',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+              }}></div>
+
+              {/* Floating Cards simulating the template */}
+              <div style={{
+                position: 'absolute',
+                bottom: '50px',
+                left: '-20px',
+                backgroundColor: 'white',
+                padding: '1rem',
+                borderRadius: '12px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem'
+              }}>
+                <div style={{ width: '50px', height: '50px', borderRadius: '8px', backgroundColor: '#dcfce7' }}></div>
+                <div>
+                  <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Alocasia</div>
+                  <div style={{ fontSize: '0.8rem', color: '#166534' }}>$50.00</div>
+                </div>
+              </div>
+            </div>
+          </ParallaxSection>
         </div>
       </section>
 
-      {/* Trust Badges */}
-      <section style={{ padding: '3rem 0', backgroundColor: '#f0fdf4' }}>
-        <div className="container" style={{ display: 'flex', justifyContent: 'center', gap: '4rem', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '1rem', backgroundColor: 'white', borderRadius: '50%', boxShadow: 'var(--shadow-sm)' }}>
-              <Leaf color="var(--primary)" />
+      {/* Categories Cards */}
+      <section className="container" style={{ margin: '-3rem auto 4rem', position: 'relative', zIndex: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+          <ScrollAnimation animation="slide-in-left" delay={100}>
+            <div style={{
+              backgroundColor: '#1f2937',
+              borderRadius: '16px',
+              padding: '3rem',
+              color: 'white',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              minHeight: '200px'
+            }}>
+              <div>
+                <h3 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '2rem', marginBottom: '0.5rem' }}>Shop Cactus</h3>
+                <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '1.5rem' }}>Unique cactus shop discover <br /> your perfect plant today</p>
+                <Link href="/shop?category=cactus" style={{ color: 'white', textDecoration: 'underline' }}>Shop Now</Link>
+              </div>
             </div>
-            <div>
-              <h4 style={{ fontWeight: 'bold' }}>รับประกันคุณภาพ</h4>
-              <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>คัดเกรดพรีเมียมทุกต้น</p>
+          </ScrollAnimation>
+          <ScrollAnimation animation="slide-in-right" delay={100}>
+            <div style={{
+              backgroundColor: '#fef3c7',
+              borderRadius: '16px',
+              padding: '3rem',
+              color: '#433422',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              minHeight: '200px'
+            }}>
+              <div>
+                <h3 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '2rem', marginBottom: '0.5rem' }}>Indoor Life Plants</h3>
+                <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '1.5rem' }}>Enhance your space: Top indoor <br /> life plants choices</p>
+                <Link href="/shop?category=indoor" style={{ color: '#166534', textDecoration: 'underline', fontWeight: 'bold' }}>Shop Now</Link>
+              </div>
             </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '1rem', backgroundColor: 'white', borderRadius: '50%', boxShadow: 'var(--shadow-sm)' }}>
-              <ShieldCheck color="var(--primary)" />
-            </div>
-            <div>
-              <h4 style={{ fontWeight: 'bold' }}>ดูแลหลังการขาย</h4>
-              <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>ปรึกษาฟรีตลอดอายุการปลูก</p>
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ padding: '1rem', backgroundColor: 'white', borderRadius: '50%', boxShadow: 'var(--shadow-sm)' }}>
-              <Truck color="var(--primary)" />
-            </div>
-            <div>
-              <h4 style={{ fontWeight: 'bold' }}>นัดรับสะดวก</h4>
-              <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>จองวันนี้ รับของใน 2 สัปดาห์</p>
-            </div>
-          </div>
+          </ScrollAnimation>
         </div>
       </section>
 
-      {/* Featured Trees */}
-      <section className="container" style={{ padding: '4rem 1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '2rem' }}>
-          <div>
-            <span style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Featured Collection</span>
-            <h2 style={{ fontSize: '2.5rem', marginTop: '0.5rem', fontWeight: 'bold' }}>ต้นไม้แนะนำ</h2>
+      {/* Features Bar (Coral Pink) */}
+      <ScrollAnimation animation="fade-in">
+        <section style={{ padding: '4rem 0', backgroundColor: 'var(--primary)', color: 'white' }}>
+          <div className="container" style={{ display: 'flex', justifyContent: 'center', gap: '4rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ padding: '1rem', border: '2px solid white', borderRadius: '50%' }}>
+                <Leaf color="white" />
+              </div>
+              <div>
+                <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', fontFamily: 'var(--font-playfair), serif', color: 'white' }}>คุณภาพที่เหนือกว่า</h4>
+                <p style={{ fontSize: '0.875rem', color: 'white', opacity: 0.95 }}>คัดสรรต้นไม้เกรดพรีเมียมเพื่อคุณ</p>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ padding: '1rem', border: '2px solid white', borderRadius: '50%' }}>
+                <Truck color="white" />
+              </div>
+              <div>
+                <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', fontFamily: 'var(--font-playfair), serif', color: 'white' }}>จัดส่งถึงหน้าบ้าน</h4>
+                <p style={{ fontSize: '0.875rem', color: 'white', opacity: 0.95 }}>แพ็คอย่างดี ส่งไว ปลอดภัย 100%</p>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ padding: '1rem', border: '2px solid white', borderRadius: '50%' }}>
+                <ShieldCheck color="white" />
+              </div>
+              <div>
+                <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', fontFamily: 'var(--font-playfair), serif', color: 'white' }}>บริการครบวงจร</h4>
+                <p style={{ fontSize: '0.875rem', color: 'white', opacity: 0.95 }}>ให้คำปรึกษาและดูแลตลอดอายุ</p>
+              </div>
+            </div>
           </div>
-          <Link href="/shop">
-            <Button variant="ghost" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              ดูทั้งหมด <ArrowRight size={16} />
-            </Button>
-          </Link>
-        </div>
+        </section>
+      </ScrollAnimation>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2rem' }}>
-          {featuredTrees.map((tree) => {
+      {/* New Arrivals (สินค้ามาใหม่) */}
+      <section className="container" style={{ padding: '6rem 1rem' }}>
+        <ScrollAnimation animation="fade-up">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '3rem' }}>
+            <div>
+              <span style={{ color: '#f87171', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>New Arrivals</span>
+              <h2 style={{ fontSize: '3rem', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>สินค้ามาใหม่</h2>
+            </div>
+            <Link href="/shop" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f87171', fontWeight: '600', textDecoration: 'none' }}>
+              ดูสินค้าทั้งหมด <ArrowRight size={18} />
+            </Link>
+          </div>
+        </ScrollAnimation>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+          {featuredTrees.map((tree, index) => {
             // Parse images safely
-            let images: string[] = [];
+            let imageUrl = '/placeholder-tree.jpg';
             try {
-              images = JSON.parse(tree.images);
+              const images = JSON.parse(tree.images);
+              if (images && images.length > 0) {
+                imageUrl = images[0];
+              }
             } catch (e) {
-              images = ['/placeholder-tree.jpg'];
+              // Use placeholder if parsing fails
             }
 
             return (
-              <Card key={tree.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div style={{ height: '220px', backgroundColor: '#f9fafb', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '1rem' }}>
-                  <img
-                    src={images[0] || '/placeholder-tree.jpg'}
-                    alt={tree.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                  />
-                </div>
-                <CardHeader>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <CardTitle>{tree.name}</CardTitle>
-                    <span style={{ fontWeight: 'bold', color: 'var(--primary)' }}>฿ {tree.price.toLocaleString()}</span>
-                  </div>
-                  <CardDescription>{tree.category}</CardDescription>
-                </CardHeader>
-                <CardFooter>
-                  <Link href={`/trees/${tree.id}`} style={{ width: '100%' }}>
-                    <Button fullWidth variant="outline">ดูรายละเอียด</Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            )
+              <ScrollAnimation key={tree.id} animation="fade-up" delay={index * 100}>
+                <Link href={`/trees/${tree.id}`} className="group" style={{ textDecoration: 'none' }}>
+                  <Card style={{
+                    border: 'none',
+                    boxShadow: 'none',
+                    backgroundColor: '#f9fafb',
+                    overflow: 'hidden',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    cursor: 'pointer'
+                  }}
+                    className="hover:shadow-xl hover:-translate-y-2"
+                  >
+                    <div style={{ position: 'relative', height: '320px', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                      <img
+                        src={imageUrl}
+                        alt={tree.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+
+                      {/* Hover Action Overlay */}
+                      <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justifyContent-center">
+                      </div>
+
+                      {/* Heart Icon */}
+                      <div style={{ position: 'absolute', top: '15px', right: '15px', backgroundColor: 'white', padding: '8px', borderRadius: '50%', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                        <Leaf size={16} color="#f87171" />
+                      </div>
+                    </div>
+
+                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', marginBottom: '0.5rem', color: '#1f2937' }}>{tree.name}</h3>
+                      <p style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '1rem' }}>⭐⭐⭐⭐⭐</p>
+                      <p style={{ fontSize: '1.1rem', fontWeight: '600', color: '#f87171' }}>฿{tree.price.toLocaleString()}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </ScrollAnimation>
+            );
           })}
         </div>
       </section>
 
-      {/* About Section */}
-      <section style={{ backgroundColor: '#2d6a4f', color: 'white', padding: '5rem 0' }}>
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
-          <div>
-            <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem', color: 'white' }}>เรื่องราวของสวนคุณแดง</h2>
-            <p style={{ fontSize: '1.125rem', lineHeight: '1.8', opacity: 0.9, marginBottom: '2rem' }}>
-              จากความรักในธรรมชาติและการสะสมพันธุ์ไม้หายากมากว่า 20 ปี สู่การแบ่งปันความสุขให้คนรักต้นไม้
-              เราคัดสรรเฉพาะต้นไม้ที่มีฟอร์มสวย แข็งแรง และมีความหมายมงคล เพื่อให้สวนของคุณเป็นมากกว่าพื้นที่สีเขียว
-              แต่เป็นพื้นที่แห่งความสุขและความสำเร็จ
-            </p>
-            <Link href="/shop">
-              <Button style={{ backgroundColor: 'white', color: '#2d6a4f' }} size="lg">เริ่มต้นจัดสวนของคุณ</Button>
-            </Link>
-          </div>
-          <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', height: '400px', borderRadius: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: '1.5rem', opacity: 0.5 }}>ภาพบรรยากาศสวน</span>
+      {/* Testimonials (รีวิวจากลูกค้า) */}
+      <section style={{ backgroundColor: '#fff', padding: '6rem 0' }}>
+        <div className="container" style={{ textAlign: 'center' }}>
+          <ScrollAnimation animation="fade-up">
+            <span style={{ color: '#9ca3af', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Our Testimonials</span>
+            <h2 style={{ fontSize: '3rem', marginTop: '0.5rem', marginBottom: '4rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>
+              เสียงตอบรับจาก<span style={{ fontStyle: 'italic', fontWeight: '400' }}>ลูกค้าของเรา</span>
+            </h2>
+          </ScrollAnimation>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+            <div style={{ textAlign: 'left', padding: '2rem', backgroundColor: '#fefcf9', borderRadius: '16px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+              <div style={{ minWidth: '80px', height: '80px', backgroundColor: '#dcfce7', borderRadius: '50%' }}></div>
+              <div>
+                <div style={{ color: '#fbbf24', marginBottom: '0.5rem' }}>★★★★★</div>
+                <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', paddingBottom: '0.5rem' }}>คุณสมชาย ใจดี</h4>
+                <p style={{ color: '#6b7280', fontStyle: 'italic' }}>"ต้นไม้สวยมากครับ แพ็คมาอย่างดีไม่มีเสียหายเลย ประทับใจบริการหลังการขายมากๆ"</p>
+              </div>
+            </div>
+            <div style={{ textAlign: 'left', padding: '2rem', backgroundColor: '#fefcf9', borderRadius: '16px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+              <div style={{ minWidth: '80px', height: '80px', backgroundColor: '#ffedd5', borderRadius: '50%' }}></div>
+              <div>
+                <div style={{ color: '#fbbf24', marginBottom: '0.5rem' }}>★★★★★</div>
+                <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', paddingBottom: '0.5rem' }}>คุณหญิง</h4>
+                <p style={{ color: '#6b7280', fontStyle: 'italic' }}>"หาต้นไม้หายากมานาน มาเจอที่นี่ราคาดี ต้นไม้แข็งแรง สั่งเพิ่มแน่นอนค่ะ"</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
-    </main>
+
+      {/* Blog Section (บทความใหม่) */}
+      <section className="container" style={{ padding: '6rem 1rem' }}>
+        <ScrollAnimation animation="fade-up">
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <span style={{ color: '#4d7c0f', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Our Blog Posts</span>
+            <h2 style={{ fontSize: '3rem', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>บทความน่ารู้</h2>
+          </div>
+        </ScrollAnimation>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+          {/* Fake Blog 1 */}
+          <ScrollAnimation animation="fade-up" delay={100}>
+            <div>
+              <div style={{ height: '240px', backgroundColor: '#e5e7eb', borderRadius: '12px', marginBottom: '1.5rem' }}></div>
+              <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginBottom: '0.5rem' }}>17 January 2024</div>
+              <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-playfair), serif', fontWeight: 'bold', marginBottom: '1rem', lineHeight: '1.3' }}>เทคนิคการดูแลไม้ด่าง<br />ให้สีสดตลอดปี</h3>
+              <a href="#" style={{ color: '#4d7c0f', fontWeight: 'bold', textDecoration: 'none' }}>อ่านเพิ่มเติม ➔</a>
+            </div>
+          </ScrollAnimation>
+          {/* Fake Blog 2 */}
+          <ScrollAnimation animation="fade-up" delay={200}>
+            <div>
+              <div style={{ height: '240px', backgroundColor: '#e5e7eb', borderRadius: '12px', marginBottom: '1.5rem' }}></div>
+              <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginBottom: '0.5rem' }}>23 March 2024</div>
+              <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-playfair), serif', fontWeight: 'bold', marginBottom: '1rem', lineHeight: '1.3' }}>5 ต้นไม้มงคล<br />ปลูกแล้วรวย</h3>
+              <a href="#" style={{ color: '#4d7c0f', fontWeight: 'bold', textDecoration: 'none' }}>อ่านเพิ่มเติม ➔</a>
+            </div>
+          </ScrollAnimation>
+          {/* Fake Blog 3 */}
+          <ScrollAnimation animation="fade-up" delay={300}>
+            <div>
+              <div style={{ height: '240px', backgroundColor: '#e5e7eb', borderRadius: '12px', marginBottom: '1.5rem' }}></div>
+              <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginBottom: '0.5rem' }}>12 February 2024</div>
+              <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-playfair), serif', fontWeight: 'bold', marginBottom: '1rem', lineHeight: '1.3' }}>มือใหม่หัดปลูก<br />เริ่มที่ต้นอะไรดี?</h3>
+              <a href="#" style={{ color: '#4d7c0f', fontWeight: 'bold', textDecoration: 'none' }}>อ่านเพิ่มเติม ➔</a>
+            </div>
+          </ScrollAnimation>
+        </div>
+      </section>
+
+    </main >
   );
 }
