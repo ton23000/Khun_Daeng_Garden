@@ -50,7 +50,7 @@ export default function MyOrdersPage() {
     const fetchBookings = async () => {
         if (!user) return;
         try {
-            const res = await fetch(`/api/bookings?userId=${user.phone}`);
+            const res = await fetch(`/api/bookings?userId=${user.id}`);
             if (res.ok) {
                 const data = await res.json();
                 setBookings(data);
@@ -63,47 +63,78 @@ export default function MyOrdersPage() {
     };
 
     const handleSlipUpload = async (bookingId: string, file: File) => {
-        if (!file) return;
+        console.log('🔵 handleSlipUpload called', { bookingId, fileName: file?.name });
+
+        if (!file) {
+            console.log('❌ No file provided');
+            return;
+        }
+
+        console.log('📁 File info:', {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            sizeInMB: (file.size / 1024 / 1024).toFixed(2) + ' MB'
+        });
 
         // Validate file type
         if (!file.type.startsWith('image/')) {
+            console.log('❌ Invalid file type:', file.type);
             alert('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น');
             return;
         }
 
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
+            console.log('❌ File too large:', file.size);
             alert('ไฟล์มีขนาดใหญ่เกินไป (สูงสุด 5MB)');
             return;
         }
 
+        console.log('✅ File validation passed');
         setUploadingSlip(bookingId);
 
         try {
+            console.log('🔄 Starting file conversion to base64...');
             // Convert to base64
             const reader = new FileReader();
             reader.onloadend = async () => {
                 const base64String = reader.result as string;
+                console.log('✅ Base64 conversion complete, length:', base64String.length);
 
                 // Update booking with slip URL
+                console.log('📤 Sending PATCH request to:', `/api/bookings/${bookingId}`);
                 const res = await fetch(`/api/bookings/${bookingId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ slipUrl: base64String })
                 });
 
+                console.log('📥 Response status:', res.status, res.statusText);
+
                 if (res.ok) {
+                    const data = await res.json();
+                    console.log('✅ Upload successful!', data);
                     alert('อัปโหลดสลิปสำเร็จ! รอการตรวจสอบจากทางร้าน');
                     fetchBookings();
                 } else {
+                    const errorText = await res.text();
+                    console.error('❌ Upload failed:', res.status, errorText);
                     alert('เกิดข้อผิดพลาดในการอัปโหลดสลิป');
                 }
+                setUploadingSlip(null);
             };
+
+            reader.onerror = (error) => {
+                console.error('❌ FileReader error:', error);
+                alert('เกิดข้อผิดพลาดในการอ่านไฟล์');
+                setUploadingSlip(null);
+            };
+
             reader.readAsDataURL(file);
         } catch (error) {
-            console.error('Failed to upload slip', error);
+            console.error('❌ Failed to upload slip', error);
             alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
-        } finally {
             setUploadingSlip(null);
         }
     };

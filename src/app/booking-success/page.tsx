@@ -17,26 +17,46 @@ export default function BookingSuccessPage() {
         }
     }, []);
 
-    const handleUpload = (fileData: string) => {
+    const handleUpload = async (file: File) => {
         if (!booking) return;
 
-        // Update local status just for this view
-        const updatedBooking = { ...booking, status: 'PAID_VERIFYING', slipUrl: fileData };
-        setBooking(updatedBooking);
-        setUploadSuccess(true);
-        setIsModalOpen(false);
+        try {
+            // Upload file first
+            const formData = new FormData();
+            formData.append('file', file);
 
-        // Update in DB (localStorage)
-        const allBookingsStr = localStorage.getItem('khun_daeng_bookings');
-        if (allBookingsStr) {
-            const allBookings = JSON.parse(allBookingsStr);
-            const idx = allBookings.findIndex((b: any) => b.id === booking.id);
-            if (idx !== -1) {
-                allBookings[idx] = updatedBooking;
-                localStorage.setItem('khun_daeng_bookings', JSON.stringify(allBookings));
+            const uploadRes = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!uploadRes.ok) {
+                throw new Error('Failed to upload file');
             }
+
+            const uploadData = await uploadRes.json();
+            const slipUrl = uploadData.urls?.[0] || uploadData.url;
+
+            // Update booking with slip URL via API
+            const updateRes = await fetch(`/api/bookings/${booking.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slipUrl }),
+            });
+
+            if (!updateRes.ok) {
+                throw new Error('Failed to update booking');
+            }
+
+            const updatedBooking = await updateRes.json();
+            setBooking(updatedBooking);
+            setUploadSuccess(true);
+            setIsModalOpen(false);
+            localStorage.setItem('last_booking', JSON.stringify(updatedBooking));
+        } catch (error) {
+            console.error('Upload failed:', error);
+            alert('การอัปโหลดสลิปล้มเหลว กรุณาลองใหม่อีกครั้ง');
         }
-        localStorage.setItem('last_booking', JSON.stringify(updatedBooking));
     };
 
     if (!booking) return null;
@@ -74,6 +94,23 @@ export default function BookingSuccessPage() {
                 {uploadSuccess && (
                     <div style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: '#dcfce7', color: '#166534', borderRadius: '0.375rem', fontSize: '0.875rem', textAlign: 'center' }}>
                         ✅ แนบสลิปเรียบร้อยแล้ว รอการตรวจสอบ
+                    </div>
+                )}
+
+                {booking.slipUrl && (
+                    <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem' }}>
+                        <p style={{ fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#374151' }}>📎 สลิปที่แนบ:</p>
+                        <img
+                            src={booking.slipUrl}
+                            alt="Payment Slip"
+                            style={{
+                                width: '100%',
+                                maxHeight: '300px',
+                                objectFit: 'contain',
+                                borderRadius: '0.375rem',
+                                border: '1px solid #e5e7eb'
+                            }}
+                        />
                     </div>
                 )}
             </div>

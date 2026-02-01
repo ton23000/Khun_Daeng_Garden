@@ -19,6 +19,16 @@ export async function PUT(
         const body = await req.json();
         const validated = UpdateBookingSchema.parse(body);
 
+        // Get current booking to check status change
+        const currentBooking = await prisma.booking.findUnique({
+            where: { id },
+            include: { user: true }
+        });
+
+        if (!currentBooking) {
+            return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+        }
+
         const updateData: any = {};
         if (validated.status) updateData.status = validated.status;
         if (validated.note !== undefined) updateData.note = validated.note;
@@ -37,6 +47,53 @@ export async function PUT(
                 user: true
             }
         });
+
+        // Create notification if status changed
+        if (validated.status && currentBooking.user && booking.userId && validated.status !== currentBooking.status) {
+            console.log('🔔 [PUT] Status changed from', currentBooking.status, 'to', validated.status);
+            let message = '';
+            let type = 'info';
+
+            switch (validated.status) {
+                case 'PAID':
+                    message = `💰 ระบบได้รับยอดชำระเงินสำหรับคำสั่งซื้อ #${booking.refCode} แล้ว`;
+                    type = 'success';
+                    break;
+                case 'PREPARING':
+                    message = `✅ การจอง #${booking.refCode} ได้รับการอนุมัติแล้ว ทางร้านกำลังเตรียมสินค้า`;
+                    type = 'success';
+                    break;
+                case 'READY':
+                    message = `📦 การจอง #${booking.refCode} พร้อมให้รับแล้ว! กรุณามารับสินค้าตามเวลาที่นัดหมาย`;
+                    type = 'success';
+                    break;
+                case 'COMPLETED':
+                    message = `🎉 การจอง #${booking.refCode} เสร็จสมบูรณ์ ขอบคุณที่ใช้บริการ`;
+                    type = 'success';
+                    break;
+                case 'CANCELLED':
+                    message = `❌ การจอง #${booking.refCode} ถูกยกเลิก`;
+                    type = 'error';
+                    break;
+            }
+
+            if (message) {
+                console.log('🔔 [PUT] Creating notification:', message, 'for user:', booking.userId);
+                try {
+                    await prisma.notification.create({
+                        data: {
+                            userId: booking.userId,
+                            message,
+                            type,
+                            bookingId: booking.id
+                        }
+                    });
+                    console.log('✅ [PUT] Notification created successfully');
+                } catch (notiError) {
+                    console.error('❌ [PUT] Failed to create notification:', notiError);
+                }
+            }
+        }
 
         return NextResponse.json(booking);
     } catch (error) {
@@ -140,13 +197,14 @@ export async function PATCH(
 
         // Create notification if status changed and user exists
         if (validated.status && currentBooking.user && booking.userId) {
+            console.log('🔔 Checking notification trigger for status:', validated.status);
             let message = '';
             let type = 'info';
 
             switch (validated.status) {
                 case 'PAID':
-                    // Usually user action, but admin might set it manually
-                    // message = 'การชำระเงินของคุณได้รับการยืนยันแล้ว';
+                    message = `💰 ระบบได้รับยอดชำระเงินสำหรับคำสั่งซื้อ #${booking.refCode} แล้ว`;
+                    type = 'success';
                     break;
                 case 'PREPARING':
                     message = `✅ การจอง #${booking.refCode} ได้รับการอนุมัติแล้ว ทางร้านกำลังเตรียมสินค้า`;
@@ -167,21 +225,29 @@ export async function PATCH(
             }
 
             if (message) {
-                await prisma.notification.create({
-                    data: {
-                        userId: booking.user.phone, // Assuming phone is used as ID/Key often, or user actual ID if needed. Wait, schema says userId is String.
-                        // Check User model in schema: id is uuid. Phone is unique.
-                        // But notifications link by userId string usually.
-                        // Let's use user's ID to be safe, or phone if your auth system relies on it.
-                        // Based on NotificationContext, it filters by userId === user.phone || user.email.
-                        // Let's try to match that.
-                        userId: booking.user.phone, // Using phone as visual identifier/key for now as per Context logic
-                        message,
-                        type,
-                        bookingId: booking.id
-                    }
-                });
+                console.log('🔔 Creating notification:', message, 'for user:', booking.userId);
+                try {
+                    await prisma.notification.create({
+                        data: {
+                            userId: booking.userId,
+                            message,
+                            type,
+                            bookingId: booking.id
+                        }
+                    });
+                    console.log('✅ Notification created successfully');
+                } catch (notiError) {
+                    console.error('❌ Failed to create notification:', notiError);
+                }
+            } else {
+                console.log('🔔 No message generated for status:', validated.status);
             }
+        } else {
+            console.log('⚠️ Notification skipped. Missing data:', {
+                hasStatus: !!validated.status,
+                hasUser: !!currentBooking.user,
+                userId: booking.userId
+            });
         }
 
         return NextResponse.json(booking);

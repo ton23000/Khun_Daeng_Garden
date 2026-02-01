@@ -87,9 +87,13 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(booking, { status: 201 });
     } catch (error) {
         console.error('Error creating booking:', error);
+        console.error('Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
         if (error instanceof z.ZodError) {
-            return NextResponse.json({ error: 'Invalid booking data', details: error.errors }, { status: 400 });
+            return NextResponse.json({ error: 'Invalid booking data', details: error.issues }, { status: 400 });
         }
-        return NextResponse.json({ error: 'Failed to create booking' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to create booking',
+            message: error instanceof Error ? error.message : 'Unknown error'
+        }, { status: 500 });
     }
 }

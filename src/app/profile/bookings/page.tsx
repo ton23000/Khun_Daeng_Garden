@@ -73,6 +73,7 @@ export default function MyBookingsPage() {
         const file = event.target.files?.[0];
         if (!file) return;
 
+        console.log('🔵 handleFileSelect called', { bookingId, fileName: file.name });
         setUploadingId(bookingId);
 
         try {
@@ -80,18 +81,33 @@ export default function MyBookingsPage() {
             const formData = new FormData();
             formData.append('file', file);
 
+            console.log('📤 Uploading file to /api/upload...');
             const uploadRes = await fetch('/api/upload', {
                 method: 'POST',
                 body: formData,
             });
 
             if (!uploadRes.ok) {
+                const errorText = await uploadRes.text();
+                console.error('❌ Upload failed:', uploadRes.status, errorText);
                 throw new Error('Failed to upload file');
             }
 
-            const { url } = await uploadRes.json();
+            const uploadData = await uploadRes.json();
+            console.log('✅ Upload response:', uploadData);
+
+            // API returns { urls: [...] }, get the first URL
+            const url = uploadData.urls?.[0] || uploadData.url;
+
+            if (!url) {
+                console.error('❌ No URL in response:', uploadData);
+                throw new Error('No URL returned from upload');
+            }
+
+            console.log('📎 Slip URL:', url);
 
             // Update booking with slip URL
+            console.log('📤 Updating booking...');
             const updateRes = await fetch(`/api/bookings/${bookingId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
@@ -99,14 +115,18 @@ export default function MyBookingsPage() {
             });
 
             if (!updateRes.ok) {
+                const errorText = await updateRes.text();
+                console.error('❌ Update failed:', updateRes.status, errorText);
                 throw new Error('Failed to update booking');
             }
+
+            console.log('✅ Booking updated successfully');
 
             // Refresh bookings
             await fetchBookings();
             alert('แนบสลิปสำเร็จ! รอร้านตรวจสอบ');
         } catch (error) {
-            console.error('Upload error:', error);
+            console.error('❌ Upload error:', error);
             alert('เกิดข้อผิดพลาดในการแนบสลิป กรุณาลองใหม่');
         } finally {
             setUploadingId(null);

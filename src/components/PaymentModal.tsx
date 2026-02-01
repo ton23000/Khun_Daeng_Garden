@@ -7,18 +7,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 interface PaymentModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onUpload: (fileData: string) => void;
+    onUpload: (file: File) => void;
 }
 
 export default function PaymentModal({ isOpen, onClose, onUpload }: PaymentModalProps) {
     const [preview, setPreview] = useState<string | null>(null);
     const [fileName, setFileName] = useState<string>('');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     if (!isOpen) return null;
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            setSelectedFile(file);
             setFileName(file.name);
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -29,8 +31,8 @@ export default function PaymentModal({ isOpen, onClose, onUpload }: PaymentModal
     };
 
     const handleSubmit = () => {
-        if (preview) {
-            onUpload(preview);
+        if (selectedFile) {
+            onUpload(selectedFile);
         }
     };
 

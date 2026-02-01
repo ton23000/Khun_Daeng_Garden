@@ -28,16 +28,17 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     // Fetch notifications from API
     const fetchNotifications = async () => {
-        if (!user) return;
+        if (!user || !user.id) return;
         try {
-            const userId = user.phone; // Assuming phone is used as ID based on current logic
+            const userId = user.id;
             const res = await fetch(`/api/notifications?userId=${userId}`);
             if (res.ok) {
                 const data = await res.json();
                 setNotifications(data);
             }
         } catch (error) {
-            console.error('Failed to fetch notifications', error);
+            // Suppress network errors during polling to avoid console spam
+            // console.error('Failed to fetch notifications', error);
         }
     };
 
@@ -45,7 +46,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     useEffect(() => {
         if (user) {
             fetchNotifications();
-            const interval = setInterval(fetchNotifications, 10000); // Poll every 10s
+            // Polling interval reduced to 5s for testing
+            const interval = setInterval(fetchNotifications, 5000);
             return () => clearInterval(interval);
         } else {
             setNotifications([]);
@@ -66,7 +68,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         };
         setNotifications(prev => [newNote, ...prev]);
 
-        // Persist to API (optional if mostly server-generated, but good for client consistency)
+        // Persist to API
         try {
             await fetch('/api/notifications', {
                 method: 'POST',
@@ -95,7 +97,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     };
 
     const markAllAsRead = async () => {
-        if (!user) return;
+        if (!user || !user.id) return;
         // Optimistic update
         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
 
@@ -103,7 +105,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             await fetch('/api/notifications', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user.phone, all: true })
+                body: JSON.stringify({ userId: user.id, all: true })
             });
         } catch (error) {
             console.error('Failed to mark all as read', error);

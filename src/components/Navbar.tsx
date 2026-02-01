@@ -5,7 +5,8 @@ import { useCart } from '@/lib/CartContext';
 import { useAuth } from '@/lib/AuthContext';
 import { useNotification } from '@/lib/NotificationContext';
 import { Button } from './ui/Button';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export function Navbar() {
     const { items } = useCart();
@@ -135,6 +136,93 @@ export function Navbar() {
                             <Link href="/login" style={{ color: '#374151', fontSize: '1.5rem' }}>👤</Link>
                         )}
 
+                        {/* Notifications */}
+                        <div style={{ position: 'relative', cursor: 'pointer' }}>
+                            <div
+                                onClick={() => {
+                                    setShowNotifications(!showNotifications);
+                                    if (unreadCount > 0) markAllAsRead();
+                                }}
+                                style={{ fontSize: '1.5rem', position: 'relative' }}
+                            >
+                                🔔
+                                {unreadCount > 0 && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        top: '-5px',
+                                        right: '-5px',
+                                        backgroundColor: '#ef4444',
+                                        color: 'white',
+                                        borderRadius: '50%',
+                                        width: '18px',
+                                        height: '18px',
+                                        fontSize: '11px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: '2px solid white'
+                                    }}>
+                                        {unreadCount}
+                                    </span>
+                                )}
+                            </div>
+
+                            {showNotifications && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '120%',
+                                    right: '-50px',
+                                    width: '320px',
+                                    backgroundColor: 'white',
+                                    border: '1px solid #e5e7eb',
+                                    borderRadius: '0.5rem',
+                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                                    zIndex: 100,
+                                    maxHeight: '400px',
+                                    overflowY: 'auto'
+                                }}>
+                                    <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #e5e7eb', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span>การแจ้งเตือน</span>
+                                        <span
+                                            style={{ fontSize: '0.75rem', color: '#166534', cursor: 'pointer' }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                markAllAsRead();
+                                            }}
+                                        >
+                                            อ่านทั้งหมด
+                                        </span>
+                                    </div>
+                                    {notifications.length === 0 ? (
+                                        <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
+                                            ไม่มีการแจ้งเตือน
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            {notifications.map(note => (
+                                                <div
+                                                    key={note.id}
+                                                    style={{
+                                                        padding: '0.75rem 1rem',
+                                                        borderBottom: '1px solid #f3f4f6',
+                                                        backgroundColor: note.read ? 'white' : '#f0fdf4',
+                                                        transition: 'background-color 0.2s'
+                                                    }}
+                                                >
+                                                    <div style={{ fontSize: '0.875rem', marginBottom: '0.25rem', color: '#1f2937' }}>
+                                                        {note.message}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
+                                                        {new Date(note.date).toLocaleString('th-TH')}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
                         {/* Wishlist (Static for now) */}
                         <div style={{ position: 'relative', cursor: 'pointer', color: '#374151', fontSize: '1.5rem' }}>
                             ❤️
@@ -209,7 +297,7 @@ export function Navbar() {
                     {/* Social Icons & Admin */}
                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                         {user?.role === 'admin' && (
-                            <Link href="/admin/orders" style={{ textDecoration: 'none' }}>
+                            <Link href="/admin/dashboard" style={{ textDecoration: 'none' }}>
                                 <span style={{ backgroundColor: '#166534', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '4px', fontSize: '0.875rem' }}>Admin Panel</span>
                             </Link>
                         )}
