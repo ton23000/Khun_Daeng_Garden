@@ -1,6 +1,6 @@
 :root {
   /* Khun Daeng Garden - New Soft Pastel Palette */
-  --primary: #f5a5a5;
+  --primary: #e51c23;
   /* Coral Pink - Main Action Color */
   --primary-foreground: #ffffff;
 
@@ -22,7 +22,7 @@
 
   --border: #a8d4a8;
   --input: #a8d4a8;
-  --ring: #f5a5a5;
+  --ring: #e51c23;
 
   --radius: 0.5rem;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);

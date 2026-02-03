@@ -256,3 +256,47 @@ export async function PATCH(
         return NextResponse.json({ error: 'Failed to update booking' }, { status: 500 });
     }
 }
+
+// DELETE - Delete booking
+export async function DELETE(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+
+        // Check if booking exists
+        const booking = await prisma.booking.findUnique({
+            where: { id },
+            include: { items: true }
+        });
+
+        if (!booking) {
+            return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+        }
+
+        // Delete booking items first (foreign key constraint)
+        await prisma.bookingItem.deleteMany({
+            where: { bookingId: id }
+        });
+
+        // Delete related notifications
+        await prisma.notification.deleteMany({
+            where: { bookingId: id }
+        });
+
+        // Delete the booking
+        await prisma.booking.delete({
+            where: { id }
+        });
+
+        return NextResponse.json({
+            success: true,
+            message: 'Booking deleted successfully',
+            deletedBookingId: id
+        });
+    } catch (error) {
+        console.error('Error deleting booking:', error);
+        return NextResponse.json({ error: 'Failed to delete booking' }, { status: 500 });
+    }
+}

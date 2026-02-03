@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 import SlipViewer from '@/components/SlipViewer';
+import { SearchBar } from '@/components/admin/SearchBar';
+import { SortableTableHeader } from '@/components/admin/SortableTableHeader';
 
 interface BookingItem {
     id: string;
@@ -36,10 +38,14 @@ interface Booking {
     items: BookingItem[];
 }
 
+type ViewMode = 'all' | 'by-customer';
+type SortConfig = { key: string; direction: 'asc' | 'desc' } | null;
+
 export default function DashboardPage() {
     const { user, isLoading } = useAuth();
     const router = useRouter();
     const [bookings, setBookings] = useState<Booking[]>([]);
+    const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
     const [viewingSlip, setViewingSlip] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState({
@@ -47,6 +53,10 @@ export default function DashboardPage() {
         pickupDate: '',
         note: ''
     });
+    const [searchQuery, setSearchQuery] = useState('');
+    const [viewMode, setViewMode] = useState<ViewMode>('all');
+    const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
+    const [sortConfig, setSortConfig] = useState<SortConfig>(null);
 
     useEffect(() => {
         if (isLoading) return;
@@ -56,6 +66,10 @@ export default function DashboardPage() {
             fetchBookings();
         }
     }, [user, isLoading, router]);
+
+    useEffect(() => {
+        filterAndSortBookings();
+    }, [bookings, searchQuery, viewMode, selectedCustomer, sortConfig]);
 
     const fetchBookings = async () => {
         try {
@@ -67,6 +81,69 @@ export default function DashboardPage() {
         } catch (error) {
             console.error('Failed to fetch bookings', error);
         }
+    };
+
+    const filterAndSortBookings = useCallback(() => {
+        let result = [...bookings];
+
+        // Filter by search query
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            result = result.filter(b =>
+                b.user.name.toLowerCase().includes(query) ||
+                b.user.phone.includes(query) ||
+                b.refCode.toLowerCase().includes(query)
+            );
+        }
+
+        // Filter by customer
+        if (viewMode === 'by-customer' && selectedCustomer) {
+            result = result.filter(b => b.user.name === selectedCustomer);
+        }
+
+        // Sort
+        if (sortConfig) {
+            result.sort((a, b) => {
+                let aValue: any;
+                let bValue: any;
+
+                switch (sortConfig.key) {
+                    case 'customer':
+                        aValue = a.user.name;
+                        bValue = b.user.name;
+                        break;
+                    case 'date':
+                        aValue = new Date(a.createdAt).getTime();
+                        bValue = new Date(b.createdAt).getTime();
+                        break;
+                    case 'price':
+                        aValue = a.totalPrice;
+                        bValue = b.totalPrice;
+                        break;
+                    case 'status':
+                        aValue = a.status;
+                        bValue = b.status;
+                        break;
+                    default:
+                        return 0;
+                }
+
+                if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+                if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        setFilteredBookings(result);
+    }, [bookings, searchQuery, viewMode, selectedCustomer, sortConfig]);
+
+    const handleSort = (key: string) => {
+        setSortConfig(current => {
+            if (current?.key === key) {
+                return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' };
+            }
+            return { key, direction: 'asc' };
+        });
     };
 
     const handleEdit = (booking: Booking) => {
@@ -95,6 +172,29 @@ export default function DashboardPage() {
             }
         } catch (error) {
             console.error('Failed to update', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        }
+    };
+
+    const handleDelete = async (id: string, refCode: string) => {
+        if (!confirm(`คุณแน่ใจหรือไม่ที่จะลบออเดอร์ ${refCode}?\n\nการลบจะไม่สามารถกู้คืนได้`)) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/bookings/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                alert('ลบออเดอร์เรียบร้อย');
+                fetchBookings();
+            } else {
+                const data = await res.json();
+                alert(`เกิดข้อผิดพลาด: ${data.error || 'ไม่สามารถลบได้'}`);
+            }
+        } catch (error) {
+            console.error('Failed to delete', error);
             alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
         }
     };
@@ -130,6 +230,17 @@ export default function DashboardPage() {
         return texts[status] || status;
     };
 
+    // Get unique customers
+    const customers = Array.from(new Set(bookings.map(b => b.user.name))).sort();
+
+    // Customer stats
+    const getCustomerStats = (customerName: string) => {
+        const customerBookings = bookings.filter(b => b.user.name === customerName);
+        const totalOrders = customerBookings.length;
+        const totalSpent = customerBookings.reduce((sum, b) => sum + b.deposit, 0);
+        return { totalOrders, totalSpent };
+    };
+
     if (isLoading) {
         return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
     }
@@ -139,10 +250,9 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="container" style={{ padding: '0 1rem' }}>
+        <div>
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#166534' }}>Admin Dashboard</h1>
-                <Button variant="outline" onClick={() => router.push('/')}>กลับหน้าหลัก</Button>
+                <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#166534' }}>Dashboard</h1>
             </header>
 
             {/* Stats */}
@@ -173,28 +283,108 @@ export default function DashboardPage() {
                 </Card>
             </div>
 
-            {/* Order Management Table */}
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>จัดการออเดอร์</h2>
+            {/* Order Management Section */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>จัดการออเดอร์</h2>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <SearchBar
+                        placeholder="ค้นหาชื่อลูกค้า, เบอร์โทร, รหัสออเดอร์..."
+                        onSearch={setSearchQuery}
+                    />
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <Button
+                            variant={viewMode === 'all' ? 'primary' : 'outline'}
+                            onClick={() => {
+                                setViewMode('all');
+                                setSelectedCustomer(null);
+                            }}
+                        >
+                            ทั้งหมด
+                        </Button>
+                        <Button
+                            variant={viewMode === 'by-customer' ? 'primary' : 'outline'}
+                            onClick={() => setViewMode('by-customer')}
+                        >
+                            แยกตามลูกค้า
+                        </Button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Customer List (when in by-customer mode) */}
+            {viewMode === 'by-customer' && (
+                <Card style={{ marginBottom: '1rem' }}>
+                    <CardContent style={{ padding: '1rem' }}>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.75rem' }}>เลือกลูกค้า:</h3>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                            {customers.map(customer => {
+                                const stats = getCustomerStats(customer);
+                                return (
+                                    <button
+                                        key={customer}
+                                        onClick={() => setSelectedCustomer(customer)}
+                                        style={{
+                                            padding: '0.5rem 1rem',
+                                            borderRadius: '0.5rem',
+                                            border: selectedCustomer === customer ? '2px solid #166534' : '1px solid #d1d5db',
+                                            backgroundColor: selectedCustomer === customer ? '#dcfce7' : 'white',
+                                            cursor: 'pointer',
+                                            fontSize: '0.875rem',
+                                            fontWeight: selectedCustomer === customer ? 600 : 400
+                                        }}
+                                    >
+                                        <div>{customer}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                                            {stats.totalOrders} ออเดอร์ · ฿{stats.totalSpent.toLocaleString()}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             <Card>
                 <CardContent style={{ padding: 0 }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                             <tr>
                                 <th style={{ padding: '1rem' }}>รหัส</th>
-                                <th style={{ padding: '1rem' }}>ลูกค้า</th>
+                                <SortableTableHeader
+                                    label="ลูกค้า"
+                                    sortKey="customer"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
                                 <th style={{ padding: '1rem' }}>รายการ</th>
-                                <th style={{ padding: '1rem' }}>ยอดรวม</th>
+                                <SortableTableHeader
+                                    label="ยอดรวม"
+                                    sortKey="price"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
                                 <th style={{ padding: '1rem' }}>สลิป</th>
-                                <th style={{ padding: '1rem' }}>วันรับของ</th>
-                                <th style={{ padding: '1rem' }}>สถานะ</th>
+                                <SortableTableHeader
+                                    label="วันรับของ"
+                                    sortKey="date"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
+                                <SortableTableHeader
+                                    label="สถานะ"
+                                    sortKey="status"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
                                 <th style={{ padding: '1rem' }}>จัดการ</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {bookings.length === 0 ? (
+                            {filteredBookings.length === 0 ? (
                                 <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>ไม่มีออเดอร์</td></tr>
                             ) : (
-                                bookings.map(booking => (
+                                filteredBookings.map(booking => (
                                     <tr key={booking.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{booking.refCode}</td>
                                         <td style={{ padding: '1rem' }}>
@@ -261,7 +451,17 @@ export default function DashboardPage() {
                                                     <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>ยกเลิก</Button>
                                                 </div>
                                             ) : (
-                                                <Button size="sm" variant="outline" onClick={() => handleEdit(booking)}>แก้ไข</Button>
+                                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                    <Button size="sm" variant="outline" onClick={() => handleEdit(booking)}>แก้ไข</Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => handleDelete(booking.id, booking.refCode)}
+                                                        style={{ borderColor: '#ef4444', color: '#ef4444' }}
+                                                    >
+                                                        ลบ
+                                                    </Button>
+                                                </div>
                                             )}
                                         </td>
                                     </tr>

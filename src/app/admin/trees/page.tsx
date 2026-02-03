@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { TagInput } from '@/components/TagInput';
+import { SearchBar } from '@/components/admin/SearchBar';
+import { SortableTableHeader } from '@/components/admin/SortableTableHeader';
 
 interface Tree {
     id: string;
@@ -51,6 +53,81 @@ export default function AdminTreesPage() {
         }
         fetchTrees();
     }, [user, isAuthLoading, router]);
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+    const [filteredTrees, setFilteredTrees] = useState<Tree[]>([]);
+    const [priceFilter, setPriceFilter] = useState({ min: '', max: '' });
+
+    useEffect(() => {
+        filterAndSortTrees();
+    }, [trees, searchQuery, sortConfig, priceFilter]);
+
+    const filterAndSortTrees = () => {
+        let result = [...trees];
+
+        // Filter by search query
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            result = result.filter(t =>
+                t.name.toLowerCase().includes(query) ||
+                t.category.toLowerCase().includes(query) ||
+                t.tags?.some(tag => tag.toLowerCase().includes(query))
+            );
+        }
+
+        // Filter by price range
+        if (priceFilter.min) {
+            result = result.filter(t => t.price >= Number(priceFilter.min));
+        }
+        if (priceFilter.max) {
+            result = result.filter(t => t.price <= Number(priceFilter.max));
+        }
+
+        // Sort
+        if (sortConfig) {
+            result.sort((a, b) => {
+                let aValue: any;
+                let bValue: any;
+
+                switch (sortConfig.key) {
+                    case 'name':
+                        aValue = a.name;
+                        bValue = b.name;
+                        break;
+                    case 'category':
+                        aValue = a.category;
+                        bValue = b.category;
+                        break;
+                    case 'price':
+                        aValue = a.price;
+                        bValue = b.price;
+                        break;
+                    case 'status':
+                        aValue = a.status;
+                        bValue = b.status;
+                        break;
+                    default:
+                        return 0;
+                }
+
+                if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+                if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        setFilteredTrees(result);
+    };
+
+    const handleSort = (key: string) => {
+        setSortConfig(current => {
+            if (current?.key === key) {
+                return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' };
+            }
+            return { key, direction: 'asc' };
+        });
+    };
 
     const fetchTrees = async () => {
         try {
@@ -157,9 +234,35 @@ export default function AdminTreesPage() {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>จัดการต้นไม้ (Manage Trees)</h1>
                 <Button variant="primary" onClick={openAdd}>+ เพิ่มต้นไม้ใหม่</Button>
+            </div>
+
+            {/* Search and Filters */}
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'flex-end' }}>
+                <div style={{ flex: 1 }}>
+                    <SearchBar
+                        placeholder="ค้นหาชื่อต้นไม้, หมวดหมู่, tags..."
+                        onSearch={setSearchQuery}
+                    />
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <input
+                        type="number"
+                        placeholder="ราคาต่ำสุด"
+                        value={priceFilter.min}
+                        onChange={(e) => setPriceFilter({ ...priceFilter, min: e.target.value })}
+                        style={{ padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid #d1d5db', width: '120px' }}
+                    />
+                    <input
+                        type="number"
+                        placeholder="ราคาสูงสุด"
+                        value={priceFilter.max}
+                        onChange={(e) => setPriceFilter({ ...priceFilter, max: e.target.value })}
+                        style={{ padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid #d1d5db', width: '120px' }}
+                    />
+                </div>
             </div>
 
             <Card>
@@ -168,22 +271,42 @@ export default function AdminTreesPage() {
                         <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                             <tr>
                                 <th style={{ padding: '1rem' }}>รูปภาพ</th>
-                                <th style={{ padding: '1rem' }}>ชื่อ</th>
-                                <th style={{ padding: '1rem' }}>หมวดหมู่</th>
+                                <SortableTableHeader
+                                    label="ชื่อ"
+                                    sortKey="name"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
+                                <SortableTableHeader
+                                    label="หมวดหมู่"
+                                    sortKey="category"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
                                 <th style={{ padding: '1rem' }}>Tags</th>
                                 <th style={{ padding: '1rem' }}>ระยะเวลา</th>
-                                <th style={{ padding: '1rem' }}>ราคา</th>
-                                <th style={{ padding: '1rem' }}>สถานะ</th>
+                                <SortableTableHeader
+                                    label="ราคา"
+                                    sortKey="price"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
+                                <SortableTableHeader
+                                    label="สถานะ"
+                                    sortKey="status"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
                                 <th style={{ padding: '1rem' }}>จัดการ</th>
                             </tr>
                         </thead>
                         <tbody>
                             {isLoading ? (
                                 <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>กำลังโหลด...</td></tr>
-                            ) : trees.length === 0 ? (
-                                <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>ไม่มีข้อมูลต้นไม้</td></tr>
+                            ) : filteredTrees.length === 0 ? (
+                                <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>ไม่พบข้อมูลต้นไม้</td></tr>
                             ) : (
-                                trees.map(tree => (
+                                filteredTrees.map(tree => (
                                     <tr key={tree.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                                         <td style={{ padding: '1rem' }}>
                                             <img src={tree.images[0] || '/placeholder-tree.jpg'} alt={tree.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '0.25rem' }} />

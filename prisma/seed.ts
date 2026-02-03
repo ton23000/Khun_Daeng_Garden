@@ -9,7 +9,7 @@ const MOCK_TREES = [
         price: 35,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/placeholder-tree.jpg']),
+        images: JSON.stringify(['/images/products/kradum-thong.jpg']),
         tags: 'ไม้ดอก,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์'
     },
@@ -29,7 +29,7 @@ const MOCK_TREES = [
         price: 50,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/placeholder-tree.jpg']),
+        images: JSON.stringify(['/images/products/ruesi-phasom.jpg']),
         tags: 'ไม้ใบ,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์'
     },
@@ -39,7 +39,7 @@ const MOCK_TREES = [
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/placeholder-tree.jpg']),
+        images: JSON.stringify(['/images/products/nueng-nai-jakrawan.jpg']),
         tags: 'ไม้มงคล,ยอดนิยม',
         growthTime: '1–2 อาทิตย์'
     },
@@ -49,7 +49,7 @@ const MOCK_TREES = [
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/placeholder-tree.jpg']),
+        images: JSON.stringify(['/images/products/donya-queen-sirikit.jpg']),
         tags: 'ไม้มงคล,ไม้ดอก',
         growthTime: '1–2 อาทิตย์'
     },
@@ -59,7 +59,7 @@ const MOCK_TREES = [
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/placeholder-tree.jpg']),
+        images: JSON.stringify(['/images/products/chuan-chom.jpg']),
         tags: 'ไม้มงคล,ทนแล้ง',
         growthTime: '1–2 อาทิตย์'
     },
@@ -69,7 +69,7 @@ const MOCK_TREES = [
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/placeholder-tree.jpg']),
+        images: JSON.stringify(['/images/products/som-prattana.jpg']),
         tags: 'ไม้มงคล',
         growthTime: '1–2 อาทิตย์'
     },
@@ -79,7 +79,7 @@ const MOCK_TREES = [
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/placeholder-tree.jpg']),
+        images: JSON.stringify(['/images/products/udom-chok.jpg']),
         tags: 'ไม้มงคล,โชคลาภ',
         growthTime: '1–2 อาทิตย์'
     },
@@ -99,7 +99,7 @@ const MOCK_TREES = [
         price: 350,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/placeholder-tree.jpg']),
+        images: JSON.stringify(['/images/products/kwak-phra-phrom.jpg']),
         tags: 'ไม้มงคล,หายาก',
         growthTime: '1–2 อาทิตย์'
     },
@@ -109,7 +109,7 @@ const MOCK_TREES = [
         price: 350,
         category: 'ไม้พรีเมียม',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/placeholder-tree.jpg']),
+        images: JSON.stringify(['/images/products/som-prattana-premium.jpg']),
         tags: 'ไม้พรีเมียม,ไม้สะสม',
         growthTime: '1–2 อาทิตย์'
     },
@@ -129,7 +129,7 @@ const MOCK_TREES = [
         price: 990,
         category: 'ไม้พรีเมียม',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/placeholder-tree.jpg']),
+        images: JSON.stringify(['/images/products/ngoen-na.jpg']),
         tags: 'ไม้พรีเมียม,ไม้สะสม,โชคลาภ',
         growthTime: '1–2 อาทิตย์'
     },
@@ -139,8 +139,28 @@ const MOCK_TREES = [
         price: 1500,
         category: 'ไม้พรีเมียม',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/placeholder-tree.jpg']),
+        images: JSON.stringify(['/images/products/moradok-lok.jpg']),
         tags: 'ไม้พรีเมียม,ไม้สะสม,หายาก',
+        growthTime: '1–2 อาทิตย์'
+    },
+    {
+        name: 'คุ้มภัย',
+        description: 'ไม้มงคลใบสวย ช่วยคุ้มครองภัย',
+        price: 50,
+        category: 'ไม้ราคาประหยัด',
+        status: 'AVAILABLE',
+        images: JSON.stringify(['/images/products/khum-phai.jpg']),
+        tags: 'ไม้ใบ,มงคล,ราคาประหยัด',
+        growthTime: '1–2 อาทิตย์'
+    },
+    {
+        name: 'พินนาคด่าง',
+        description: 'ไม้ใบสวยงาม โดดเด่นด้วยลวดลายด่างที่เป็นเอกลักษณ์ (ใบละ)',
+        price: 2000,
+        category: 'ไม้พรีเมียม',
+        status: 'AVAILABLE',
+        images: JSON.stringify(['/images/products/phin-nak-dang.jpg']),
+        tags: 'ไม้พรีเมียม,ไม้ใบ,หายาก',
         growthTime: '1–2 อาทิตย์'
     }
 ]
@@ -149,7 +169,9 @@ async function main() {
     console.log('Start seeding...')
 
     // Clear existing data (optional, be careful in prod)
-    // await prisma.tree.deleteMany()
+    await prisma.bookingItem.deleteMany()
+    await prisma.booking.deleteMany()
+    await prisma.tree.deleteMany()
 
     for (const tree of MOCK_TREES) {
         await prisma.tree.create({

@@ -4,13 +4,25 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { Card, CardContent } from '@/components/ui/Card';
+import { SearchBar } from '@/components/admin/SearchBar';
+import { SortableTableHeader } from '@/components/admin/SortableTableHeader';
 
 interface User {
     id: string;
     name: string;
     email: string;
     nickname: string;
+    phone: string;
     role: string;
+    createdAt: string;
+}
+
+interface Booking {
+    id: string;
+    refCode: string;
+    totalPrice: number;
+    deposit: number;
+    status: string;
     createdAt: string;
 }
 
@@ -18,7 +30,12 @@ export default function AdminUsersPage() {
     const router = useRouter();
     const { user: currentUser } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
+    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [userBookings, setUserBookings] = useState<Booking[]>([]);
 
     useEffect(() => {
         if (!currentUser || currentUser.role !== 'admin') {
@@ -27,6 +44,10 @@ export default function AdminUsersPage() {
         }
         fetchUsers();
     }, [currentUser, router]);
+
+    useEffect(() => {
+        filterAndSortUsers();
+    }, [users, searchQuery, sortConfig]);
 
     const fetchUsers = async () => {
         try {
@@ -42,33 +63,148 @@ export default function AdminUsersPage() {
         }
     };
 
+    const fetchUserBookings = async (userId: string) => {
+        try {
+            const res = await fetch('/api/bookings');
+            if (res.ok) {
+                const allBookings = await res.json();
+                const filtered = allBookings.filter((b: any) => b.userId === userId);
+                setUserBookings(filtered);
+            }
+        } catch (error) {
+            console.error('Failed to fetch user bookings', error);
+        }
+    };
+
+    const filterAndSortUsers = () => {
+        let result = [...users];
+
+        // Filter by search query
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            result = result.filter(u =>
+                u.name.toLowerCase().includes(query) ||
+                u.email?.toLowerCase().includes(query) ||
+                u.nickname?.toLowerCase().includes(query) ||
+                u.phone?.includes(query)
+            );
+        }
+
+        // Sort
+        if (sortConfig) {
+            result.sort((a, b) => {
+                let aValue: any;
+                let bValue: any;
+
+                switch (sortConfig.key) {
+                    case 'name':
+                        aValue = a.name;
+                        bValue = b.name;
+                        break;
+                    case 'email':
+                        aValue = a.email || '';
+                        bValue = b.email || '';
+                        break;
+                    case 'role':
+                        aValue = a.role;
+                        bValue = b.role;
+                        break;
+                    case 'date':
+                        aValue = new Date(a.createdAt).getTime();
+                        bValue = new Date(b.createdAt).getTime();
+                        break;
+                    default:
+                        return 0;
+                }
+
+                if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+                if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        setFilteredUsers(result);
+    };
+
+    const handleSort = (key: string) => {
+        setSortConfig(current => {
+            if (current?.key === key) {
+                return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' };
+            }
+            return { key, direction: 'asc' };
+        });
+    };
+
+    const handleUserClick = (user: User) => {
+        setSelectedUser(user);
+        fetchUserBookings(user.id);
+    };
+
+    const getTotalSpent = () => {
+        return userBookings
+            .filter(b => b.status !== 'CANCELLED')
+            .reduce((sum, b) => sum + b.deposit, 0);
+    };
+
     return (
         <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem' }}>ข้อมูลผู้ใช้งาน (User Info)</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>ข้อมูลผู้ใช้งาน (User Info)</h1>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+                <SearchBar
+                    placeholder="ค้นหาชื่อ, อีเมล, ชื่อเล่น, เบอร์โทร..."
+                    onSearch={setSearchQuery}
+                />
+            </div>
 
             <Card>
                 <CardContent style={{ padding: 0 }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                             <tr>
-                                <th style={{ padding: '1rem' }}>ชื่อ-นามสกุล</th>
+                                <SortableTableHeader
+                                    label="ชื่อ-นามสกุล"
+                                    sortKey="name"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
                                 <th style={{ padding: '1rem' }}>ชื่อเล่น</th>
-                                <th style={{ padding: '1rem' }}>อีเมล</th>
-                                <th style={{ padding: '1rem' }}>สถานะ</th>
-                                <th style={{ padding: '1rem' }}>วันที่สมัคร</th>
+                                <SortableTableHeader
+                                    label="อีเมล"
+                                    sortKey="email"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
+                                <th style={{ padding: '1rem' }}>เบอร์โทร</th>
+                                <SortableTableHeader
+                                    label="สถานะ"
+                                    sortKey="role"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
+                                <SortableTableHeader
+                                    label="วันที่สมัคร"
+                                    sortKey="date"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
+                                <th style={{ padding: '1rem' }}>ดูออเดอร์</th>
                             </tr>
                         </thead>
                         <tbody>
                             {isLoading ? (
-                                <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center' }}>Loading...</td></tr>
-                            ) : users.length === 0 ? (
-                                <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center' }}>ไม่มีข้อมูลผู้ใช้งาน</td></tr>
+                                <tr><td colSpan={7} style={{ padding: '2rem', textAlign: 'center' }}>Loading...</td></tr>
+                            ) : filteredUsers.length === 0 ? (
+                                <tr><td colSpan={7} style={{ padding: '2rem', textAlign: 'center' }}>ไม่พบข้อมูลผู้ใช้งาน</td></tr>
                             ) : (
-                                users.map(user => (
+                                filteredUsers.map(user => (
                                     <tr key={user.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{user.name}</td>
                                         <td style={{ padding: '1rem' }}>{user.nickname || '-'}</td>
                                         <td style={{ padding: '1rem' }}>{user.email || '-'}</td>
+                                        <td style={{ padding: '1rem', fontWeight: 500 }}>{user.phone || '-'}</td>
                                         <td style={{ padding: '1rem' }}>
                                             <span style={{
                                                 padding: '0.25rem 0.5rem', borderRadius: '9999px', fontSize: '0.75rem',
@@ -79,6 +215,22 @@ export default function AdminUsersPage() {
                                             </span>
                                         </td>
                                         <td style={{ padding: '1rem' }}>{new Date(user.createdAt).toLocaleDateString('th-TH')}</td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <button
+                                                onClick={() => handleUserClick(user)}
+                                                style={{
+                                                    padding: '0.5rem 1rem',
+                                                    borderRadius: '0.375rem',
+                                                    border: '1px solid #166534',
+                                                    backgroundColor: selectedUser?.id === user.id ? '#166534' : 'white',
+                                                    color: selectedUser?.id === user.id ? 'white' : '#166534',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.875rem'
+                                                }}
+                                            >
+                                                ดูประวัติ
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             )}
@@ -86,6 +238,81 @@ export default function AdminUsersPage() {
                     </table>
                 </CardContent>
             </Card>
+
+            {/* User Order History Modal/Section */}
+            {selectedUser && (
+                <Card style={{ marginTop: '2rem' }}>
+                    <CardContent style={{ padding: '1.5rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+                                ประวัติการสั่งซื้อของ {selectedUser.name}
+                            </h2>
+                            <button
+                                onClick={() => setSelectedUser(null)}
+                                style={{
+                                    padding: '0.5rem 1rem',
+                                    borderRadius: '0.375rem',
+                                    border: '1px solid #d1d5db',
+                                    backgroundColor: 'white',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                ปิด
+                            </button>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
+                            <div style={{ padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '0.5rem' }}>
+                                <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>จำนวนออเดอร์ทั้งหมด</p>
+                                <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{userBookings.length}</p>
+                            </div>
+                            <div style={{ padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '0.5rem' }}>
+                                <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>ยอดซื้อรวม</p>
+                                <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#166534' }}>
+                                    ฿{getTotalSpent().toLocaleString()}
+                                </p>
+                            </div>
+                        </div>
+
+                        {userBookings.length === 0 ? (
+                            <p style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>ยังไม่มีประวัติการสั่งซื้อ</p>
+                        ) : (
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                                    <tr>
+                                        <th style={{ padding: '0.75rem', textAlign: 'left' }}>รหัสออเดอร์</th>
+                                        <th style={{ padding: '0.75rem', textAlign: 'left' }}>วันที่</th>
+                                        <th style={{ padding: '0.75rem', textAlign: 'left' }}>ยอดรวม</th>
+                                        <th style={{ padding: '0.75rem', textAlign: 'left' }}>สถานะ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {userBookings.map(booking => (
+                                        <tr key={booking.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                                            <td style={{ padding: '0.75rem', fontWeight: 500 }}>{booking.refCode}</td>
+                                            <td style={{ padding: '0.75rem' }}>
+                                                {new Date(booking.createdAt).toLocaleDateString('th-TH')}
+                                            </td>
+                                            <td style={{ padding: '0.75rem' }}>฿{booking.totalPrice.toLocaleString()}</td>
+                                            <td style={{ padding: '0.75rem' }}>
+                                                <span style={{
+                                                    padding: '0.25rem 0.5rem',
+                                                    borderRadius: '9999px',
+                                                    fontSize: '0.75rem',
+                                                    backgroundColor: booking.status === 'COMPLETED' ? '#dcfce7' : '#f3f4f6',
+                                                    color: booking.status === 'COMPLETED' ? '#166534' : '#374151'
+                                                }}>
+                                                    {booking.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }

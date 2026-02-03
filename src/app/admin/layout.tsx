@@ -72,6 +72,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             }}>
                                 ข้อมูลผู้ใช้งาน
                             </Link>
+
+                            <Link href="/admin/reports" style={{
+                                display: 'block',
+                                padding: '0.75rem 1rem',
+                                borderRadius: '0.5rem',
+                                color: pathname === '/admin/reports' ? '#166534' : '#374151',
+                                backgroundColor: pathname === '/admin/reports' ? '#dcfce7' : 'transparent',
+                                fontWeight: pathname === '/admin/reports' ? 500 : 400,
+                                textDecoration: 'none'
+                            }}>
+                                รายงาน
+                            </Link>
                         </>
                     )}
                 </nav>
