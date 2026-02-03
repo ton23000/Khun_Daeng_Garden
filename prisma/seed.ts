@@ -169,9 +169,13 @@ async function main() {
     console.log('Start seeding...')
 
     // Clear existing data (optional, be careful in prod)
-    await prisma.bookingItem.deleteMany()
-    await prisma.booking.deleteMany()
-    await prisma.tree.deleteMany()
+    try {
+        await prisma.bookingItem.deleteMany()
+        await prisma.booking.deleteMany()
+        await prisma.tree.deleteMany()
+    } catch (e) {
+        console.log('Tables may not exist yet, continuing...')
+    }
 
     for (const tree of MOCK_TREES) {
         await prisma.tree.create({

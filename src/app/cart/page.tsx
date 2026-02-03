@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { useCart } from '@/lib/CartContext';
 import { useAuth } from '@/lib/AuthContext';
 import { useNotification } from '@/lib/NotificationContext';
@@ -14,10 +16,11 @@ export default function CartPage() {
     const { user, logout } = useAuth();
     const { addNotification } = useNotification();
     const router = useRouter();
+    const [paymentType, setPaymentType] = React.useState<'deposit' | 'full'>('deposit');
 
     // Calculate totals
     const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const deposit = totalPrice * 0.5;
+    const deposit = paymentType === 'full' ? totalPrice : totalPrice * 0.3;
 
     // Min date (14 days)
     const today = new Date();
@@ -41,6 +44,8 @@ export default function CartPage() {
             return;
         }
 
+        console.log('[Cart] Creating booking for user:', user.id, user.name);
+
         try {
             const res = await fetch('/api/bookings', {
                 method: 'POST',
@@ -56,14 +61,23 @@ export default function CartPage() {
                         pickupDate: item.pickupDate
                     })),
                     totalPrice,
-                    deposit
+                    deposit,
+                    paymentType
                 })
             });
 
             if (!res.ok) {
-                const errorData = await res.json();
-                console.error('Booking failed:', errorData);
-                throw new Error(errorData.error || 'Failed to create booking');
+                console.error(`Booking request failed: ${res.status} ${res.statusText}`);
+                let errorData;
+                try {
+                    errorData = await res.json();
+                    console.error('Booking failed data:', errorData);
+                } catch (e) {
+                    const text = await res.text();
+                    console.error('Failed to parse error response as JSON. Raw text:', text);
+                    throw new Error(`Failed to create booking (${res.status}): ${text}`);
+                }
+                throw new Error(errorData.error || errorData.message || `Failed to create booking (${res.status})`);
             }
 
             const booking = await res.json();
@@ -187,8 +201,46 @@ export default function CartPage() {
                                     <span>ราคารวม</span>
                                     <span>฿ {totalPrice.toLocaleString()}</span>
                                 </div>
+
+                                {/* Payment Type Selector */}
+                                <div style={{ marginTop: '1rem', marginBottom: '1rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '0.5rem' }}>
+                                    <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: '600', fontSize: '0.875rem' }}>
+                                        เลือกประเภทการชำระเงิน:
+                                    </label>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0.75rem', backgroundColor: paymentType === 'deposit' ? '#e0f2fe' : 'white', border: `2px solid ${paymentType === 'deposit' ? 'var(--primary)' : '#e5e7eb'}`, borderRadius: '0.5rem', transition: 'all 0.2s' }}>
+                                            <input
+                                                type="radio"
+                                                name="paymentType"
+                                                value="deposit"
+                                                checked={paymentType === 'deposit'}
+                                                onChange={(e) => setPaymentType(e.target.value as 'deposit' | 'full')}
+                                                style={{ marginRight: '0.75rem' }}
+                                            />
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontWeight: '600' }}>ชำระมัดจำ 30%</div>
+                                                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>฿{(totalPrice * 0.3).toLocaleString()}</div>
+                                            </div>
+                                        </label>
+                                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0.75rem', backgroundColor: paymentType === 'full' ? '#e0f2fe' : 'white', border: `2px solid ${paymentType === 'full' ? 'var(--primary)' : '#e5e7eb'}`, borderRadius: '0.5rem', transition: 'all 0.2s' }}>
+                                            <input
+                                                type="radio"
+                                                name="paymentType"
+                                                value="full"
+                                                checked={paymentType === 'full'}
+                                                onChange={(e) => setPaymentType(e.target.value as 'deposit' | 'full')}
+                                                style={{ marginRight: '0.75rem' }}
+                                            />
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontWeight: '600' }}>ชำระเต็มจำนวน 100%</div>
+                                                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>฿{totalPrice.toLocaleString()}</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb', fontWeight: 'bold' }}>
-                                    <span>มัดจำที่ต้องชำระ (50%)</span>
+                                    <span>{paymentType === 'full' ? 'ยอดชำระทั้งหมด' : 'มัดจำที่ต้องชำระ (30%)'}</span>
                                     <span style={{ color: 'var(--primary)', fontSize: '1.25rem' }}>฿ {deposit.toLocaleString()}</span>
                                 </div>
 

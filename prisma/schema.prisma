@@ -17,6 +17,7 @@ model User {
   password  String
   role      String   @default("USER") // ADMIN, USER
   bookings  Booking[]
+  favorites Favorite[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -32,25 +33,28 @@ model Tree {
   tags        String   // Comma separated tags
   growthTime  String?  // e.g. "1-2 weeks"
   bookings    BookingItem[]
+  favorites   Favorite[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 
 model Booking {
-  id          String   @id @default(uuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  items       BookingItem[]
-  pickupDate  DateTime
-  totalPrice  Float
-  deposit     Float
-  status      String   @default("PENDING") // PENDING, PAID, PREPARING, READY, COMPLETED, CANCELLED
-  refCode     String   @unique
-  slipUrl     String?
-  note        String?  // Admin note or user note
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                 String              @id @default(uuid())
+  userId             String
+  user               User                @relation(fields: [userId], references: [id])
+  items              BookingItem[]
+  pickupDate         DateTime
+  totalPrice         Float
+  deposit            Float
+  paymentType        String              @default("deposit") // deposit, full
+  status             String              @default("PENDING") // PENDING, VERIFYING_PAYMENT, PAYMENT_ISSUE, CONFIRMED, PREPARING, READY, COMPLETED, CANCELLED
+  refCode            String              @unique
+  slipUrl            String?
+  note               String?             // Admin note or user note
+  adminNotifications AdminNotification[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 }
 
 model BookingItem {
@@ -71,4 +75,25 @@ model Notification {
   read      Boolean  @default(false)
   bookingId String?  // Optional link to booking
   createdAt DateTime @default(now())
+}
+
+model AdminNotification {
+  id        String   @id @default(uuid())
+  message   String
+  type      String   @default("order") // order, system, alert
+  read      Boolean  @default(false)
+  bookingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  treeId    String
+  tree      Tree     @relation(fields: [treeId], references: [id])
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, treeId])
 }

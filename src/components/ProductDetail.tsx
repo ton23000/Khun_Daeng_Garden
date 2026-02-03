@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { useCart } from '@/lib/CartContext';
-import { useState } from 'react';
+import { useAuth } from '@/lib/AuthContext';
+import { useState, useEffect } from 'react';
 
 // Define Interface locally or import from shared types
 interface Tree {
@@ -21,9 +22,73 @@ interface Tree {
 
 export default function ProductDetail({ tree }: { tree: Tree }) {
     const { addItem } = useCart();
+    const { user } = useAuth();
     const [quantity, setQuantity] = useState(1);
     const [isAdded, setIsAdded] = useState(false);
     const [selectedImage, setSelectedImage] = useState(tree.images[0] || '/placeholder-tree.jpg');
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [isCheckingFavorite, setIsCheckingFavorite] = useState(true);
+
+    useEffect(() => {
+        if (user) {
+            checkFavorite();
+        } else {
+            setIsCheckingFavorite(false);
+        }
+    }, [user, tree.id]);
+
+    const checkFavorite = async () => {
+        if (!user) return;
+        try {
+            const res = await fetch('/api/favorites', {
+                headers: { 'x-user-id': user.id }
+            });
+            if (res.ok) {
+                const favorites = await res.json();
+                setIsFavorite(favorites.some((f: any) => f.treeId === tree.id));
+            }
+        } catch (error) {
+            console.error('Failed to check favorite:', error);
+        } finally {
+            setIsCheckingFavorite(false);
+        }
+    };
+
+    const toggleFavorite = async () => {
+        if (!user) {
+            alert('กรุณาเข้าสู่ระบบเพื่อบันทึกรายการโปรด');
+            return;
+        }
+
+        try {
+            if (isFavorite) {
+                // Remove from favorites
+                const res = await fetch(`/api/favorites?treeId=${tree.id}`, {
+                    method: 'DELETE',
+                    headers: { 'x-user-id': user.id }
+                });
+                if (res.ok) {
+                    setIsFavorite(false);
+                }
+            } else {
+                // Add to favorites
+                const res = await fetch('/api/favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-user-id': user.id
+                    },
+                    body: JSON.stringify({ treeId: tree.id })
+                });
+                if (res.ok) {
+                    setIsFavorite(true);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to toggle favorite:', error);
+            alert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+        }
+    };
 
     const handleAdd = () => {
         addItem(tree, quantity);
@@ -91,7 +156,36 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
 
                 {/* Right: Details & Booking */}
                 <div>
-                    <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{tree.name}</h1>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                        <h1 style={{ fontSize: '2rem', flex: 1 }}>{tree.name}</h1>
+
+                        {/* Favorite Button */}
+                        {!isCheckingFavorite && (
+                            <button
+                                onClick={toggleFavorite}
+                                style={{
+                                    background: 'white',
+                                    border: '2px solid #e5e7eb',
+                                    borderRadius: '50%',
+                                    width: '48px',
+                                    height: '48px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    marginLeft: '1rem'
+                                }}
+                                title={isFavorite ? 'ลบออกจากรายการโปรด' : 'เพิ่มไปยังรายการโปรด'}
+                            >
+                                <img
+                                    src={isFavorite ? '/uploaded_media_1_1770098764245.png' : '/uploaded_media_0_1770098764245.png'}
+                                    alt={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                                    style={{ width: '24px', height: '24px' }}
+                                />
+                            </button>
+                        )}
+                    </div>
                     <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '1rem' }}>
                         ฿ {tree.price.toLocaleString()}
                     </p>

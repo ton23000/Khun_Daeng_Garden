@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
+import NotificationBell from '@/components/admin/NotificationBell'; // Keep for now if we want to use it elsewhere, or remove line if unused. User wanted it removed from here. 
+// Actually, better to remove the line.
 import SlipViewer from '@/components/SlipViewer';
 import { SearchBar } from '@/components/admin/SearchBar';
 import { SortableTableHeader } from '@/components/admin/SortableTableHeader';
@@ -34,6 +36,7 @@ interface Booking {
     user: {
         name: string;
         phone: string;
+        nickname?: string;
     };
     items: BookingItem[];
 }
@@ -200,22 +203,42 @@ export default function DashboardPage() {
     };
 
     const getStatusBadge = (status: string) => {
-        const colors: Record<string, string> = {
-            PENDING: '#f59e0b',
-            PAID: '#3b82f6',
-            PREPARING: '#8b5cf6',
-            READY: '#22c55e',
-            COMPLETED: '#6b7280',
-            CANCELLED: '#ef4444'
+        const statusConfig: Record<string, { color: string; label: string }> = {
+            PENDING: { color: '#f59e0b', label: 'รอชำระเงิน' },
+            VERIFYING_PAYMENT: { color: '#3b82f6', label: 'ตรวจสอบการชำระเงิน' },
+            PAYMENT_ISSUE: { color: '#ef4444', label: 'ชำระเงินมีปัญหา' },
+            CONFIRMED: { color: '#10b981', label: 'ยืนยันการจอง' },
+            PREPARING: { color: '#8b5cf6', label: 'เตรียมต้นไม้' },
+            READY: { color: '#22c55e', label: 'พร้อมรับที่ร้าน' },
+            COMPLETED: { color: '#6b7280', label: 'เสร็จสิ้น' },
+            CANCELLED: { color: '#dc2626', label: 'ยกเลิกการจอง' },
+            // Legacy statuses
+            PAID: { color: '#3b82f6', label: 'รอตรวจสอบ' }
         };
+        const config = statusConfig[status] || { color: '#6b7280', label: status };
         return {
-            backgroundColor: colors[status] || '#6b7280',
+            backgroundColor: config.color,
             color: 'white',
             padding: '0.25rem 0.75rem',
             borderRadius: '9999px',
             fontSize: '0.75rem',
             fontWeight: 'bold'
         };
+    };
+
+    const getStatusLabel = (status: string) => {
+        const statusConfig: Record<string, string> = {
+            PENDING: 'รอชำระเงิน',
+            VERIFYING_PAYMENT: 'ตรวจสอบการชำระเงิน',
+            PAYMENT_ISSUE: 'ชำระเงินมีปัญหา',
+            CONFIRMED: 'ยืนยันการจอง',
+            PREPARING: 'เตรียมต้นไม้',
+            READY: 'พร้อมรับที่ร้าน',
+            COMPLETED: 'เสร็จสิ้น',
+            CANCELLED: 'ยกเลิกการจอง',
+            PAID: 'รอตรวจสอบ'
+        };
+        return statusConfig[status] || status;
     };
 
     const getStatusText = (status: string) => {
@@ -388,7 +411,10 @@ export default function DashboardPage() {
                                     <tr key={booking.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{booking.refCode}</td>
                                         <td style={{ padding: '1rem' }}>
-                                            <div>{booking.user.name}</div>
+                                            <div>
+                                                {booking.user.name}
+                                                {booking.user.nickname && <span style={{ color: '#6b7280', fontSize: '0.875rem' }}> ({booking.user.nickname})</span>}
+                                            </div>
                                             <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{booking.user.phone}</div>
                                         </td>
                                         <td style={{ padding: '1rem' }}>
