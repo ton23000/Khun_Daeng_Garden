@@ -79,6 +79,28 @@ export async function POST(req: NextRequest) {
         }
         console.log('[Booking API] User found:', userExists.name);
 
+        // Check stock availability for all items
+        console.log('[Booking API] Checking stock availability...');
+        for (const item of validated.items) {
+            const tree = await prisma.tree.findUnique({
+                where: { id: item.treeId }
+            });
+
+            if (!tree) {
+                return NextResponse.json({
+                    error: `ไม่พบต้นไม้ "${item.treeName}"`
+                }, { status: 400 });
+            }
+
+            const availableStock = tree.stock - tree.reserved;
+            if (availableStock < item.quantity) {
+                return NextResponse.json({
+                    error: `ต้นไม้ "${item.treeName}" มีสต็อกไม่เพียงพอ (เหลือ ${availableStock} ต้น)`
+                }, { status: 400 });
+            }
+        }
+        console.log('[Booking API] Stock check passed');
+
         const refCode = `KD${Date.now().toString(36).toUpperCase()}`;
         console.log('[Booking API] Generated refCode:', refCode);
 
@@ -110,6 +132,20 @@ export async function POST(req: NextRequest) {
             }
         });
         console.log('[Booking API] Booking created:', booking.id);
+
+        // Reserve stock for pending booking
+        console.log('[Booking API] Reserving stock...');
+        for (const item of validated.items) {
+            await prisma.tree.update({
+                where: { id: item.treeId },
+                data: {
+                    reserved: {
+                        increment: item.quantity
+                    }
+                }
+            });
+        }
+        console.log('[Booking API] Stock reserved');
 
         // Create admin notification
         console.log('[Booking API] Creating admin notification...');

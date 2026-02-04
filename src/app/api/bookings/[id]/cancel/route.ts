@@ -36,8 +36,23 @@ export async function PATCH(
             data: {
                 status: 'CANCELLED',
                 note: 'User cancelled'
+            },
+            include: {
+                items: true
             }
         });
+
+        // Release reserved stock
+        for (const item of updated.items) {
+            await prisma.tree.update({
+                where: { id: item.treeId },
+                data: {
+                    reserved: {
+                        decrement: item.quantity
+                    }
+                }
+            });
+        }
 
         // Create notification for admin
         await prisma.adminNotification.create({

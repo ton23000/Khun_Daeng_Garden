@@ -20,6 +20,9 @@ interface Tree {
     images: string[];
     tags: string[];
     growthTime?: string;
+    stock?: number;
+    reserved?: number;
+    sold?: number;
 }
 
 export default function AdminTreesPage() {
@@ -29,6 +32,8 @@ export default function AdminTreesPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTree, setEditingTree] = useState<Tree | null>(null);
+    const [editingStockId, setEditingStockId] = useState<string | null>(null);
+    const [newStock, setNewStock] = useState<number>(0);
 
     // Derived state for suggestions
     const allTags = Array.from(new Set(trees.flatMap(t => t.tags || [])));
@@ -104,8 +109,22 @@ export default function AdminTreesPage() {
                         bValue = b.price;
                         break;
                     case 'status':
-                        aValue = a.status;
-                        bValue = b.status;
+                        // Sort by status priority: Out (0) < Low (1) < Available (2)
+                        const aAvail = (a.stock || 0) - (a.reserved || 0);
+                        const bAvail = (b.stock || 0) - (b.reserved || 0);
+
+                        const getStatusValue = (avail: number) => {
+                            if (avail <= 0) return 0; // Out of stock
+                            if (avail < 5) return 1;  // Low stock
+                            return 2;                 // Available
+                        };
+
+                        aValue = getStatusValue(aAvail);
+                        bValue = getStatusValue(bAvail);
+                        break;
+                    case 'stock':
+                        aValue = a.stock || 0;
+                        bValue = b.stock || 0;
                         break;
                     default:
                         return 0;
@@ -292,6 +311,14 @@ export default function AdminTreesPage() {
                                     onSort={handleSort}
                                 />
                                 <SortableTableHeader
+                                    label="สต็อก"
+                                    sortKey="stock"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
+                                <th style={{ padding: '1rem', textAlign: 'center' }}>จอง</th>
+                                <th style={{ padding: '1rem', textAlign: 'center' }}>ขาย</th>
+                                <SortableTableHeader
                                     label="สถานะ"
                                     sortKey="status"
                                     currentSort={sortConfig}
@@ -324,19 +351,88 @@ export default function AdminTreesPage() {
                                         </td>
                                         <td style={{ padding: '1rem' }}>{tree.growthTime || '-'}</td>
                                         <td style={{ padding: '1rem' }}>฿{tree.price.toLocaleString()}</td>
+                                        <td style={{ padding: '1rem', textAlign: 'center' }}>
+                                            {editingStockId === tree.id ? (
+                                                <Input
+                                                    type="number"
+                                                    value={newStock}
+                                                    onChange={(e) => setNewStock(Number(e.target.value))}
+                                                    style={{ width: '70px', textAlign: 'center', padding: '0.25rem' }}
+                                                    min={0}
+                                                />
+                                            ) : (
+                                                <span style={{ fontWeight: 600 }}>{tree.stock || 0}</span>
+                                            )}
+                                        </td>
+                                        <td style={{ padding: '1rem', textAlign: 'center', color: '#f59e0b' }}>{tree.reserved || 0}</td>
+                                        <td style={{ padding: '1rem', textAlign: 'center', color: '#6b7280' }}>{tree.sold || 0}</td>
                                         <td style={{ padding: '1rem' }}>
-                                            <span style={{
-                                                padding: '0.25rem 0.5rem', borderRadius: '9999px', fontSize: '0.75rem',
-                                                backgroundColor: tree.status === 'AVAILABLE' ? '#dcfce7' : '#f3f4f6',
-                                                color: tree.status === 'AVAILABLE' ? '#166534' : '#374151'
-                                            }}>
-                                                {tree.status === 'AVAILABLE' ? 'พร้อมขาย' : 'ไม่ว่าง'}
-                                            </span>
+                                            {(() => {
+                                                const available = (tree.stock || 0) - (tree.reserved || 0);
+                                                let label = 'พร้อมขาย';
+                                                let color = '#22c55e';
+                                                let bgColor = '#dcfce7';
+
+                                                if (available <= 0) {
+                                                    label = 'สินค้าหมด';
+                                                    color = '#ef4444';
+                                                    bgColor = '#fee2e2';
+                                                } else if (available < 5) {
+                                                    label = 'สต็อกต่ำ';
+                                                    color = '#f59e0b';
+                                                    bgColor = '#fef3c7';
+                                                }
+
+                                                // If database status is not AVAILABLE (e.g. manually set to something else), show that instead?
+                                                // But currently we don't have UI to change tree.status. 
+                                                // Assuming we want to show stock status primarily.
+
+                                                return (
+                                                    <span style={{
+                                                        padding: '0.25rem 0.5rem', borderRadius: '9999px', fontSize: '0.75rem',
+                                                        backgroundColor: bgColor,
+                                                        color: color,
+                                                        fontWeight: 600
+                                                    }}>
+                                                        {label}
+                                                    </span>
+                                                );
+                                            })()}
                                         </td>
                                         <td style={{ padding: '1rem' }}>
-                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                <Button size="sm" variant="outline" onClick={() => openEdit(tree)}>แก้ไข</Button>
-                                                <Button size="sm" variant="outline" onClick={() => handleDelete(tree.id)} style={{ borderColor: '#ef4444', color: '#ef4444' }}>ลบ</Button>
+                                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                                {editingStockId === tree.id ? (
+                                                    <>
+                                                        <Button size="sm" onClick={async () => {
+                                                            try {
+                                                                const res = await fetch(`/api/admin/trees/${tree.id}/stock`, {
+                                                                    method: 'PATCH',
+                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                    body: JSON.stringify({ stock: newStock })
+                                                                });
+                                                                if (res.ok) {
+                                                                    fetchTrees();
+                                                                    setEditingStockId(null);
+                                                                } else {
+                                                                    alert('ไม่สามารถอัปเดตสต็อกได้');
+                                                                }
+                                                            } catch (error) {
+                                                                console.error('Failed to update stock:', error);
+                                                                alert('เกิดข้อผิดพลาด');
+                                                            }
+                                                        }} style={{ fontSize: '0.75rem' }}>บันทึก</Button>
+                                                        <Button size="sm" variant="outline" onClick={() => setEditingStockId(null)} style={{ fontSize: '0.75rem' }}>ยกเลิก</Button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Button size="sm" variant="outline" onClick={() => {
+                                                            setEditingStockId(tree.id);
+                                                            setNewStock(tree.stock || 0);
+                                                        }} style={{ fontSize: '0.75rem' }}>สต็อก</Button>
+                                                        <Button size="sm" variant="outline" onClick={() => openEdit(tree)}>แก้ไข</Button>
+                                                        <Button size="sm" variant="outline" onClick={() => handleDelete(tree.id)} style={{ borderColor: '#ef4444', color: '#ef4444' }}>ลบ</Button>
+                                                    </>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>
@@ -417,11 +513,11 @@ export default function AdminTreesPage() {
 
                                                 const uploadFormData = new FormData();
                                                 for (let i = 0; i < files.length; i++) {
-                                                    uploadFormData.append('file', files[i]);
+                                                    uploadFormData.append('images', files[i]);
                                                 }
 
                                                 try {
-                                                    const res = await fetch('/api/upload', {
+                                                    const res = await fetch('/api/upload/images', {
                                                         method: 'POST',
                                                         body: uploadFormData
                                                     });

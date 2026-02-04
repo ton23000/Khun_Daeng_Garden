@@ -6,8 +6,10 @@ import Link from 'next/link';
 import { useCart } from '@/lib/CartContext';
 import { useAuth } from '@/lib/AuthContext';
 import { useState, useEffect } from 'react';
+import ImageGallery from './ImageGallery';
+import StarRating from './StarRating';
+import ReviewList from './ReviewList';
 
-// Define Interface locally or import from shared types
 interface Tree {
     id: string;
     name: string;
@@ -18,6 +20,8 @@ interface Tree {
     images: string[];
     tags: string[];
     growthTime?: string | null;
+    rating?: number;
+    reviewCount?: number;
 }
 
 export default function ProductDetail({ tree }: { tree: Tree }) {
@@ -25,9 +29,14 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
     const { user } = useAuth();
     const [quantity, setQuantity] = useState(1);
     const [isAdded, setIsAdded] = useState(false);
-    const [selectedImage, setSelectedImage] = useState(tree.images[0] || '/placeholder-tree.jpg');
     const [isFavorite, setIsFavorite] = useState(false);
     const [isCheckingFavorite, setIsCheckingFavorite] = useState(true);
+
+    // Calculate available stock
+    const stock = (tree as any).stock || 0;
+    const reserved = (tree as any).reserved || 0;
+    const availableStock = Math.max(0, stock - reserved);
+    const isOutOfStock = availableStock === 0;
 
     useEffect(() => {
         if (user) {
@@ -62,7 +71,6 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
 
         try {
             if (isFavorite) {
-                // Remove from favorites
                 const res = await fetch(`/api/favorites?treeId=${tree.id}`, {
                     method: 'DELETE',
                     headers: { 'x-user-id': user.id }
@@ -71,7 +79,6 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                     setIsFavorite(false);
                 }
             } else {
-                // Add to favorites
                 const res = await fetch('/api/favorites', {
                     method: 'POST',
                     headers: {
@@ -91,6 +98,10 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
     };
 
     const handleAdd = () => {
+        if (quantity > availableStock) {
+            alert(`สินค้ามีจำนวนไม่เพียงพอ (เหลือ ${availableStock} ต้น)`);
+            return;
+        }
         addItem(tree, quantity);
         setIsAdded(true);
         setTimeout(() => setIsAdded(false), 2000);
@@ -105,53 +116,7 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                 {/* Left: Image Gallery */}
                 <div>
-                    <div style={{
-                        backgroundColor: '#e5e7eb',
-                        borderRadius: '0.5rem',
-                        overflow: 'hidden',
-                        marginBottom: '1rem',
-                        aspectRatio: '1/1',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}>
-                        <img
-                            src={selectedImage}
-                            alt={tree.name}
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'contain',
-                                maxHeight: '500px'
-                            }}
-                        />
-                    </div>
-                    {/* Thumbnails */}
-                    {tree.images.length > 1 && (
-                        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-                            {tree.images.map((img, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setSelectedImage(img)}
-                                    style={{
-                                        border: selectedImage === img ? '2px solid var(--primary)' : '2px solid transparent',
-                                        borderRadius: '0.25rem',
-                                        overflow: 'hidden',
-                                        minWidth: '60px',
-                                        width: '60px',
-                                        height: '60px',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    <img
-                                        src={img}
-                                        alt={`${tree.name} ${index + 1}`}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                    />
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                    <ImageGallery images={tree.images} alt={tree.name} />
                 </div>
 
                 {/* Right: Details & Booking */}
@@ -186,6 +151,7 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                             </button>
                         )}
                     </div>
+
                     <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '1rem' }}>
                         ฿ {tree.price.toLocaleString()}
                     </p>
@@ -213,30 +179,55 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                             <CardTitle>สั่งจอง</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {tree.status === 'AVAILABLE' ? (
+                            {tree.status === 'AVAILABLE' && !isOutOfStock ? (
                                 <div>
                                     <div style={{ marginBottom: '1rem' }}>
-                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem' }}>จำนวน</label>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                            <label style={{ fontSize: '0.875rem' }}>จำนวน</label>
+                                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>มีสินค้า {availableStock} ต้น</span>
+                                        </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <Button variant="outline" onClick={() => setQuantity(q => Math.max(1, q - 1))} disabled={quantity <= 1}>-</Button>
                                             <span style={{ fontSize: '1.25rem', fontWeight: 'bold', width: '40px', textAlign: 'center' }}>{quantity}</span>
-                                            <Button variant="outline" onClick={() => setQuantity(q => q + 1)}>+</Button>
+                                            <Button variant="outline" onClick={() => setQuantity(q => Math.min(availableStock, q + 1))} disabled={quantity >= availableStock}>+</Button>
                                         </div>
                                     </div>
 
-                                    <Button fullWidth onClick={handleAdd} variant="primary">
+                                    <Button fullWidth onClick={handleAdd} variant="primary" disabled={isOutOfStock}>
                                         {isAdded ? 'เพิ่มเรียบร้อย!' : `เพิ่มลงตะกร้า (${quantity} ต้น)`}
                                     </Button>
                                 </div>
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                                    <p style={{ color: '#d97706', fontWeight: 'bold' }}>สินค้านี้ถูกจองแล้ว</p>
+                                    <p style={{ color: '#d97706', fontWeight: 'bold' }}>สินค้านี้ถูกจองแล้ว / สินค้าหมด</p>
                                     <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>กรุณาเลือกดูรายการอื่น</p>
                                 </div>
                             )}
                         </CardContent>
                     </Card>
                 </div>
+            </div>
+
+            {/* Reviews Section */}
+            <div style={{ marginTop: '3rem' }}>
+                <div style={{ marginBottom: '2rem' }}>
+                    <h2 style={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                        รีวิวและคะแนน
+                    </h2>
+                    {tree.rating !== undefined && tree.reviewCount !== undefined && tree.reviewCount > 0 && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <StarRating rating={tree.rating} readonly size="md" />
+                            <span style={{ fontSize: '1.25rem', fontWeight: 600, color: '#374151' }}>
+                                {tree.rating.toFixed(1)}
+                            </span>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                                ({tree.reviewCount} รีวิว)
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                <ReviewList treeId={tree.id} currentUserId={user?.id} />
             </div>
         </div>
     );

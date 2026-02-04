@@ -18,6 +18,7 @@ model User {
   role      String   @default("USER") // ADMIN, USER
   bookings  Booking[]
   favorites Favorite[]
+  reviews   Review[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -32,8 +33,14 @@ model Tree {
   status      String   @default("AVAILABLE") // AVAILABLE, BOOKED, SOLD
   tags        String   // Comma separated tags
   growthTime  String?  // e.g. "1-2 weeks"
+  stock       Int      @default(0)        // Available quantity
+  reserved    Int      @default(0)        // Reserved in pending bookings
+  sold        Int      @default(0)        // Total sold
+  rating      Float    @default(0)        // Average rating
+  reviewCount Int      @default(0)        // Total reviews
   bookings    BookingItem[]
   favorites   Favorite[]
+  reviews     Review[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -52,6 +59,8 @@ model Booking {
   refCode            String              @unique
   slipUrl            String?
   note               String?             // Admin note or user note
+  reviewable         Boolean             @default(false)  // Set true when COMPLETED
+  review             Review?
   adminNotifications AdminNotification[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
@@ -96,4 +105,32 @@ model Favorite {
   createdAt DateTime @default(now())
   
   @@unique([userId, treeId])
+}
+
+model PasswordReset {
+  id        String   @id @default(uuid())
+  phone     String
+  code      String   // 6-digit verification code
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  treeId    String
+  tree      Tree     @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  bookingId String   @unique
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  rating    Int      // 1-5 stars
+  comment   String?
+  images    String?  // JSON array of URLs
+  helpful   Int      @default(0)  // helpful count
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([treeId])
+  @@index([userId])
 }

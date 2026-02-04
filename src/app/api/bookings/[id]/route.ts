@@ -30,7 +30,13 @@ export async function PUT(
         }
 
         const updateData: any = {};
-        if (validated.status) updateData.status = validated.status;
+        if (validated.status) {
+            updateData.status = validated.status;
+            // Enable reviews when booking is completed
+            if (validated.status === 'COMPLETED') {
+                updateData.reviewable = true;
+            }
+        }
         if (validated.note !== undefined) updateData.note = validated.note;
         if (validated.slipUrl !== undefined) updateData.slipUrl = validated.slipUrl;
         if (validated.pickupDate) updateData.pickupDate = new Date(validated.pickupDate);
@@ -47,6 +53,26 @@ export async function PUT(
                 user: true
             }
         });
+
+        // Update stock when order is completed
+        if (validated.status === 'COMPLETED' && currentBooking.status !== 'COMPLETED') {
+            console.log('[Booking Update] Order completed, updating stock...');
+            const bookingItems = await prisma.bookingItem.findMany({
+                where: { bookingId: id }
+            });
+
+            for (const item of bookingItems) {
+                await prisma.tree.update({
+                    where: { id: item.treeId },
+                    data: {
+                        stock: { decrement: item.quantity },
+                        sold: { increment: item.quantity },
+                        reserved: { decrement: item.quantity }
+                    }
+                });
+                console.log(`[Booking Update] Updated tree ${item.treeId}: -${item.quantity} stock, +${item.quantity} sold, -${item.quantity} reserved`);
+            }
+        }
 
         // Create notification if status changed
         if (validated.status && currentBooking.user && booking.userId && validated.status !== currentBooking.status) {
@@ -171,7 +197,13 @@ export async function PATCH(
         }
 
         const updateData: any = {};
-        if (validated.status) updateData.status = validated.status;
+        if (validated.status) {
+            updateData.status = validated.status;
+            // Enable reviews when booking is completed
+            if (validated.status === 'COMPLETED') {
+                updateData.reviewable = true;
+            }
+        }
         if (validated.note !== undefined) updateData.note = validated.note;
         if (validated.slipUrl !== undefined) {
             updateData.slipUrl = validated.slipUrl;
@@ -194,6 +226,26 @@ export async function PATCH(
                 user: true
             }
         });
+
+        // Update stock when order is completed
+        if (validated.status === 'COMPLETED' && currentBooking.status !== 'COMPLETED') {
+            console.log('[Booking PATCH] Order completed, updating stock...');
+            const bookingItems = await prisma.bookingItem.findMany({
+                where: { bookingId: id }
+            });
+
+            for (const item of bookingItems) {
+                await prisma.tree.update({
+                    where: { id: item.treeId },
+                    data: {
+                        stock: { decrement: item.quantity },
+                        sold: { increment: item.quantity },
+                        reserved: { decrement: item.quantity }
+                    }
+                });
+                console.log(`[Booking PATCH] Updated tree ${item.treeId}: -${item.quantity} stock, +${item.quantity} sold, -${item.quantity} reserved`);
+            }
+        }
 
         // Create notification if status changed and user exists
         if (validated.status && currentBooking.user && booking.userId) {

@@ -61,6 +61,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 Manage Trees
                             </Link>
 
+                            <Link href="/admin/inventory" style={{
+                                display: 'block',
+                                padding: '0.75rem 1rem',
+                                borderRadius: '0.5rem',
+                                color: pathname === '/admin/inventory' ? '#166534' : '#374151',
+                                backgroundColor: pathname === '/admin/inventory' ? '#dcfce7' : 'transparent',
+                                fontWeight: pathname === '/admin/inventory' ? 500 : 400,
+                                textDecoration: 'none'
+                            }}>
+                                📦 จัดการสต็อก
+                            </Link>
+
                             <Link href="/admin/users" style={{
                                 display: 'block',
                                 padding: '0.75rem 1rem',

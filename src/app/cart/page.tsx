@@ -93,7 +93,8 @@ export default function CartPage() {
             router.push('/booking-success');
         } catch (error) {
             console.error('Booking error:', error);
-            alert('เกิดข้อผิดพลาดในการจอง กรุณาลองใหม่อีกครั้ง');
+            console.error('Booking error:', error);
+            alert(error instanceof Error ? error.message : 'เกิดข้อผิดพลาดในการจอง กรุณาลองใหม่อีกครั้ง');
         }
     };
 

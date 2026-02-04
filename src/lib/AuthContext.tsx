@@ -21,6 +21,7 @@ interface AuthContextType {
     register: (name: string, nickname: string, phone: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
     resetPassword: (identifier: string) => boolean;
     logout: () => void;
+    refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -121,8 +122,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         router.refresh();
     };
 
+    const refreshUser = async () => {
+        if (!user) return;
+
+        try {
+            const res = await fetch('/api/auth/me');
+            if (res.ok) {
+                const data = await res.json();
+                setUser(data.user);
+                localStorage.setItem('khun_daeng_user', JSON.stringify(data.user));
+            }
+        } catch (error) {
+            console.error('Failed to refresh user:', error);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, isLoading, login, loginAdmin, register, resetPassword, logout }}>
+        <AuthContext.Provider value={{ user, isLoading, login, loginAdmin, register, resetPassword, logout, refreshUser }}>
             {children}
         </AuthContext.Provider>
     );

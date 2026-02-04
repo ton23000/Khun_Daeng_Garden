@@ -1,56 +1,110 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+'use client';
+
+import { Card, CardContent } from '@/components/ui/Card';
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
-import { ShopControls } from '@/components/ShopControls';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
-import { Prisma } from '@prisma/client';
+import AdvancedFilters, { FilterState } from '@/components/AdvancedFilters';
+import { useState, useEffect } from 'react';
 
-export const dynamic = 'force-dynamic';
+interface Tree {
+    id: string;
+    name: string;
+    price: number;
+    category: string;
+    status: string;
+    images: string;
+    tags: string;
+    stock: number;
+    reserved: number;
+    rating: number;
+    reviewCount: number;
+}
 
-export default async function ShopPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
-    const params = await searchParams;
-    const category = params.category as string | undefined;
-    const sort = params.sort as string | undefined;
-    const q = params.q as string | undefined;
+export default function ShopPage() {
+    const [trees, setTrees] = useState<Tree[]>([]);
+    const [filteredTrees, setFilteredTrees] = useState<Tree[]>([]);
+    const [categories, setCategories] = useState<string[]>([]);
+    const [allTags, setAllTags] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Filter Logic
-    const where: Prisma.TreeWhereInput = {
-        status: { not: 'SOLD' } // Optional: Hide sold items? Or keep them. Let's show everything for now but user can filter.
+    useEffect(() => {
+        fetchTrees();
+    }, []);
+
+    const fetchTrees = async () => {
+        try {
+            const res = await fetch('/api/trees');
+            if (res.ok) {
+                const data = await res.json();
+                setTrees(data);
+                setFilteredTrees(data);
+
+                // Extract unique categories
+                const uniqueCategories = Array.from(new Set(data.map((t: Tree) => t.category))).filter(Boolean) as string[];
+                setCategories(uniqueCategories);
+
+                // Extract all tags
+                const tagsSet = new Set<string>();
+                data.forEach((t: Tree) => {
+                    if (t.tags) {
+                        // Handle both string and array types
+                        const treeTags = Array.isArray(t.tags)
+                            ? t.tags
+                            : t.tags.split(',').map(tag => tag.trim()).filter(Boolean);
+                        treeTags.forEach(tag => tagsSet.add(tag));
+                    }
+                });
+                setAllTags(Array.from(tagsSet));
+            }
+        } catch (error) {
+            console.error('Failed to fetch trees:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    if (category) {
-        where.category = category;
+    const handleFilterChange = (filters: FilterState) => {
+        let filtered = [...trees];
+
+        // Filter by price
+        if (filters.minPrice) {
+            filtered = filtered.filter(t => t.price >= Number(filters.minPrice));
+        }
+        if (filters.maxPrice) {
+            filtered = filtered.filter(t => t.price <= Number(filters.maxPrice));
+        }
+
+        // Filter by categories
+        if (filters.selectedCategories.length > 0) {
+            filtered = filtered.filter(t => filters.selectedCategories.includes(t.category));
+        }
+
+        // Filter by tags
+        if (filters.selectedTags.length > 0) {
+            filtered = filtered.filter(t => {
+                // Handle both string and array types
+                const treeTags = t.tags
+                    ? (Array.isArray(t.tags) ? t.tags : t.tags.split(',').map(tag => tag.trim()))
+                    : [];
+                return filters.selectedTags.some(tag => treeTags.includes(tag));
+            });
+        }
+
+        // Filter by stock
+        if (filters.inStockOnly) {
+            filtered = filtered.filter(t => (t.stock - t.reserved) > 0);
+        }
+
+        setFilteredTrees(filtered);
+    };
+
+    if (isLoading) {
+        return (
+            <div className="container" style={{ padding: '2rem 1rem', textAlign: 'center' }}>
+                <p>กำลังโหลด...</p>
+            </div>
+        );
     }
-
-    if (q) {
-        where.name = { contains: q }; // Case insensitive usually requires mode: 'insensitive' if DB supports it. 
-        // Prisma SQLite default collision is case-sensitive, but often configured otherwise. 
-        // For simplicity we just use contains.
-    }
-
-    // Sort Logic
-    let orderBy: Prisma.TreeOrderByWithRelationInput = { createdAt: 'desc' };
-    if (sort === 'price_asc') {
-        orderBy = { price: 'asc' };
-    } else if (sort === 'price_desc') {
-        orderBy = { price: 'desc' };
-    } else if (sort === 'newest') {
-        orderBy = { createdAt: 'desc' };
-    }
-
-    // Fetch Data
-    const trees = await prisma.tree.findMany({
-        where,
-        orderBy
-    });
-
-    // Get all categories for filter
-    const categoriesData = await prisma.tree.findMany({
-        select: { category: true },
-        distinct: ['category']
-    });
-    const categories = categoriesData.map(c => c.category).filter(Boolean);
 
     return (
         <div className="container" style={{ padding: '2rem 1rem' }}>
@@ -62,19 +116,35 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                 </header>
             </ScrollAnimation>
 
-            <ShopControls categories={categories} />
+            {/* Advanced Filters */}
+            <AdvancedFilters
+                categories={categories}
+                allTags={allTags}
+                onFilterChange={handleFilterChange}
+            />
 
+            {/* Results Count */}
+            <div style={{ marginBottom: '1rem', color: '#6b7280' }}>
+                แสดง {filteredTrees.length} จาก {trees.length} รายการ
+            </div>
+
+            {/* Product Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-                {trees.map((tree, index) => {
-                    // Parse images safely
+                {filteredTrees.map((tree, index) => {
+                    // Get first image from array
                     let imageUrl = '/placeholder-tree.jpg';
-                    try {
-                        const images = JSON.parse(tree.images);
-                        if (images && images.length > 0) {
-                            imageUrl = images[0];
+                    if (tree.images && Array.isArray(tree.images) && tree.images.length > 0) {
+                        imageUrl = tree.images[0];
+                    } else if (typeof tree.images === 'string') {
+                        // Fallback: try to parse if it's a JSON string
+                        try {
+                            const images = JSON.parse(tree.images);
+                            if (images && images.length > 0) {
+                                imageUrl = images[0];
+                            }
+                        } catch (e) {
+                            // Use placeholder if parsing fails
                         }
-                    } catch (e) {
-                        // Use placeholder if parsing fails
                     }
 
                     return (
@@ -98,12 +168,24 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                                             style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                                         />
 
-                                        {/* Status Badge */}
-                                        {tree.status === 'BOOKED' && (
-                                            <div style={{ position: 'absolute', top: '15px', left: '15px', backgroundColor: '#fef3c7', color: '#d97706', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                                                จองแล้ว
-                                            </div>
-                                        )}
+                                        {/* Status Badges */}
+                                        <div style={{ position: 'absolute', top: '15px', left: '15px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                            {tree.status === 'BOOKED' && (
+                                                <div style={{ backgroundColor: '#fef3c7', color: '#d97706', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                                    จองแล้ว
+                                                </div>
+                                            )}
+                                            {tree.stock - tree.reserved === 0 && (
+                                                <div style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                                    หมดสต็อก
+                                                </div>
+                                            )}
+                                            {tree.stock - tree.reserved > 0 && tree.stock - tree.reserved < 5 && (
+                                                <div style={{ backgroundColor: '#fef3c7', color: '#d97706', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                                    เหลือน้อย ({tree.stock - tree.reserved})
+                                                </div>
+                                            )}
+                                        </div>
 
                                         {/* Heart Icon */}
                                         <div style={{ position: 'absolute', top: '15px', right: '15px', backgroundColor: 'white', padding: '8px', borderRadius: '50%', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
@@ -116,8 +198,27 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                                     <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
                                         <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', marginBottom: '0.5rem', color: '#1f2937' }}>{tree.name}</h3>
                                         <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>{tree.category}</p>
-                                        <p style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '1rem' }}>⭐⭐⭐⭐⭐</p>
-                                        <p style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--primary)' }}>฿{tree.price.toLocaleString()}</p>
+                                        {tree.rating > 0 && tree.reviewCount > 0 ? (
+                                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                                                <span style={{ color: '#fbbf24', fontSize: '1rem' }}>⭐</span>
+                                                <span style={{ fontSize: '0.875rem', fontWeight: 500, color: '#374151' }}>
+                                                    {tree.rating.toFixed(1)}
+                                                </span>
+                                                <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
+                                                    ({tree.reviewCount})
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <p style={{ fontSize: '0.875rem', color: '#9ca3af', marginBottom: '1rem' }}>ยังไม่มีรีวิว</p>
+                                        )}
+                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                                            <p style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--primary)' }}>฿{tree.price.toLocaleString()}</p>
+                                            {tree.stock - tree.reserved > 0 && (
+                                                <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                                                    คงเหลือ: <span style={{ fontWeight: 600, color: tree.stock - tree.reserved < 5 ? '#f59e0b' : '#22c55e' }}>{tree.stock - tree.reserved}</span>
+                                                </p>
+                                            )}
+                                        </div>
                                     </CardContent>
                                 </Card>
                             </Link>
@@ -125,9 +226,11 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                     );
                 })}
             </div>
-            {trees.length === 0 && (
+
+            {filteredTrees.length === 0 && (
                 <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
-                    <p style={{ fontSize: '1.125rem' }}>ยังไม่มีรายการต้นไม้ในขณะนี้</p>
+                    <p style={{ fontSize: '1.125rem' }}>ไม่พบรายการต้นไม้ที่ตรงกับเงื่อนไข</p>
+                    <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>ลองปรับตัวกรองหรือล้างการค้นหา</p>
                 </div>
             )}
         </div>

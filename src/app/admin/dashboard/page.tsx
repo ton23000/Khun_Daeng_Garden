@@ -49,6 +49,7 @@ export default function DashboardPage() {
     const router = useRouter();
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
+    const [trees, setTrees] = useState<any[]>([]);
     const [viewingSlip, setViewingSlip] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState({
@@ -67,6 +68,7 @@ export default function DashboardPage() {
             router.push('/admin/login');
         } else {
             fetchBookings();
+            fetchTrees();
         }
     }, [user, isLoading, router]);
 
@@ -83,6 +85,18 @@ export default function DashboardPage() {
             }
         } catch (error) {
             console.error('Failed to fetch bookings', error);
+        }
+    };
+
+    const fetchTrees = async () => {
+        try {
+            const res = await fetch('/api/trees');
+            if (res.ok) {
+                const data = await res.json();
+                setTrees(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch trees', error);
         }
     };
 
@@ -279,7 +293,7 @@ export default function DashboardPage() {
             </header>
 
             {/* Stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                 <Card>
                     <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
                         <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>รายการจองรอตรวจสอบ</p>
@@ -308,6 +322,20 @@ export default function DashboardPage() {
                         <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ต้นไม้ที่ถูกจอง</p>
                         <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>
                             {bookings.reduce((acc, b) => acc + b.items.reduce((s, i) => s + i.quantity, 0), 0)} ต้น
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card
+                    style={{
+                        borderColor: trees.filter(t => (t.stock - t.reserved) > 0 && (t.stock - t.reserved) < 5).length > 0 ? '#f59e0b' : '#e5e7eb',
+                        cursor: 'pointer'
+                    }}
+                    onClick={() => router.push('/admin/inventory')}
+                >
+                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
+                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>⚠️ สต็อกต่ำ</p>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>
+                            {trees.filter(t => (t.stock - t.reserved) > 0 && (t.stock - t.reserved) < 5).length}
                         </p>
                     </CardContent>
                 </Card>

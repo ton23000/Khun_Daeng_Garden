@@ -51,7 +51,8 @@ const MOCK_TREES = [
         status: 'AVAILABLE',
         images: JSON.stringify(['/images/products/donya-queen-sirikit.jpg']),
         tags: 'ไม้มงคล,ไม้ดอก',
-        growthTime: '1–2 อาทิตย์'
+        growthTime: '1–2 อาทิตย์',
+        stock: 15  // Added stock management
     },
     {
         name: 'ชวนชม',

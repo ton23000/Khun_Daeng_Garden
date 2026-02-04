@@ -9,7 +9,8 @@ const treeSchema = z.object({
     category: z.string().min(1, "Category is required"),
     images: z.array(z.string()).default([]), // Accept array, convert to string for DB
     tags: z.array(z.string()).default([]),   // Accept array, convert to string
-    growthTime: z.string().optional()
+    growthTime: z.string().optional(),
+    stock: z.number().min(0, "Stock must be non-negative").default(0)
 });
 
 export async function GET() {
@@ -18,11 +19,14 @@ export async function GET() {
             orderBy: { createdAt: 'desc' }
         });
 
-        // Parse JSON strings back to arrays
+        // Parse JSON strings back to arrays and include all fields
         const formattedTrees = trees.map(tree => ({
             ...tree,
             images: JSON.parse(tree.images),
-            tags: tree.tags.split(',').filter(t => t)
+            tags: tree.tags.split(',').filter(t => t),
+            stock: tree.stock || 0,
+            reserved: tree.reserved || 0,
+            sold: tree.sold || 0
         }));
 
         return NextResponse.json(formattedTrees);
@@ -46,7 +50,8 @@ export async function POST(request: Request) {
                 status: 'AVAILABLE',
                 images: JSON.stringify(validated.images),
                 tags: validated.tags.join(','),
-                growthTime: validated.growthTime || '1-2 อาทิตย์'
+                growthTime: validated.growthTime || '1-2 อาทิตย์',
+                stock: validated.stock
             }
         });
 

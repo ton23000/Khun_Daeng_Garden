@@ -8,23 +8,40 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
-    const { user } = useAuth();
+    const { user, refreshUser } = useAuth();
     const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [isEditing, setIsEditing] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [recentBooking, setRecentBooking] = useState<any>(null);
 
     useEffect(() => {
         if (user) {
             setName(user.name);
+            setEmail(user.email || '');
+            setPhone(user.phone);
 
             // Load recent booking
-            const allBookings = JSON.parse(localStorage.getItem('khun_daeng_bookings') || '[]');
-            const userBookings = allBookings.filter((b: any) => b.userId === user.phone).reverse();
-            if (userBookings.length > 0) {
-                setRecentBooking(userBookings[0]);
-            }
+            fetchRecentBooking();
         }
     }, [user]);
+
+    const fetchRecentBooking = async () => {
+        try {
+            const response = await fetch(`/api/bookings?userId=${user?.id}`);
+            if (response.ok) {
+                const bookings = await response.json();
+                if (bookings.length > 0) {
+                    setRecentBooking(bookings[0]);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching bookings:', error);
+        }
+    };
 
     if (!user) {
         return (
@@ -35,21 +52,60 @@ export default function ProfilePage() {
         );
     }
 
-    const handleSave = () => {
-        const db = localStorage.getItem('khun_daeng_db_users');
-        let users = db ? JSON.parse(db) : [];
-        const idx = users.findIndex((u: any) => u.phone === user.phone);
+    const handleSave = async () => {
+        setError('');
+        setSuccess('');
+        setLoading(true);
 
-        if (idx !== -1) {
-            users[idx].name = name;
-            localStorage.setItem('khun_daeng_db_users', JSON.stringify(users));
+        try {
+            // Validate phone format
+            if (phone && !/^\d{10}$/.test(phone)) {
+                setError('เบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลัก');
+                setLoading(false);
+                return;
+            }
 
-            const updatedUser = { ...user, name };
-            localStorage.setItem('khun_daeng_user', JSON.stringify(updatedUser));
+            // Validate email format
+            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                setError('รูปแบบอีเมลไม่ถูกต้อง');
+                setLoading(false);
+                return;
+            }
 
-            window.location.reload();
+            const response = await fetch(`/api/users/${user.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phone })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.error || 'เกิดข้อผิดพลาดในการบันทึก');
+                setLoading(false);
+                return;
+            }
+
+            // Update user in AuthContext
+            await refreshUser();
+
+            setSuccess('บันทึกข้อมูลเรียบร้อยแล้ว');
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            setError('เกิดข้อผิดพลาดในการบันทึก');
+        } finally {
+            setLoading(false);
         }
+    };
+
+    const handleCancel = () => {
+        setName(user.name);
+        setEmail(user.email || '');
+        setPhone(user.phone);
         setIsEditing(false);
+        setError('');
+        setSuccess('');
     };
 
     return (
@@ -62,25 +118,89 @@ export default function ProfilePage() {
                         <CardTitle>บัญชีของฉัน</CardTitle>
                     </CardHeader>
                     <CardContent style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {error && (
+                            <div style={{
+                                padding: '0.75rem',
+                                backgroundColor: '#fee2e2',
+                                color: '#dc2626',
+                                borderRadius: '0.5rem',
+                                fontSize: '0.875rem'
+                            }}>
+                                {error}
+                            </div>
+                        )}
+                        {success && (
+                            <div style={{
+                                padding: '0.75rem',
+                                backgroundColor: '#dcfce7',
+                                color: '#16a34a',
+                                borderRadius: '0.5rem',
+                                fontSize: '0.875rem'
+                            }}>
+                                {success}
+                            </div>
+                        )}
+
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                             <label style={{ fontWeight: 'bold' }}>ชื่อ-นามสกุล</label>
-                            <div style={{ display: 'flex', gap: '1rem' }}>
-                                <Input
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    disabled={!isEditing}
-                                />
-                                {isEditing ? (
-                                    <Button variant="primary" onClick={handleSave}>บันทึก</Button>
-                                ) : (
-                                    <Button variant="outline" onClick={() => setIsEditing(true)}>แก้ไข</Button>
-                                )}
-                            </div>
+                            <Input
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                disabled={!isEditing}
+                            />
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <label style={{ fontWeight: 'bold' }}>เบอร์โทรศัพท์ (ID)</label>
-                            <Input value={user.phone} disabled style={{ backgroundColor: '#f3f4f6' }} />
+                            <label style={{ fontWeight: 'bold' }}>อีเมล</label>
+                            <Input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                disabled={!isEditing}
+                                placeholder="example@email.com"
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <label style={{ fontWeight: 'bold' }}>เบอร์โทรศัพท์</label>
+                            <Input
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                disabled={!isEditing}
+                                placeholder="0812345678"
+                                maxLength={10}
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                            {isEditing ? (
+                                <>
+                                    <Button
+                                        variant="primary"
+                                        onClick={handleSave}
+                                        disabled={loading}
+                                        style={{ flex: 1 }}
+                                    >
+                                        {loading ? 'กำลังบันทึก...' : 'บันทึก'}
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleCancel}
+                                        disabled={loading}
+                                        style={{ flex: 1 }}
+                                    >
+                                        ยกเลิก
+                                    </Button>
+                                </>
+                            ) : (
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setIsEditing(true)}
+                                    fullWidth
+                                >
+                                    แก้ไข
+                                </Button>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -98,13 +218,21 @@ export default function ProfilePage() {
                         {recentBooking ? (
                             <div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                    <span style={{ fontWeight: 'bold' }}>Order #{recentBooking.id}</span>
-                                    <span style={{ color: recentBooking.status === 'PENDING' ? '#d97706' : 'green' }}>
-                                        {recentBooking.status === 'PENDING' ? 'รอตรวจสอบ' : recentBooking.status}
+                                    <span style={{ fontWeight: 'bold' }}>Order #{recentBooking.refCode}</span>
+                                    <span style={{
+                                        padding: '0.25rem 0.5rem',
+                                        borderRadius: '0.25rem',
+                                        fontSize: '0.75rem',
+                                        backgroundColor: recentBooking.status === 'COMPLETED' ? '#dcfce7' : '#fef3c7',
+                                        color: recentBooking.status === 'COMPLETED' ? '#16a34a' : '#d97706'
+                                    }}>
+                                        {recentBooking.status === 'PENDING' ? 'รอตรวจสอบ' :
+                                            recentBooking.status === 'COMPLETED' ? 'เสร็จสิ้น' :
+                                                recentBooking.status}
                                     </span>
                                 </div>
                                 <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                                    {recentBooking.items.length} รายการ - รวม ฿ {recentBooking.totalPrice.toLocaleString()}
+                                    {recentBooking.items.length} รายการ - รวม ฿{recentBooking.totalPrice.toLocaleString()}
                                 </p>
                             </div>
                         ) : (
