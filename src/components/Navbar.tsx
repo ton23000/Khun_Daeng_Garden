@@ -183,15 +183,20 @@ export function Navbar() {
                                 }}>
                                     <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #e5e7eb', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <span>การแจ้งเตือน</span>
-                                        <span
-                                            style={{ fontSize: '0.75rem', color: '#166534', cursor: 'pointer' }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                markAllAsRead();
-                                            }}
-                                        >
-                                            อ่านทั้งหมด
-                                        </span>
+                                        {notifications.length > 0 && (
+                                            <Link
+                                                href="/notifications"
+                                                style={{
+                                                    color: '#166534',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: 600,
+                                                    textDecoration: 'none'
+                                                }}
+                                                onClick={() => setShowNotifications(false)}
+                                            >
+                                                ดูทั้งหมด →
+                                            </Link>
+                                        )}
                                     </div>
                                     {notifications.length === 0 ? (
                                         <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
@@ -219,6 +224,7 @@ export function Navbar() {
                                             ))}
                                         </div>
                                     )}
+
                                 </div>
                             )}
                         </div>

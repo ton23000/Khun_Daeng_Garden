@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface Booking {
     id: string;
@@ -74,12 +75,24 @@ export default function ReportsPage() {
 
     // Stats
     const totalOrders = filteredBookings.length;
-    const totalSales = filteredBookings.reduce((sum, b) => sum + b.totalPrice, 0);
-    const totalDeposits = filteredBookings.reduce((sum, b) => sum + b.deposit, 0);
+
+    // Only count sales from confirmed orders (PREPARING, READY, COMPLETED)
+    // Exclude: CANCELLED, PENDING, VERIFYING_PAYMENT, PAID, PAYMENT_ISSUE
+    const confirmedBookings = filteredBookings.filter(b =>
+        !['CANCELLED', 'PENDING', 'VERIFYING_PAYMENT', 'PAID', 'PAYMENT_ISSUE'].includes(b.status)
+    );
+
+    // For COMPLETED: count full totalPrice, for others: count deposit
+    const totalSales = confirmedBookings.reduce((sum, b) =>
+        sum + (b.status === 'COMPLETED' ? b.totalPrice : b.deposit), 0
+    );
+
+    const totalDeposits = confirmedBookings.reduce((sum, b) => sum + b.deposit, 0);
+
     const totalTreesSold = filteredBookings.reduce((sum, b) =>
         sum + b.items.reduce((acc, item) => acc + item.quantity, 0), 0
     );
-    const pendingOrders = filteredBookings.filter(b => b.status === 'PENDING' || b.status === 'PAID').length;
+    const pendingOrders = filteredBookings.filter(b => b.status === 'PENDING' || b.status === 'PAID' || b.status === 'VERIFYING_PAYMENT').length;
     const completedOrders = filteredBookings.filter(b => b.status === 'COMPLETED').length;
 
     // Best Sellers
@@ -301,7 +314,12 @@ export default function ReportsPage() {
                 {/* Recent Activity */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>กิจกรรมล่าสุด</CardTitle>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <CardTitle>กิจกรรมล่าสุด</CardTitle>
+                            <Link href="/admin/activities" style={{ fontSize: '0.875rem', color: '#166534', fontWeight: 600, textDecoration: 'none' }}>
+                                ดูทั้งหมด →
+                            </Link>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         {filteredBookings.length > 0 ? (

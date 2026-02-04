@@ -17,7 +17,7 @@ export default function ServicesPage() {
                         </CardHeader>
                         <CardContent>
                             <div style={{ lineHeight: '1.8' }}>
-                                <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>ขั้นตอนง่ายๆ ในการเลือกซื้อต้นไม้ผ่านเว็บไซต์ และการชำระเงิน</h3>
+                                <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>ขั้นตอนง่ายๆ ในการจองต้นไม้ผ่านเว็บไซต์ และการชำระเงิน</h3>
                                 <ol style={{ marginLeft: '1.5rem', marginTop: '1rem' }}>
                                     <li>เลือกต้นไม้ที่ต้องการจากหน้า "ค้นหาสินค้า"</li>
                                     <li>คลิก "เพิ่มในตะกร้า" และตรวจสอบรายการในตะกร้าสินค้า</li>

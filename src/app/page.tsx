@@ -41,7 +41,7 @@ export default async function Home() {
           <ScrollAnimation animation="fade-up">
             <div style={{ gridColumn: 'span 1' }}>
               <span style={{ color: '#6b7280', fontSize: '0.9rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1rem', display: 'block' }}>
-                #Greenery For Life
+                #ต้นไม้คุณภาพ จากคุณแดง
               </span>
               <h1 style={{
                 fontFamily: 'var(--font-playfair), serif',
@@ -51,8 +51,8 @@ export default async function Home() {
                 color: 'var(--foreground)',
                 marginBottom: '1.5rem'
               }}>
-                Everyone loves <br />
-                a <span style={{ fontStyle: 'italic', fontWeight: '400', color: 'var(--primary)' }}>beautiful</span> garden
+                สวนสวย <br />
+                เริ่มต้นที่ <span style={{ fontStyle: 'italic', fontWeight: '400', color: 'var(--primary)' }}>คุณแดงการ์เด้น</span>
               </h1>
               <p style={{ fontSize: '1.1rem', color: '#6b7280', marginBottom: '2.5rem', lineHeight: '1.6' }}>
                 ค้นพบความสุขในการปลูกต้นไม้กับเรา แหล่งรวมพันธุ์ไม้คัดพิเศษ <br />
@@ -66,7 +66,7 @@ export default async function Home() {
                     borderRadius: '50px',
                     padding: '0 2rem'
                   }}>
-                    Shop Now ➔
+                    จองต้นไม้ →
                   </Button>
                 </Link>
                 <Link href="/services">
@@ -76,7 +76,7 @@ export default async function Home() {
                     borderColor: 'var(--foreground)',
                     color: 'var(--foreground)'
                   }}>
-                    Explore Now ➔
+                    บริการของเรา →
                   </Button>
                 </Link>
               </div>
@@ -136,9 +136,9 @@ export default async function Home() {
               minHeight: '200px'
             }}>
               <div>
-                <h3 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '2rem', marginBottom: '0.5rem' }}>Shop Cactus</h3>
-                <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '1.5rem' }}>Unique cactus shop discover <br /> your perfect plant today</p>
-                <Link href="/shop?category=cactus" style={{ color: 'white', textDecoration: 'underline' }}>Shop Now</Link>
+                <h3 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '2rem', marginBottom: '0.5rem' }}>กระบองเพชร</h3>
+                <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '1.5rem' }}>คอลเลคชั่นกระบองเพชรหายาก <br /> จองเลยวันนี้</p>
+                <Link href="/shop?category=cactus" style={{ color: 'white', textDecoration: 'underline' }}>จองเลย</Link>
               </div>
             </div>
           </ScrollAnimation>
@@ -154,9 +154,9 @@ export default async function Home() {
               minHeight: '200px'
             }}>
               <div>
-                <h3 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '2rem', marginBottom: '0.5rem' }}>Indoor Life Plants</h3>
-                <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '1.5rem' }}>Enhance your space: Top indoor <br /> life plants choices</p>
-                <Link href="/shop?category=indoor" style={{ color: '#166534', textDecoration: 'underline', fontWeight: 'bold' }}>Shop Now</Link>
+                <h3 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '2rem', marginBottom: '0.5rem' }}>ต้นไม้ในร่ม</h3>
+                <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '1.5rem' }}>เติมเต็มพื้นที่ของคุณ <br /> ด้วยต้นไม้ในร่มคุณภาพ</p>
+                <Link href="/shop?category=indoor" style={{ color: '#166534', textDecoration: 'underline', fontWeight: 'bold' }}>จองเลย</Link>
               </div>
             </div>
           </ScrollAnimation>

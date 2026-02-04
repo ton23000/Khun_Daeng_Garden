@@ -292,7 +292,14 @@ export default function DashboardPage() {
                     <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
                         <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ยอดขายเดือนนี้</p>
                         <p style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--primary)' }}>
-                            ฿ {bookings.filter(b => b.status !== 'CANCELLED').reduce((s, b) => s + b.deposit, 0).toLocaleString()}
+                            ฿ {bookings
+                                .filter(b => !['CANCELLED', 'PENDING', 'VERIFYING_PAYMENT', 'PAID', 'PAYMENT_ISSUE'].includes(b.status))
+                                .reduce((s, b) => {
+                                    // For COMPLETED orders, count the full totalPrice
+                                    // For PREPARING/READY, count deposit only
+                                    return s + (b.status === 'COMPLETED' ? b.totalPrice : b.deposit);
+                                }, 0)
+                                .toLocaleString()}
                         </p>
                     </CardContent>
                 </Card>

@@ -30,11 +30,31 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     const fetchNotifications = async () => {
         if (!user || !user.id) return;
         try {
-            const userId = user.id;
-            const res = await fetch(`/api/notifications?userId=${userId}`);
+            let url = `/api/notifications?userId=${user.id}`;
+
+            // If admin, fetch admin notifications
+            if (user.role === 'admin') {
+                url = '/api/admin/notifications';
+            }
+
+            const res = await fetch(url);
             if (res.ok) {
                 const data = await res.json();
-                setNotifications(data);
+
+                // Map admin notifications if needed
+                if (user.role === 'admin') {
+                    const mapped = data.map((n: any) => ({
+                        id: n.id,
+                        userId: 'admin',
+                        message: n.message,
+                        read: n.read,
+                        date: n.createdAt,
+                        type: n.type || 'info'
+                    }));
+                    setNotifications(mapped);
+                } else {
+                    setNotifications(data);
+                }
             }
         } catch (error) {
             // Suppress network errors during polling to avoid console spam
@@ -102,11 +122,23 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
 
         try {
-            await fetch('/api/notifications', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user.id, all: true })
-            });
+            if (user.role === 'admin') {
+                // Admin notifications use different endpoint and payload
+                await fetch('/api/admin/notifications', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ markAllRead: true })
+                });
+            } else {
+                // User notifications
+                await fetch('/api/notifications', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: user.id, all: true })
+                });
+            }
+            // Refresh notifications from server to ensure count is correct
+            fetchNotifications();
         } catch (error) {
             console.error('Failed to mark all as read', error);
         }

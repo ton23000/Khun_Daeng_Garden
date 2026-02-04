@@ -202,7 +202,7 @@ export default function MyOrdersPage() {
                             คุณยังไม่มีออเดอร์
                         </p>
                         <Link href="/shop">
-                            <Button>เลือกซื้อต้นไม้</Button>
+                            <Button>จองต้นไม้</Button>
                         </Link>
                     </CardContent>
                 </Card>

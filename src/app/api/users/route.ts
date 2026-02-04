@@ -9,7 +9,8 @@ export async function GET() {
                 id: true,
                 name: true,
                 email: true,
-
+                phone: true,
+                nickname: true,
                 role: true,
                 createdAt: true
             }

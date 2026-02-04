@@ -102,7 +102,7 @@ export default function CartPage() {
             <div className="container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>
                 <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>ตะกร้าสินค้าว่างเปล่า</h1>
                 <p style={{ marginBottom: '2rem', color: '#6b7280' }}>คุณยังไม่ได้เลือกต้นไม้ใดๆ</p>
-                <Link href="/shop"><Button variant="primary">เลือกซื้อต้นไม้</Button></Link>
+                <Link href="/shop"><Button variant="primary">จองต้นไม้</Button></Link>
             </div>
         );
     }

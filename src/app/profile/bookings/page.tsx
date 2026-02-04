@@ -200,7 +200,7 @@ export default function MyBookingsPage() {
                             คุณยังไม่มีการจอง
                         </p>
                         <Link href="/shop">
-                            <Button>เลือกซื้อต้นไม้</Button>
+                            <Button>จองต้นไม้</Button>
                         </Link>
                     </CardContent>
                 </Card>
@@ -396,6 +396,35 @@ export default function MyBookingsPage() {
                                                     fontSize: '0.875rem'
                                                 }}>
                                                     <strong>หมายเหตุจากร้าน:</strong> {booking.note}
+                                                </div>
+                                            )}
+
+                                            {/* Cancel Button */}
+                                            {(booking.status === 'PENDING' || booking.status === 'VERIFYING_PAYMENT' || booking.status === 'PAID' || booking.status === 'PAYMENT_ISSUE') && (
+                                                <div style={{ marginTop: '1rem', textAlign: 'right' }}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        style={{ color: '#ef4444', borderColor: '#ef4444' }}
+                                                        onClick={async () => {
+                                                            if (!confirm('ยืนยันที่จะยกเลิกออเดอร์นี้?')) return;
+                                                            try {
+                                                                const res = await fetch(`/api/bookings/${booking.id}/cancel`, {
+                                                                    method: 'PATCH'
+                                                                });
+                                                                if (res.ok) {
+                                                                    alert('ยกเลิกออเดอร์เรียบร้อย');
+                                                                    fetchBookings();
+                                                                } else {
+                                                                    const d = await res.json();
+                                                                    alert(d.error || 'ไม่สามารถยกเลิกได้');
+                                                                }
+                                                            } catch (e) {
+                                                                alert('เกิดข้อผิดพลาด');
+                                                            }
+                                                        }}
+                                                    >
+                                                        ❌ ยกเลิกออเดอร์
+                                                    </Button>
                                                 </div>
                                             )}
                                         </div>
