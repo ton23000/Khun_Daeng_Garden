@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -15,7 +16,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
@@ -33,7 +34,7 @@ export default function LoginPage() {
             }
         }
 
-        const success = login(identifier, password);
+        const success = await login(identifier, password);
         if (success) {
             router.push('/');
         } else {
@@ -49,6 +50,7 @@ export default function LoginPage() {
                     <CardDescription>ใช้อีเมลหรือเบอร์โทรศัพท์เพื่อเข้าสู่ระบบ</CardDescription>
                 </CardHeader>
                 <CardContent>
+                    {/* Phone/Email Login Form */}
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <Input
                             label="อีเมล หรือ เบอร์โทรศัพท์"

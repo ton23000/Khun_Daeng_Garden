@@ -66,7 +66,7 @@ export function Navbar() {
             {/* 1. Top Bar */}
             <div style={topBarStyle}>
                 <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>จัดส่งฟรีทั่วไทยเมื่อสั่งซื้อเกิน 1,000 บาท</div>
+                    <div>ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท</div>
                     <div style={{ display: 'flex', gap: '1.5rem' }}>
                         <span>สายด่วน : +66 81 234 5678</span>
                         <Link href="/services#faq" style={{ color: 'white', textDecoration: 'none' }}>คำถามที่พบบ่อย</Link>

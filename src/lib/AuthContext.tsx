@@ -3,14 +3,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+
 export interface User {
     id: string;
     name: string;
-    nickname: string;
-    phone: string;
-    email: string;
+    nickname?: string;
+    phone?: string;
+    email?: string;
     password?: string;
     role?: 'user' | 'admin';
+    image?: string;
 }
 
 interface AuthContextType {
@@ -31,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
-    // Check storage on mount
+    // Check localStorage for local auth on mount
     useEffect(() => {
         const storedUser = localStorage.getItem('khun_daeng_user');
         if (storedUser) {
@@ -112,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 method: 'POST',
             });
         } catch (error) {
-            console.error('Logout API error:', error);
+            console.error('Logout error:', error);
         }
 
         // Clear client-side state

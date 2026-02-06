@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
-import { CartProvider } from '@/lib/CartContext';
-import { AuthProvider } from '@/lib/AuthContext';
-import { NotificationProvider } from '@/lib/NotificationContext';
+import Providers from '@/components/Providers';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 
@@ -23,16 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${playfair.variable} font-sans`} suppressHydrationWarning={true} style={{ fontFamily: 'var(--font-inter)' }}>
-        <AuthProvider>
-          <NotificationProvider>
-            <CartProvider>
-              <Navbar />
-              {children}
-              <Footer />
-            </CartProvider>
-          </NotificationProvider>
-        </AuthProvider>
+        <Providers>
+          <Navbar />
+          {children}
+          <Footer />
+        </Providers>
       </body>
-    </html >
+    </html>
   );
 }

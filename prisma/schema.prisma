@@ -9,18 +9,20 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
-  nickname  String?  // Added for compatibility with frontend register form
+  nickname  String?
   phone     String   @unique
-  email     String?
+  email     String?  @unique
   password  String
-  role      String   @default("USER") // ADMIN, USER
+  role      String   @default("USER")
+  
   bookings  Booking[]
   favorites Favorite[]
   reviews   Review[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Tree {
@@ -134,3 +136,5 @@ model Review {
   @@index([treeId])
   @@index([userId])
 }
+
+

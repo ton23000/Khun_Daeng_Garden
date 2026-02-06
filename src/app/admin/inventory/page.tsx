@@ -75,7 +75,7 @@ export default function InventoryPage() {
         const available = stock - reserved;
         if (available === 0) return { label: 'หมด', color: '#ef4444' };
         if (available < 5) return { label: 'ต่ำ', color: '#f59e0b' };
-        return { label: 'พอเพียง', color: '#22c55e' };
+        return { label: 'พร้อมขาย', color: '#22c55e' };
     };
 
     const filteredTrees = trees

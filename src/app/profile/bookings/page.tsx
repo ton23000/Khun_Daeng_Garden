@@ -267,7 +267,7 @@ export default function MyBookingsPage() {
                                                     <span style={{ fontWeight: 'bold' }}>฿{booking.totalPrice.toLocaleString()}</span>
                                                 </div>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                                    <span>มัดจำ (50%):</span>
+                                                    <span>มัดจำ (30%):</span>
                                                     <span style={{ color: 'var(--primary)' }}>฿{booking.deposit.toLocaleString()}</span>
                                                 </div>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.125rem', marginTop: '0.75rem' }}>
