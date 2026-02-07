@@ -6,6 +6,7 @@ import { ArrowRight, Leaf, ShieldCheck, Truck } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
 import { ParallaxSection } from '@/components/ParallaxSection';
+import FavoriteButton from '@/components/FavoriteButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,14 +46,20 @@ export default async function Home() {
               </span>
               <h1 style={{
                 fontFamily: 'var(--font-playfair), serif',
-                fontSize: '4.5rem',
+                fontSize: 'clamp(3rem, 8vw, 4.5rem)',
                 fontWeight: '700',
-                lineHeight: '1.1',
+                lineHeight: '1.2',
                 color: 'var(--foreground)',
                 marginBottom: '1.5rem'
               }}>
-                สวนสวย <br />
-                เริ่มต้นที่ <span style={{ fontStyle: 'italic', fontWeight: '400', color: 'var(--primary)' }}>คุณแดงการ์เด้น</span>
+                สวนสวยเริ่มต้นที่ <br />
+                <span style={{
+                  fontStyle: 'italic',
+                  fontWeight: '400',
+                  color: 'var(--primary)',
+                  display: 'inline-block',
+                  whiteSpace: 'nowrap'
+                }}>สวนคุณแดง</span>
               </h1>
               <p style={{ fontSize: '1.1rem', color: '#6b7280', marginBottom: '2.5rem', lineHeight: '1.6' }}>
                 ค้นพบความสุขในการปลูกต้นไม้กับเรา แหล่งรวมพันธุ์ไม้คัดพิเศษ <br />
@@ -249,9 +256,9 @@ export default async function Home() {
                       <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justifyContent-center">
                       </div>
 
-                      {/* Heart Icon */}
-                      <div style={{ position: 'absolute', top: '15px', right: '15px', backgroundColor: 'white', padding: '8px', borderRadius: '50%', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                        <Leaf size={16} color="#f87171" />
+                      {/* Favorite Button */}
+                      <div style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 10 }}>
+                        <FavoriteButton treeId={tree.id} size="md" />
                       </div>
                     </div>
 

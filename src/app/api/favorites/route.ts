@@ -56,6 +56,24 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: 'Already in favorites', favorite: existing });
         }
 
+        // Validate user exists
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        // Validate tree exists
+        const tree = await prisma.tree.findUnique({
+            where: { id: treeId }
+        });
+
+        if (!tree) {
+            return NextResponse.json({ error: 'Tree not found' }, { status: 404 });
+        }
+
         const favorite = await prisma.favorite.create({
             data: {
                 userId,

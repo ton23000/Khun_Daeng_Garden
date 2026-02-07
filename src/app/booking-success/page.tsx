@@ -69,56 +69,71 @@ export default function BookingSuccessPage() {
 
             <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>การจองสำเร็จ!</h1>
             <p style={{ color: '#6b7280', marginBottom: '2rem' }}>
-                รหัสการจอง: <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{booking.id}</span>
+                รหัสการจอง: <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{booking.refCode || booking.id}</span>
             </p>
 
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', textAlign: 'left', marginBottom: '2rem' }}>
-                <h3 style={{ fontWeight: 'bold', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>รายละเอียดการชำระเงิน</h3>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <span>ธนาคาร</span>
-                    <span style={{ fontWeight: 'bold' }}>กสิกรไทย (KBank)</span>
+            {booking.status === 'PENDING_APPROVAL' ? (
+                <div style={{ backgroundColor: '#fef3c7', color: '#92400e', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #fbbf24', textAlign: 'left', marginBottom: '2rem' }}>
+                    <h3 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>⏳ รอการอนุมัติจากแอดมิน</h3>
+                    <p style={{ marginBottom: '0.5rem' }}>
+                        คำสั่งซื้อของคุณอยู่ในคิวรอการอนุมัติจากทางร้าน เนื่องจากสินค้าบางรายการมีสต็อกไม่เพียงพอในขณะนี้
+                    </p>
+                    <p style={{ marginBottom: '0.5rem' }}>
+                        ทางร้านจะตรวจสอบและแจ้งกลับให้คุณทราบโดยเร็วที่สุด
+                    </p>
+                    <p style={{ fontWeight: 'bold', marginTop: '1rem' }}>
+                        💡 คุณจะสามารถแนบสลิปการโอนเงินได้หลังจากทางร้านอนุมัติคำสั่งซื้อแล้ว
+                    </p>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <span>เลขที่บัญชี</span>
-                    <span style={{ fontWeight: 'bold', fontFamily: 'monospace' }}>123-4-56789-0</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <span>ชื่อบัญชี</span>
-                    <span>บจก. สวนคุณแดง</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', fontWeight: 'bold', fontSize: '1.125rem' }}>
-                    <span>ยอดมัดจำที่ต้องโอน</span>
-                    <span style={{ color: 'var(--primary)' }}>฿ {booking.deposit.toLocaleString()}</span>
-                </div>
-
-                {uploadSuccess && (
-                    <div style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: '#dcfce7', color: '#166534', borderRadius: '0.375rem', fontSize: '0.875rem', textAlign: 'center' }}>
-                        ✅ แนบสลิปเรียบร้อยแล้ว รอการตรวจสอบ
+            ) : (
+                <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', textAlign: 'left', marginBottom: '2rem' }}>
+                    <h3 style={{ fontWeight: 'bold', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>รายละเอียดการชำระเงิน</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <span>ธนาคาร</span>
+                        <span style={{ fontWeight: 'bold' }}>กสิกรไทย (KBank)</span>
                     </div>
-                )}
-
-                {booking.slipUrl && (
-                    <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem' }}>
-                        <p style={{ fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#374151' }}>📎 สลิปที่แนบ:</p>
-                        <img
-                            src={booking.slipUrl}
-                            alt="Payment Slip"
-                            style={{
-                                width: '100%',
-                                maxHeight: '300px',
-                                objectFit: 'contain',
-                                borderRadius: '0.375rem',
-                                border: '1px solid #e5e7eb'
-                            }}
-                        />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <span>เลขที่บัญชี</span>
+                        <span style={{ fontWeight: 'bold', fontFamily: 'monospace' }}>123-4-56789-0</span>
                     </div>
-                )}
-            </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <span>ชื่อบัญชี</span>
+                        <span>บจก. สวนคุณแดง</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', fontWeight: 'bold', fontSize: '1.125rem' }}>
+                        <span>ยอดมัดจำที่ต้องโอน</span>
+                        <span style={{ color: 'var(--primary)' }}>฿ {booking.deposit.toLocaleString()}</span>
+                    </div>
+
+                    {uploadSuccess && (
+                        <div style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: '#dcfce7', color: '#166534', borderRadius: '0.375rem', fontSize: '0.875rem', textAlign: 'center' }}>
+                            ✅ แนบสลิปเรียบร้อยแล้ว รอการตรวจสอบ
+                        </div>
+                    )}
+
+                    {booking.slipUrl && (
+                        <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem' }}>
+                            <p style={{ fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#374151' }}>📎 สลิปที่แนบ:</p>
+                            <img
+                                src={booking.slipUrl}
+                                alt="Payment Slip"
+                                style={{
+                                    width: '100%',
+                                    maxHeight: '300px',
+                                    objectFit: 'contain',
+                                    borderRadius: '0.375rem',
+                                    border: '1px solid #e5e7eb'
+                                }}
+                            />
+                        </div>
+                    )}
+                </div>
+            )}
 
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href="/"><Button variant="outline">กลับหน้าหลัก</Button></Link>
                 <Link href="/profile/bookings"><Button variant="outline">การจองของฉัน</Button></Link>
-                {!uploadSuccess && (
+                {!uploadSuccess && booking.status !== 'PENDING_APPROVAL' && (
                     <Button variant="primary" onClick={() => setIsModalOpen(true)}>แนบสลิปการโอนเงิน</Button>
                 )}
             </div>

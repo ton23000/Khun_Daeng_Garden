@@ -229,10 +229,10 @@ export function Navbar() {
                             )}
                         </div>
 
-                        {/* Wishlist (Static for now) */}
-                        <div style={{ position: 'relative', cursor: 'pointer', color: '#374151', fontSize: '1.5rem' }}>
+                        {/* Favorites/Wishlist */}
+                        <Link href="/favorites" style={{ position: 'relative', color: '#374151', fontSize: '1.5rem', textDecoration: 'none' }} title="รายการโปรด">
                             ❤️
-                        </div>
+                        </Link>
 
                         {/* Cart */}
                         <Link href="/cart" style={{ position: 'relative', color: '#374151', fontSize: '1.5rem' }}>

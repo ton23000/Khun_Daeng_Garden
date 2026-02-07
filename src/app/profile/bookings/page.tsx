@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import SlipViewer from '@/components/SlipViewer';
+import ReviewModal from '@/components/ReviewModal';
 import Link from 'next/link';
 
 interface BookingItem {
@@ -30,6 +31,7 @@ interface Booking {
     createdAt: string;
     slipUrl: string | null;
     items: BookingItem[];
+    reviews?: Array<{ id: string; treeId: string; }>;
 }
 
 export default function MyBookingsPage() {
@@ -39,6 +41,7 @@ export default function MyBookingsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [uploadingId, setUploadingId] = useState<string | null>(null);
     const [viewingSlip, setViewingSlip] = useState<string | null>(null);
+    const [reviewModal, setReviewModal] = useState<{ bookingId: string; treeId: string; treeName: string; } | null>(null);
     const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
     useEffect(() => {
@@ -139,6 +142,7 @@ export default function MyBookingsPage() {
 
     const getStatusBadge = (status: string) => {
         const colors: Record<string, string> = {
+            PENDING_APPROVAL: '#f97316',
             PENDING: '#f59e0b',
             PAID: '#3b82f6',
             PREPARING: '#8b5cf6',
@@ -159,6 +163,7 @@ export default function MyBookingsPage() {
 
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {
+            PENDING_APPROVAL: 'รอการอนุมัติ',
             PENDING: 'รอชำระเงิน',
             PAID: 'รอตรวจสอบ',
             PREPARING: 'กำลังเตรียมต้นไม้',
@@ -255,11 +260,41 @@ export default function MyBookingsPage() {
                                         {/* Details */}
                                         <div>
                                             <h3 style={{ fontWeight: 'bold', marginBottom: '0.75rem' }}>รายการสินค้า:</h3>
-                                            {booking.items.map((item, idx) => (
-                                                <div key={idx} style={{ marginBottom: '0.5rem' }}>
-                                                    • {item.tree.name} x{item.quantity} - ฿{item.price.toLocaleString()}
-                                                </div>
-                                            ))}
+                                            {booking.items.map((item, idx) => {
+                                                const isReviewed = booking.reviews?.some(r => r.treeId === item.treeId);
+                                                const canReview = booking.status === 'COMPLETED';
+
+                                                return (
+                                                    <div key={idx} style={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center',
+                                                        marginBottom: '0.75rem',
+                                                        padding: '0.5rem',
+                                                        backgroundColor: '#f9fafb',
+                                                        borderRadius: '0.375rem'
+                                                    }}>
+                                                        <div>
+                                                            • {item.tree.name} x{item.quantity} - ฿{item.price.toLocaleString()}
+                                                        </div>
+                                                        {canReview && (
+                                                            <Button
+                                                                size="sm"
+                                                                variant={isReviewed ? "outline" : "primary"}
+                                                                disabled={isReviewed}
+                                                                onClick={() => setReviewModal({
+                                                                    bookingId: booking.id,
+                                                                    treeId: item.treeId,
+                                                                    treeName: item.tree.name
+                                                                })}
+                                                                style={{ fontSize: '0.75rem' }}
+                                                            >
+                                                                {isReviewed ? '✓ รีวิวแล้ว' : '⭐ รีวิว'}
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
 
                                             <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
@@ -441,6 +476,19 @@ export default function MyBookingsPage() {
                 slipUrl={viewingSlip}
                 onClose={() => setViewingSlip(null)}
             />
+
+            {reviewModal && user && (
+                <ReviewModal
+                    bookingId={reviewModal.bookingId}
+                    treeId={reviewModal.treeId}
+                    treeName={reviewModal.treeName}
+                    userId={user.id}
+                    onClose={() => setReviewModal(null)}
+                    onSuccess={() => {
+                        fetchBookings(); // Refresh to show updated review status
+                    }}
+                />
+            )}
         </div>
     );
 }

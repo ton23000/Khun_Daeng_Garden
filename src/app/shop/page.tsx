@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import Link from 'next/link';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
 import AdvancedFilters, { FilterState } from '@/components/AdvancedFilters';
+import FavoriteButton from '@/components/FavoriteButton';
 import { useState, useEffect } from 'react';
 
 interface Tree {
@@ -177,7 +178,7 @@ export default function ShopPage() {
                                             )}
                                             {tree.stock - tree.reserved === 0 && (
                                                 <div style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                                                    หมดสต็อก
+                                                    หมดสต็อก - จองได้
                                                 </div>
                                             )}
                                             {tree.stock - tree.reserved > 0 && tree.stock - tree.reserved < 5 && (
@@ -187,11 +188,9 @@ export default function ShopPage() {
                                             )}
                                         </div>
 
-                                        {/* Heart Icon */}
-                                        <div style={{ position: 'absolute', top: '15px', right: '15px', backgroundColor: 'white', padding: '8px', borderRadius: '50%', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--primary)' }}>
-                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                            </svg>
+                                        {/* Favorite Button */}
+                                        <div style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 10 }}>
+                                            <FavoriteButton treeId={tree.id} size="md" />
                                         </div>
                                     </div>
 

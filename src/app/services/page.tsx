@@ -49,7 +49,7 @@ export default function ServicesPage() {
                                     <li>การป้องกันและกำจัดโรคแมลง</li>
                                 </ul>
                                 <p style={{ marginTop: '1rem', color: '#166534', fontWeight: 500 }}>
-                                    📞 ติดต่อสอบถาม: 081-234-5678 หรือ Line: @khundaeng
+                                    📞 ติดต่อสอบถาม: 089-876-2045
                                 </p>
                             </div>
                         </CardContent>

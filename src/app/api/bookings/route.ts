@@ -41,6 +41,12 @@ export async function GET(req: NextRequest) {
                         nickname: true,
                         phone: true
                     }
+                },
+                reviews: {
+                    select: {
+                        id: true,
+                        treeId: true
+                    }
                 }
             },
             orderBy: { createdAt: 'desc' }
@@ -79,8 +85,9 @@ export async function POST(req: NextRequest) {
         }
         console.log('[Booking API] User found:', userExists.name);
 
-        // Check stock availability for all items
+        // Check stock availability and determine if this is a pre-order
         console.log('[Booking API] Checking stock availability...');
+        let isPreOrder = false;
         for (const item of validated.items) {
             const tree = await prisma.tree.findUnique({
                 where: { id: item.treeId }
@@ -94,12 +101,10 @@ export async function POST(req: NextRequest) {
 
             const availableStock = tree.stock - tree.reserved;
             if (availableStock < item.quantity) {
-                return NextResponse.json({
-                    error: `ต้นไม้ "${item.treeName}" มีสต็อกไม่เพียงพอ (เหลือ ${availableStock} ต้น)`
-                }, { status: 400 });
+                isPreOrder = true; // Mark as pre-order but don't reject
             }
         }
-        console.log('[Booking API] Stock check passed');
+        console.log('[Booking API] Stock check complete. Is pre-order:', isPreOrder);
 
         const refCode = `KD${Date.now().toString(36).toUpperCase()}`;
         console.log('[Booking API] Generated refCode:', refCode);
@@ -113,7 +118,7 @@ export async function POST(req: NextRequest) {
                 paymentType: validated.paymentType,
                 refCode,
                 pickupDate: new Date(validated.items[0].pickupDate),
-                status: 'PENDING',
+                status: isPreOrder ? 'PENDING_APPROVAL' : 'PENDING',
                 items: {
                     create: validated.items.map(item => ({
                         treeId: item.treeId,
@@ -133,26 +138,32 @@ export async function POST(req: NextRequest) {
         });
         console.log('[Booking API] Booking created:', booking.id);
 
-        // Reserve stock for pending booking
-        console.log('[Booking API] Reserving stock...');
-        for (const item of validated.items) {
-            await prisma.tree.update({
-                where: { id: item.treeId },
-                data: {
-                    reserved: {
-                        increment: item.quantity
+        // Reserve stock only for non-pre-orders
+        if (!isPreOrder) {
+            console.log('[Booking API] Reserving stock...');
+            for (const item of validated.items) {
+                await prisma.tree.update({
+                    where: { id: item.treeId },
+                    data: {
+                        reserved: {
+                            increment: item.quantity
+                        }
                     }
-                }
-            });
+                });
+            }
+            console.log('[Booking API] Stock reserved');
+        } else {
+            console.log('[Booking API] Pre-order - stock NOT reserved (awaiting approval)');
         }
-        console.log('[Booking API] Stock reserved');
 
         // Create admin notification
         console.log('[Booking API] Creating admin notification...');
         await prisma.adminNotification.create({
             data: {
-                message: `🛒 ออเดอร์ใหม่ #${refCode} จาก ${validated.userName} - ฿${validated.totalPrice.toLocaleString()} (${validated.paymentType === 'full' ? 'เต็มจำนวน' : 'มัดจำ'})`,
-                type: 'order',
+                message: isPreOrder
+                    ? `⚠️ ออเดอร์รอการอนุมัติ #${refCode} จาก ${validated.userName} - ฿${validated.totalPrice.toLocaleString()} (สินค้าบางรายการหมด)`
+                    : `🛒 ออเดอร์ใหม่ #${refCode} จาก ${validated.userName} - ฿${validated.totalPrice.toLocaleString()} (${validated.paymentType === 'full' ? 'เต็มจำนวน' : 'มัดจำ'})`,
+                type: isPreOrder ? 'alert' : 'order',
                 bookingId: booking.id
             }
         });

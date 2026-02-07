@@ -28,10 +28,9 @@ export default function AboutPage() {
                                 <CardTitle>ช่องทางการติดต่อ</CardTitle>
                             </CardHeader>
                             <CardContent style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                <p><strong>เบอร์โทรศัพท์:</strong> 081-234-5678</p>
-                                <p><strong>Line Official:</strong> @khundaeng</p>
-                                <p><strong>Facebook:</strong> สวนคุณแดง</p>
-                                <p><strong>ที่อยู่:</strong> 123 หมู่ 1 ต.หาดใหญ่ อ.หาดใหญ่ จ.สงขลา 90110</p>
+                                <p><strong>เบอร์โทรศัพท์:</strong> 089-876-2045</p>
+                                <p><strong>อีเมล:</strong> kittitusjuprajak@gmail.com</p>
+                                <p><strong>Facebook:</strong> <a href="https://web.facebook.com/kittitusjupraja" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>สวนคุณแดง</a></p>
                             </CardContent>
                         </Card>
 

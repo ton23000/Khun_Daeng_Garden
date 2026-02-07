@@ -72,7 +72,12 @@ export async function POST(req: NextRequest) {
         // Check if booking exists and belongs to user
         const booking = await prisma.booking.findUnique({
             where: { id: bookingId },
-            include: { review: true }
+            include: {
+                reviews: true,
+                items: {
+                    include: { tree: true }
+                }
+            }
         });
 
         if (!booking) {
@@ -87,8 +92,16 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Can only review completed bookings' }, { status: 400 });
         }
 
-        if (booking.review) {
-            return NextResponse.json({ error: 'Review already exists for this booking' }, { status: 400 });
+        // Check if tree is in booking
+        const treeInBooking = booking.items.some(item => item.treeId === treeId);
+        if (!treeInBooking) {
+            return NextResponse.json({ error: 'Tree not in this booking' }, { status: 400 });
+        }
+
+        // Check if review already exists for this tree in this booking
+        const existingReview = booking.reviews.find(r => r.treeId === treeId);
+        if (existingReview) {
+            return NextResponse.json({ error: 'Review already exists for this tree' }, { status: 400 });
         }
 
         // Create review
@@ -126,12 +139,6 @@ export async function POST(req: NextRequest) {
                 rating: avgRating,
                 reviewCount: allReviews.length
             }
-        });
-
-        // Mark booking as reviewed
-        await prisma.booking.update({
-            where: { id: bookingId },
-            data: { reviewable: false }
         });
 
         return NextResponse.json(review, { status: 201 });

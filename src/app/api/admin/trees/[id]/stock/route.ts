@@ -8,15 +8,48 @@ export async function PATCH(
 ) {
     try {
         const { id: treeId } = await params;
-        const { stock } = await req.json();
+        const body = await req.json();
 
-        if (typeof stock !== 'number' || stock < 0) {
-            return NextResponse.json({ error: 'สต็อกต้องเป็นตัวเลขที่ไม่ติดลบ' }, { status: 400 });
+        // Support both old format { stock: number } and new format { action: 'add'|'set', amount: number }
+        let updateData: any;
+
+        if ('action' in body && 'amount' in body) {
+            // New format with action
+            const { action, amount } = body;
+
+            if (typeof amount !== 'number' || amount < 0) {
+                return NextResponse.json({ error: 'จำนวนต้องเป็นตัวเลขที่ไม่ติดลบ' }, { status: 400 });
+            }
+
+            if (action === 'add') {
+                updateData = {
+                    stock: {
+                        increment: amount
+                    }
+                };
+            } else if (action === 'set') {
+                updateData = {
+                    stock: amount
+                };
+            } else {
+                return NextResponse.json({ error: 'Invalid action. Use "add" or "set"' }, { status: 400 });
+            }
+        } else if ('stock' in body) {
+            // Old format - backward compatibility
+            const { stock } = body;
+            if (typeof stock !== 'number' || stock < 0) {
+                return NextResponse.json({ error: 'สต็อกต้องเป็นตัวเลขที่ไม่ติดลบ' }, { status: 400 });
+            }
+            updateData = {
+                stock: stock
+            };
+        } else {
+            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
         const tree = await prisma.tree.update({
             where: { id: treeId },
-            data: { stock }
+            data: updateData
         });
 
         return NextResponse.json(tree);

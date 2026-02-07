@@ -41,7 +41,7 @@ interface Booking {
     items: BookingItem[];
 }
 
-type ViewMode = 'all' | 'by-customer';
+type ViewMode = 'all' | 'by-customer' | 'pending-approval';
 type SortConfig = { key: string; direction: 'asc' | 'desc' } | null;
 
 export default function DashboardPage() {
@@ -116,6 +116,11 @@ export default function DashboardPage() {
         // Filter by customer
         if (viewMode === 'by-customer' && selectedCustomer) {
             result = result.filter(b => b.user.name === selectedCustomer);
+        }
+
+        // Filter by pending approval
+        if (viewMode === 'pending-approval') {
+            result = result.filter(b => b.status === 'PENDING_APPROVAL');
         }
 
         // Sort
@@ -218,6 +223,7 @@ export default function DashboardPage() {
 
     const getStatusBadge = (status: string) => {
         const statusConfig: Record<string, { color: string; label: string }> = {
+            PENDING_APPROVAL: { color: '#f97316', label: 'รอการอนุมัติ' },
             PENDING: { color: '#f59e0b', label: 'รอชำระเงิน' },
             VERIFYING_PAYMENT: { color: '#3b82f6', label: 'ตรวจสอบการชำระเงิน' },
             PAYMENT_ISSUE: { color: '#ef4444', label: 'ชำระเงินมีปัญหา' },
@@ -242,6 +248,7 @@ export default function DashboardPage() {
 
     const getStatusLabel = (status: string) => {
         const statusConfig: Record<string, string> = {
+            PENDING_APPROVAL: 'รอการอนุมัติ',
             PENDING: 'รอชำระเงิน',
             VERIFYING_PAYMENT: 'ตรวจสอบการชำระเงิน',
             PAYMENT_ISSUE: 'ชำระเงินมีปัญหา',
@@ -349,7 +356,7 @@ export default function DashboardPage() {
                         placeholder="ค้นหาชื่อลูกค้า, เบอร์โทร, รหัสออเดอร์..."
                         onSearch={setSearchQuery}
                     />
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <Button
                             variant={viewMode === 'all' ? 'primary' : 'outline'}
                             onClick={() => {
@@ -358,6 +365,19 @@ export default function DashboardPage() {
                             }}
                         >
                             ทั้งหมด
+                        </Button>
+                        <Button
+                            variant={viewMode === 'pending-approval' ? 'primary' : 'outline'}
+                            onClick={() => {
+                                setViewMode('pending-approval');
+                                setSelectedCustomer(null);
+                            }}
+                            style={{
+                                backgroundColor: viewMode === 'pending-approval' ? '#f59e0b' : undefined,
+                                borderColor: viewMode === 'pending-approval' ? '#f59e0b' : undefined
+                            }}
+                        >
+                            ⚠️ รอการอนุมัติ
                         </Button>
                         <Button
                             variant={viewMode === 'by-customer' ? 'primary' : 'outline'}
@@ -492,6 +512,7 @@ export default function DashboardPage() {
                                                     onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
                                                     style={{ padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db' }}
                                                 >
+                                                    <option value="PENDING_APPROVAL">รอการอนุมัติ</option>
                                                     <option value="PENDING">รอชำระเงิน</option>
                                                     <option value="PAID">รอตรวจสอบ</option>
                                                     <option value="PREPARING">กำลังเตรียม</option>
@@ -510,6 +531,61 @@ export default function DashboardPage() {
                                                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                     <Button size="sm" onClick={() => handleUpdate(booking.id)}>บันทึก</Button>
                                                     <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>ยกเลิก</Button>
+                                                </div>
+                                            ) : booking.status === 'PENDING_APPROVAL' ? (
+                                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={async () => {
+                                                            if (!confirm(`อนุมัติออเดอร์ #${booking.refCode}?`)) return;
+                                                            try {
+                                                                const res = await fetch(`/api/admin/bookings/${booking.id}/action`, {
+                                                                    method: 'POST',
+                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                    body: JSON.stringify({ action: 'approve' })
+                                                                });
+                                                                if (res.ok) {
+                                                                    alert('อนุมัติออเดอร์เรียบร้อย');
+                                                                    fetchBookings();
+                                                                } else {
+                                                                    const data = await res.json();
+                                                                    alert(data.error || 'เกิดข้อผิดพลาด');
+                                                                }
+                                                            } catch (error) {
+                                                                console.error('Approve error:', error);
+                                                                alert('เกิดข้อผิดพลาด');
+                                                            }
+                                                        }}
+                                                        style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white' }}
+                                                    >
+                                                        ✅ อนุมัติ
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={async () => {
+                                                            if (!confirm(`ปฏิเสธออเดอร์ #${booking.refCode}?`)) return;
+                                                            try {
+                                                                const res = await fetch(`/api/admin/bookings/${booking.id}/action`, {
+                                                                    method: 'POST',
+                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                    body: JSON.stringify({ action: 'reject' })
+                                                                });
+                                                                if (res.ok) {
+                                                                    alert('ปฏิเสธออเดอร์เรียบร้อย');
+                                                                    fetchBookings();
+                                                                } else {
+                                                                    alert('เกิดข้อผิดพลาด');
+                                                                }
+                                                            } catch (error) {
+                                                                console.error('Reject error:', error);
+                                                                alert('เกิดข้อผิดพลาด');
+                                                            }
+                                                        }}
+                                                        style={{ borderColor: '#ef4444', color: '#ef4444' }}
+                                                    >
+                                                        ❌ ปฏิเสธ
+                                                    </Button>
                                                 </div>
                                             ) : (
                                                 <div style={{ display: 'flex', gap: '0.5rem' }}>

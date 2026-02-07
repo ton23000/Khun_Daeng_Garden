@@ -4,13 +4,28 @@ import { useState } from 'react';
 import { Button } from './ui/Button';
 
 interface ImageGalleryProps {
-    images: string[];
+    images: string[] | string;
     alt?: string;
 }
 
-export default function ImageGallery({ images = [], alt = 'Product image' }: ImageGalleryProps) {
+export default function ImageGallery({ images: imagesProp = [], alt = 'Product image' }: ImageGalleryProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isZoomed, setIsZoomed] = useState(false);
+
+    // Parse images if it's a JSON string
+    let images: string[] = [];
+    if (imagesProp) {
+        if (Array.isArray(imagesProp)) {
+            images = imagesProp;
+        } else if (typeof imagesProp === 'string') {
+            try {
+                images = JSON.parse(imagesProp);
+            } catch (e) {
+                // If parsing fails, treat as single image URL
+                images = [imagesProp];
+            }
+        }
+    }
 
     if (!images || images.length === 0) {
         return (

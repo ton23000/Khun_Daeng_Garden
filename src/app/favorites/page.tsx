@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { useCart } from '@/lib/CartContext';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import FavoriteButton from '@/components/FavoriteButton';
 import Link from 'next/link';
 
 interface Tree {
@@ -117,33 +118,22 @@ export default function FavoritesPage() {
                     {favorites.map(favorite => (
                         <Card key={favorite.id} style={{ position: 'relative' }}>
                             <CardContent style={{ padding: '1rem' }}>
-                                {/* Remove button */}
-                                <button
-                                    onClick={() => removeFavorite(favorite.treeId)}
-                                    style={{
-                                        position: 'absolute',
-                                        top: '1rem',
-                                        right: '1rem',
-                                        background: 'white',
-                                        border: 'none',
-                                        borderRadius: '50%',
-                                        width: '36px',
-                                        height: '36px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                                        zIndex: 10
-                                    }}
-                                    title="ลบออกจากรายการโปรด"
-                                >
-                                    <img
-                                        src="/uploaded_media_1_1770098764245.png"
-                                        alt="Remove from favorites"
-                                        style={{ width: '20px', height: '20px' }}
+                                {/* Favorite Button */}
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '1rem',
+                                    right: '1rem',
+                                    zIndex: 10
+                                }}>
+                                    <FavoriteButton
+                                        treeId={favorite.treeId}
+                                        initialIsFavorite={true}
+                                        onToggle={(isFav) => {
+                                            if (!isFav) removeFavorite(favorite.treeId);
+                                        }}
+                                        size="md"
                                     />
-                                </button>
+                                </div>
 
                                 {/* Image */}
                                 <Link href={`/shop/${favorite.tree.id}`}>
@@ -156,12 +146,27 @@ export default function FavoritesPage() {
                                         cursor: 'pointer'
                                     }}>
                                         <img
-                                            src={favorite.tree.images[0] || '/placeholder-tree.jpg'}
+                                            src={(() => {
+                                                let imageUrl = '/placeholder-tree.jpg';
+                                                if (favorite.tree.images) {
+                                                    if (Array.isArray(favorite.tree.images)) {
+                                                        imageUrl = favorite.tree.images[0] || '/placeholder-tree.jpg';
+                                                    } else if (typeof favorite.tree.images === 'string') {
+                                                        try {
+                                                            const images = JSON.parse(favorite.tree.images);
+                                                            imageUrl = images[0] || '/placeholder-tree.jpg';
+                                                        } catch (e) {
+                                                            imageUrl = '/placeholder-tree.jpg';
+                                                        }
+                                                    }
+                                                }
+                                                return imageUrl;
+                                            })()}
                                             alt={favorite.tree.name}
                                             style={{
                                                 width: '100%',
                                                 height: '100%',
-                                                objectFit: 'cover'
+                                                objectFit: 'contain'
                                             }}
                                         />
                                     </div>
@@ -178,21 +183,36 @@ export default function FavoritesPage() {
                                     ฿{favorite.tree.price.toLocaleString()}
                                 </p>
 
+
                                 {/* Tags */}
                                 <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-                                    {favorite.tree.tags.slice(0, 3).map(tag => (
-                                        <span
-                                            key={tag}
-                                            style={{
-                                                backgroundColor: '#f3f4f6',
-                                                padding: '0.25rem 0.5rem',
-                                                borderRadius: '9999px',
-                                                fontSize: '0.75rem'
-                                            }}
-                                        >
-                                            #{tag}
-                                        </span>
-                                    ))}
+                                    {(() => {
+                                        let tags: string[] = [];
+                                        if (favorite.tree.tags) {
+                                            if (Array.isArray(favorite.tree.tags)) {
+                                                tags = favorite.tree.tags;
+                                            } else if (typeof favorite.tree.tags === 'string') {
+                                                try {
+                                                    tags = JSON.parse(favorite.tree.tags);
+                                                } catch (e) {
+                                                    tags = [];
+                                                }
+                                            }
+                                        }
+                                        return tags.slice(0, 3).map(tag => (
+                                            <span
+                                                key={tag}
+                                                style={{
+                                                    backgroundColor: '#f3f4f6',
+                                                    padding: '0.25rem 0.5rem',
+                                                    borderRadius: '9999px',
+                                                    fontSize: '0.75rem'
+                                                }}
+                                            >
+                                                #{tag}
+                                            </span>
+                                        ));
+                                    })()}
                                 </div>
 
                                 {/* Add to cart button */}

@@ -29,15 +29,22 @@ export default function AdminTreesPage() {
     const router = useRouter();
     const { user, isLoading: isAuthLoading } = useAuth();
     const [trees, setTrees] = useState<Tree[]>([]);
+    const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Category Modal State
+    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState('');
+
     const [editingTree, setEditingTree] = useState<Tree | null>(null);
     const [editingStockId, setEditingStockId] = useState<string | null>(null);
     const [newStock, setNewStock] = useState<number>(0);
+    const [stockAction, setStockAction] = useState<'add' | 'set'>('set'); // Track which action is being performed
 
     // Derived state for suggestions
     const allTags = Array.from(new Set(trees.flatMap(t => t.tags || [])));
-    const allCategories = Array.from(new Set(trees.map(t => t.category)));
+    // allCategories is now replaced by 'categories' state
 
     // Form State
     const [formData, setFormData] = useState({
@@ -45,19 +52,113 @@ export default function AdminTreesPage() {
         description: '',
         price: 0,
         category: '',
-        images: [] as string[], // Changed to array
+        images: [] as string[],
         tags: [] as string[],
         growthTime: ''
     });
 
     useEffect(() => {
-        if (isAuthLoading) return; // Wait for auth to load
+        if (isAuthLoading) return;
         if (!user || user.role !== 'admin') {
             router.push('/admin/login');
             return;
         }
         fetchTrees();
+        fetchCategories();
     }, [user, isAuthLoading, router]);
+
+    const fetchCategories = async () => {
+        try {
+            const res = await fetch('/api/admin/categories');
+            if (res.ok) {
+                const data = await res.json();
+                setCategories(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch categories', error);
+        }
+    };
+
+    const handleAddCategory = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const res = await fetch('/api/admin/categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newCategoryName })
+            });
+
+            if (res.ok) {
+                const newCat = await res.json();
+                setCategories([...categories, newCat]);
+                setFormData({ ...formData, category: newCat.name });
+                setIsCategoryModalOpen(false);
+                setNewCategoryName('');
+            } else {
+                const error = await res.json();
+                alert(error.error || 'Failed to add category');
+            }
+        } catch (error) {
+            console.error('Failed to add category', error);
+            alert('Error adding category');
+        }
+    };
+
+    // ... (rest of the file content until render)
+
+    // Inside the Form render in Modal:
+    /*
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">หมวดหมู่</label>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <select
+                                                value={formData.category}
+                                                onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                                required
+                                            >
+                                                <option value="">-- เลือกหมวดหมู่ --</option>
+                                                {categories.map(cat => (
+                                                    <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                                ))}
+                                            </select>
+                                            <Button type="button" variant="outline" onClick={() => setIsCategoryModalOpen(true)} title="เพิ่มหมวดหมู่ใหม่">+</Button>
+                                        </div>
+                                    </div>
+    */
+
+    // ...
+
+    {/* Category Modal */ }
+    {
+        isCategoryModalOpen && (
+            <div style={{
+                position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60
+            }}>
+                <Card style={{ width: '90%', maxWidth: '400px', backgroundColor: 'white' }}>
+                    <CardHeader>
+                        <CardTitle>เพิ่มหมวดหมู่ใหม่</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={handleAddCategory} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <Input
+                                label="ชื่อหมวดหมู่"
+                                value={newCategoryName}
+                                onChange={e => setNewCategoryName(e.target.value)}
+                                placeholder="เช่น ไม้มงคล, ไม้ประดับ"
+                                required
+                            />
+                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                <Button type="button" variant="outline" onClick={() => setIsCategoryModalOpen(false)}>ยกเลิก</Button>
+                                <Button type="submit" variant="primary">บันทึก</Button>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
 
     const [searchQuery, setSearchQuery] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
@@ -408,7 +509,10 @@ export default function AdminTreesPage() {
                                                                 const res = await fetch(`/api/admin/trees/${tree.id}/stock`, {
                                                                     method: 'PATCH',
                                                                     headers: { 'Content-Type': 'application/json' },
-                                                                    body: JSON.stringify({ stock: newStock })
+                                                                    body: JSON.stringify({
+                                                                        action: stockAction,
+                                                                        amount: newStock
+                                                                    })
                                                                 });
                                                                 if (res.ok) {
                                                                     fetchTrees();
@@ -426,9 +530,15 @@ export default function AdminTreesPage() {
                                                 ) : (
                                                     <>
                                                         <Button size="sm" variant="outline" onClick={() => {
+                                                            setStockAction('add');
+                                                            setEditingStockId(tree.id);
+                                                            setNewStock(0);
+                                                        }} style={{ fontSize: '0.75rem' }} title="เพิ่มสต็อก">+ เพิ่ม</Button>
+                                                        <Button size="sm" variant="outline" onClick={() => {
+                                                            setStockAction('set');
                                                             setEditingStockId(tree.id);
                                                             setNewStock(tree.stock || 0);
-                                                        }} style={{ fontSize: '0.75rem' }}>สต็อก</Button>
+                                                        }} style={{ fontSize: '0.75rem' }} title="ตั้งค่าสต็อก">ตั้งค่า</Button>
                                                         <Button size="sm" variant="outline" onClick={() => openEdit(tree)}>แก้ไข</Button>
                                                         <Button size="sm" variant="outline" onClick={() => handleDelete(tree.id)} style={{ borderColor: '#ef4444', color: '#ef4444' }}>ลบ</Button>
                                                     </>
@@ -471,19 +581,21 @@ export default function AdminTreesPage() {
 
                                     <div>
                                         <label className="block text-sm font-medium mb-1">หมวดหมู่</label>
-                                        <input
-                                            list="categories"
-                                            value={formData.category}
-                                            onChange={e => setFormData({ ...formData, category: e.target.value })}
-                                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            placeholder="เลือกหรือพิมพ์หมวดหมู่ใหม่"
-                                            required
-                                        />
-                                        <datalist id="categories">
-                                            {allCategories.map(cat => (
-                                                <option key={cat} value={cat} />
-                                            ))}
-                                        </datalist>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <select
+                                                value={formData.category}
+                                                onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                                required
+                                                style={{ flex: 1 }}
+                                            >
+                                                <option value="">-- เลือกหมวดหมู่ --</option>
+                                                {categories.map(cat => (
+                                                    <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                                ))}
+                                            </select>
+                                            <Button type="button" variant="outline" onClick={() => setIsCategoryModalOpen(true)} title="เพิ่มหมวดหมู่ใหม่" style={{ fontSize: '1.25rem', padding: '0 1rem' }}>+</Button>
+                                        </div>
                                     </div>
                                 </div>
                                 <Input label="ระยะเวลาเติบโต (เช่น 1-2 อาทิตย์)" value={formData.growthTime} onChange={e => setFormData({ ...formData, growthTime: e.target.value })} />
@@ -581,6 +693,35 @@ export default function AdminTreesPage() {
 
                                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
                                     <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>ยกเลิก</Button>
+                                    <Button type="submit" variant="primary">บันทึก</Button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+
+            {/* Category Modal */}
+            {isCategoryModalOpen && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60
+                }}>
+                    <Card style={{ width: '90%', maxWidth: '400px', backgroundColor: 'white' }}>
+                        <CardHeader>
+                            <CardTitle>เพิ่มหมวดหมู่ใหม่</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={handleAddCategory} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <Input
+                                    label="ชื่อหมวดหมู่"
+                                    value={newCategoryName}
+                                    onChange={e => setNewCategoryName(e.target.value)}
+                                    placeholder="เช่น ไม้มงคล, ไม้ประดับ"
+                                    required
+                                />
+                                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                    <Button type="button" variant="outline" onClick={() => setIsCategoryModalOpen(false)}>ยกเลิก</Button>
                                     <Button type="submit" variant="primary">บันทึก</Button>
                                 </div>
                             </form>

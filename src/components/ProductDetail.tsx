@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import ImageGallery from './ImageGallery';
 import StarRating from './StarRating';
 import ReviewList from './ReviewList';
+import FavoriteButton from './FavoriteButton';
 
 interface Tree {
     id: string;
@@ -98,10 +99,7 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
     };
 
     const handleAdd = () => {
-        if (quantity > availableStock) {
-            alert(`สินค้ามีจำนวนไม่เพียงพอ (เหลือ ${availableStock} ต้น)`);
-            return;
-        }
+        // ไม่ต้องเช็คสต๊อก - ให้สั่งซื้อได้แม้หมด (จะกลายเป็น PENDING_APPROVAL)
         addItem(tree, quantity);
         setIsAdded(true);
         setTimeout(() => setIsAdded(false), 2000);
@@ -125,31 +123,9 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                         <h1 style={{ fontSize: '2rem', flex: 1 }}>{tree.name}</h1>
 
                         {/* Favorite Button */}
-                        {!isCheckingFavorite && (
-                            <button
-                                onClick={toggleFavorite}
-                                style={{
-                                    background: 'white',
-                                    border: '2px solid #e5e7eb',
-                                    borderRadius: '50%',
-                                    width: '48px',
-                                    height: '48px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    marginLeft: '1rem'
-                                }}
-                                title={isFavorite ? 'ลบออกจากรายการโปรด' : 'เพิ่มไปยังรายการโปรด'}
-                            >
-                                <img
-                                    src={isFavorite ? '/uploaded_media_1_1770098764245.png' : '/uploaded_media_0_1770098764245.png'}
-                                    alt={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                                    style={{ width: '24px', height: '24px' }}
-                                />
-                            </button>
-                        )}
+                        <div style={{ marginLeft: '1rem' }}>
+                            <FavoriteButton treeId={tree.id} size="lg" />
+                        </div>
                     </div>
 
                     <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '1rem' }}>
@@ -162,13 +138,29 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                         </p>
                     )}
 
+
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-                        {tree.tags.map(tag => (
-                            <span key={tag} style={{ backgroundColor: '#f3f4f6', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem' }}>
-                                #{tag}
-                            </span>
-                        ))}
+                        {(() => {
+                            let tags: string[] = [];
+                            if (tree.tags) {
+                                if (Array.isArray(tree.tags)) {
+                                    tags = tree.tags;
+                                } else if (typeof tree.tags === 'string') {
+                                    try {
+                                        tags = JSON.parse(tree.tags);
+                                    } catch (e) {
+                                        tags = [];
+                                    }
+                                }
+                            }
+                            return tags.map(tag => (
+                                <span key={tag} style={{ backgroundColor: '#f3f4f6', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem' }}>
+                                    #{tag}
+                                </span>
+                            ));
+                        })()}
                     </div>
+
 
                     <p style={{ marginBottom: '2rem', lineHeight: '1.6' }}>
                         {tree.description}
@@ -179,27 +171,48 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                             <CardTitle>สั่งจอง</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {tree.status === 'AVAILABLE' && !isOutOfStock ? (
+                            {tree.status === 'AVAILABLE' ? (
                                 <div>
+                                    {/* Stock warning for out-of-stock items */}
+                                    {isOutOfStock && (
+                                        <div style={{
+                                            backgroundColor: '#fef3c7',
+                                            color: '#92400e',
+                                            padding: '0.75rem',
+                                            borderRadius: '0.375rem',
+                                            marginBottom: '1rem',
+                                            fontSize: '0.875rem',
+                                            border: '1px solid #fbbf24'
+                                        }}>
+                                            ⚠️ <strong>สินค้าหมดสต๊อก</strong> - คุณยังสามารถสั่งจองได้ โดยจะรอการ<strong>อนุมัติจากแอดมิน</strong>เมื่อมีสินค้าเข้า
+                                        </div>
+                                    )}
+
                                     <div style={{ marginBottom: '1rem' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                                             <label style={{ fontSize: '0.875rem' }}>จำนวน</label>
-                                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>มีสินค้า {availableStock} ต้น</span>
+                                            <span style={{
+                                                fontSize: '0.875rem',
+                                                color: isOutOfStock ? '#dc2626' : '#6b7280',
+                                                fontWeight: isOutOfStock ? 'bold' : 'normal'
+                                            }}>
+                                                {isOutOfStock ? 'หมดสต๊อก - จองได้' : `มีสินค้า ${availableStock} ต้น`}
+                                            </span>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <Button variant="outline" onClick={() => setQuantity(q => Math.max(1, q - 1))} disabled={quantity <= 1}>-</Button>
                                             <span style={{ fontSize: '1.25rem', fontWeight: 'bold', width: '40px', textAlign: 'center' }}>{quantity}</span>
-                                            <Button variant="outline" onClick={() => setQuantity(q => Math.min(availableStock, q + 1))} disabled={quantity >= availableStock}>+</Button>
+                                            <Button variant="outline" onClick={() => setQuantity(q => q + 1)}>+</Button>
                                         </div>
                                     </div>
 
-                                    <Button fullWidth onClick={handleAdd} variant="primary" disabled={isOutOfStock}>
-                                        {isAdded ? 'เพิ่มเรียบร้อย!' : `เพิ่มลงตะกร้า (${quantity} ต้น)`}
+                                    <Button fullWidth onClick={handleAdd} variant="primary">
+                                        {isAdded ? '✓ เพิ่มเรียบร้อย!' : `เพิ่มลงตะกร้า (${quantity} ต้น)`}
                                     </Button>
                                 </div>
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                                    <p style={{ color: '#d97706', fontWeight: 'bold' }}>สินค้านี้ถูกจองแล้ว / สินค้าหมด</p>
+                                    <p style={{ color: '#d97706', fontWeight: 'bold' }}>สินค้านี้ถูกจองแล้ว</p>
                                     <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>กรุณาเลือกดูรายการอื่น</p>
                                 </div>
                             )}

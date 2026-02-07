@@ -64,10 +64,13 @@ export function Footer() {
                         </p>
                         <div style={{ marginBottom: '1rem' }}>
                             <div style={{ fontSize: '0.875rem', color: '#d1d5db', marginBottom: '0.5rem' }}>
-                                อีเมล: <a href="mailto:khundaeng@gmail.com" style={{ color: '#7fb069', textDecoration: 'none' }}>khundaeng@gmail.com</a>
+                                อีเมล: <a href="mailto:kittitusjuprajak@gmail.com" style={{ color: '#7fb069', textDecoration: 'none' }}>kittitusjuprajak@gmail.com</a>
+                            </div>
+                            <div style={{ fontSize: '0.875rem', color: '#d1d5db', marginBottom: '0.5rem' }}>
+                                โทรศัพท์: <span style={{ color: '#7fb069' }}>089-876-2045</span>
                             </div>
                             <div style={{ fontSize: '0.875rem', color: '#d1d5db' }}>
-                                โทรศัพท์: <span style={{ color: '#7fb069' }}>098-765-432</span>
+                                Facebook: <a href="https://web.facebook.com/kittitusjupraja" target="_blank" rel="noopener noreferrer" style={{ color: '#7fb069', textDecoration: 'none' }}>สวนคุณแดง</a>
                             </div>
                         </div>
                         {/* Payment Icons */}
