@@ -20,8 +20,7 @@ export async function GET(req: NextRequest) {
                 user: {
                     select: {
                         id: true,
-                        name: true,
-                        nickname: true
+                        name: true
                     }
                 },
                 tree: {
@@ -118,8 +117,7 @@ export async function POST(req: NextRequest) {
                 user: {
                     select: {
                         id: true,
-                        name: true,
-                        nickname: true
+                        name: true
                     }
                 }
             }

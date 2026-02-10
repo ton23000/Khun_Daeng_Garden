@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 
-// POST - Reset password
+// POST - Reset password with token
 export async function POST(req: NextRequest) {
     try {
-        const { phone, code, newPassword } = await req.json();
+        const { token, newPassword } = await req.json();
 
-        if (!phone || !code || !newPassword) {
+        if (!token || !newPassword) {
             return NextResponse.json({ error: 'กรุณาระบุข้อมูลให้ครบถ้วน' }, { status: 400 });
         }
 
@@ -15,11 +15,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร' }, { status: 400 });
         }
 
-        // Find valid reset code
-        const resetCode = await prisma.passwordReset.findFirst({
+        // Find valid reset token
+        const resetToken = await prisma.passwordReset.findFirst({
             where: {
-                phone,
-                code,
+                token,
                 used: false,
                 expiresAt: {
                     gt: new Date()
@@ -27,8 +26,10 @@ export async function POST(req: NextRequest) {
             }
         });
 
-        if (!resetCode) {
-            return NextResponse.json({ error: 'รหัสยืนยันไม่ถูกต้องหรือหมดอายุ' }, { status: 400 });
+        if (!resetToken) {
+            return NextResponse.json({
+                error: 'ลิงก์รีเซ็ตรหัสผ่านไม่ถูกต้องหรือหมดอายุแล้ว'
+            }, { status: 400 });
         }
 
         // Hash new password
@@ -36,13 +37,13 @@ export async function POST(req: NextRequest) {
 
         // Update user password
         await prisma.user.update({
-            where: { phone },
+            where: { id: resetToken.userId },
             data: { password: hashedPassword }
         });
 
-        // Mark code as used
+        // Mark token as used
         await prisma.passwordReset.update({
-            where: { id: resetCode.id },
+            where: { id: resetToken.id },
             data: { used: true }
         });
 

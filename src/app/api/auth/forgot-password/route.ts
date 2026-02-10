@@ -1,61 +1,103 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendPasswordResetEmail } from '@/lib/email';
+import { randomBytes } from 'crypto';
 
-// Generate 6-digit code
-function generateCode(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+// Generate secure random token
+function generateToken(): string {
+    return randomBytes(32).toString('hex');
 }
 
-// POST - Request password reset
+// POST - Request password reset via email
 export async function POST(req: NextRequest) {
     try {
-        const { phone } = await req.json();
+        const { email } = await req.json();
+        console.log('Forgot password request for:', email);
 
-        if (!phone) {
-            return NextResponse.json({ error: 'กรุณาระบุเบอร์โทรศัพท์' }, { status: 400 });
+        if (!email) {
+            return NextResponse.json({ error: 'กรุณาระบุอีเมล' }, { status: 400 });
         }
 
-        // Check if user exists
-        const user = await prisma.user.findUnique({
-            where: { phone }
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return NextResponse.json({ error: 'รูปแบบอีเมลไม่ถูกต้อง' }, { status: 400 });
+        }
+
+        /* Check if user exists */
+        /* Check if user exists */
+        // SQLite doesn't support mode: 'insensitive' directly in findFirst
+        const users = await prisma.user.findMany({
+            where: {
+                email: {
+                    not: null
+                }
+            }
         });
 
+        const user = users.find(u => u.email?.toLowerCase() === email.toLowerCase());
+
         if (!user) {
-            return NextResponse.json({ error: 'ไม่พบเบอร์โทรศัพท์นี้ในระบบ' }, { status: 404 });
+            console.log('User not found for email:', email);
+            // Still return success to prevent email enumeration
+            return NextResponse.json({
+                message: 'หากอีเมลนี้มีในระบบ คุณจะได้รับลิงก์รีเซ็ตรหัสผ่านทางอีเมล'
+            });
         }
 
-        // Generate code
-        const code = generateCode();
-        const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
+        console.log('User found:', user.id);
 
-        // Delete any existing unused codes for this phone
+        // Generate secure token
+        const token = generateToken();
+        const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+        // Delete any existing unused tokens for this user
         await prisma.passwordReset.deleteMany({
             where: {
-                phone,
+                userId: user.id,
                 used: false
             }
         });
 
-        // Create new reset code
+        // Create new reset token
         await prisma.passwordReset.create({
             data: {
-                phone,
-                code,
+                userId: user.id,
+                email: user.email!,
+                token,
                 expiresAt
             }
         });
 
-        // In production, send SMS here
-        console.log(`Password reset code for ${phone}: ${code}`);
+        // Create reset link
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const resetLink = `${baseUrl}/reset-password?token=${token}`;
+
+        console.log('Generated reset link:', resetLink);
+
+        // Send email
+        try {
+            await sendPasswordResetEmail({
+                email: user.email!,
+                resetLink,
+                userName: user.name
+            });
+            console.log('Email sent successfully');
+        } catch (emailError: any) {
+            console.error('Failed to send email:', emailError);
+            // TEMPORARY: Return actual error for debugging
+            return NextResponse.json(
+                { error: `ไม่สามารถส่งอีเมลได้: ${emailError.message || emailError}` },
+                { status: 500 }
+            );
+        }
 
         return NextResponse.json({
-            message: 'ส่งรหัสยืนยันเรียบร้อย',
-            // NOTE: Remove this in production! Only for development
-            code: process.env.NODE_ENV === 'development' ? code : undefined
+            message: 'หากอีเมลนี้มีในระบบ คุณจะได้รับลิงก์รีเซ็ตรหัสผ่านทางอีเมล'
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in forgot-password:', error);
-        return NextResponse.json({ error: 'เกิดข้อผิดพลาด' }, { status: 500 });
+        return NextResponse.json({ error: `เกิดข้อผิดพลาด: ${error.message || error}` }, { status: 500 });
     }
 }

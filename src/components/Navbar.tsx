@@ -69,7 +69,7 @@ export function Navbar() {
                     <div>ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท</div>
                     <div style={{ display: 'flex', gap: '1.5rem' }}>
                         <span>สายด่วน : +66 81 234 5678</span>
-                        <Link href="/services#faq" style={{ color: 'white', textDecoration: 'none' }}>คำถามที่พบบ่อย</Link>
+                        <Link href="/faq" style={{ color: 'white', textDecoration: 'none' }}>คำถามที่พบบ่อย</Link>
                         <Link href="/about" style={{ color: 'white', textDecoration: 'none' }}>เกี่ยวกับเรา</Link>
                         <Link href="/contact" style={{ color: 'white', textDecoration: 'none' }}>ติดต่อ</Link>
                     </div>
@@ -119,7 +119,7 @@ export function Navbar() {
                                     </div>
                                     <div>
                                         <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>ยินดีต้อนรับ</div>
-                                        <div style={{ fontWeight: 'bold', lineHeight: 1 }}>{user.nickname || user.name}</div>
+                                        <div style={{ fontWeight: 'bold', lineHeight: 1 }}>{user.name}</div>
                                     </div>
                                 </div>
 
@@ -277,8 +277,6 @@ export function Navbar() {
                                 <div style={{ ...dropdownStyle, top: '100%', left: 0 }}>
                                     <Link href="/shop" style={linkStyle}>สินค้าทั้งหมด</Link>
                                     <Link href="/promotion" style={linkStyle}>โปรโมชั่น</Link>
-                                    <Link href="/shop?category=indoor" style={linkStyle}>ไม้ในร่ม</Link>
-                                    <Link href="/shop?category=outdoor" style={linkStyle}>ไม้กลางแจ้ง</Link>
                                 </div>
                             )}
                         </div>
@@ -286,7 +284,7 @@ export function Navbar() {
                         {/* Dropdown: About */}
                         <div style={{ position: 'relative', cursor: 'pointer' }} onMouseEnter={() => setShowAbout(true)} onMouseLeave={() => setShowAbout(false)}>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                                เกี่ยวกับเรา ▾
+                                บริการของเรา ▾
                             </span>
                             {showAbout && (
                                 <div style={{ ...dropdownStyle, top: '100%', left: 0 }}>

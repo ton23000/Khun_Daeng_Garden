@@ -11,7 +11,6 @@ datasource db {
 model User {
   id        String    @id @default(uuid())
   name      String
-  nickname  String?
   phone     String   @unique
   email     String?  @unique
   password  String
@@ -23,6 +22,8 @@ model User {
   
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  
+  passwordResets PasswordReset[]
 }
 
 model Category {
@@ -118,9 +119,11 @@ model Favorite {
 
 model PasswordReset {
   id        String   @id @default(uuid())
-  phone     String
-  code      String   // 6-digit verification code
-  expiresAt DateTime
+  userId    String   // User ID reference
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email     String   // Email where reset link was sent
+  token     String   @unique // Unique token for reset link
+  expiresAt DateTime // Expires in 1 hour
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
 }

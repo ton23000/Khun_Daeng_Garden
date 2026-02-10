@@ -38,9 +38,6 @@ export default function AdminTreesPage() {
     const [newCategoryName, setNewCategoryName] = useState('');
 
     const [editingTree, setEditingTree] = useState<Tree | null>(null);
-    const [editingStockId, setEditingStockId] = useState<string | null>(null);
-    const [newStock, setNewStock] = useState<number>(0);
-    const [stockAction, setStockAction] = useState<'add' | 'set'>('set'); // Track which action is being performed
 
     // Derived state for suggestions
     const allTags = Array.from(new Set(trees.flatMap(t => t.tags || [])));
@@ -411,28 +408,14 @@ export default function AdminTreesPage() {
                                     currentSort={sortConfig}
                                     onSort={handleSort}
                                 />
-                                <SortableTableHeader
-                                    label="สต็อก"
-                                    sortKey="stock"
-                                    currentSort={sortConfig}
-                                    onSort={handleSort}
-                                />
-                                <th style={{ padding: '1rem', textAlign: 'center' }}>จอง</th>
-                                <th style={{ padding: '1rem', textAlign: 'center' }}>ขาย</th>
-                                <SortableTableHeader
-                                    label="สถานะ"
-                                    sortKey="status"
-                                    currentSort={sortConfig}
-                                    onSort={handleSort}
-                                />
                                 <th style={{ padding: '1rem' }}>จัดการ</th>
                             </tr>
                         </thead>
                         <tbody>
                             {isLoading ? (
-                                <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>กำลังโหลด...</td></tr>
+                                <tr><td colSpan={7} style={{ padding: '2rem', textAlign: 'center' }}>กำลังโหลด...</td></tr>
                             ) : filteredTrees.length === 0 ? (
-                                <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>ไม่พบข้อมูลต้นไม้</td></tr>
+                                <tr><td colSpan={7} style={{ padding: '2rem', textAlign: 'center' }}>ไม่พบข้อมูลต้นไม้</td></tr>
                             ) : (
                                 filteredTrees.map(tree => (
                                     <tr key={tree.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
@@ -452,97 +435,10 @@ export default function AdminTreesPage() {
                                         </td>
                                         <td style={{ padding: '1rem' }}>{tree.growthTime || '-'}</td>
                                         <td style={{ padding: '1rem' }}>฿{tree.price.toLocaleString()}</td>
-                                        <td style={{ padding: '1rem', textAlign: 'center' }}>
-                                            {editingStockId === tree.id ? (
-                                                <Input
-                                                    type="number"
-                                                    value={newStock}
-                                                    onChange={(e) => setNewStock(Number(e.target.value))}
-                                                    style={{ width: '70px', textAlign: 'center', padding: '0.25rem' }}
-                                                    min={0}
-                                                />
-                                            ) : (
-                                                <span style={{ fontWeight: 600 }}>{tree.stock || 0}</span>
-                                            )}
-                                        </td>
-                                        <td style={{ padding: '1rem', textAlign: 'center', color: '#f59e0b' }}>{tree.reserved || 0}</td>
-                                        <td style={{ padding: '1rem', textAlign: 'center', color: '#6b7280' }}>{tree.sold || 0}</td>
-                                        <td style={{ padding: '1rem' }}>
-                                            {(() => {
-                                                const available = (tree.stock || 0) - (tree.reserved || 0);
-                                                let label = 'พร้อมขาย';
-                                                let color = '#22c55e';
-                                                let bgColor = '#dcfce7';
-
-                                                if (available <= 0) {
-                                                    label = 'สินค้าหมด';
-                                                    color = '#ef4444';
-                                                    bgColor = '#fee2e2';
-                                                } else if (available < 5) {
-                                                    label = 'สต็อกต่ำ';
-                                                    color = '#f59e0b';
-                                                    bgColor = '#fef3c7';
-                                                }
-
-                                                // If database status is not AVAILABLE (e.g. manually set to something else), show that instead?
-                                                // But currently we don't have UI to change tree.status. 
-                                                // Assuming we want to show stock status primarily.
-
-                                                return (
-                                                    <span style={{
-                                                        padding: '0.25rem 0.5rem', borderRadius: '9999px', fontSize: '0.75rem',
-                                                        backgroundColor: bgColor,
-                                                        color: color,
-                                                        fontWeight: 600
-                                                    }}>
-                                                        {label}
-                                                    </span>
-                                                );
-                                            })()}
-                                        </td>
                                         <td style={{ padding: '1rem' }}>
                                             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                                {editingStockId === tree.id ? (
-                                                    <>
-                                                        <Button size="sm" onClick={async () => {
-                                                            try {
-                                                                const res = await fetch(`/api/admin/trees/${tree.id}/stock`, {
-                                                                    method: 'PATCH',
-                                                                    headers: { 'Content-Type': 'application/json' },
-                                                                    body: JSON.stringify({
-                                                                        action: stockAction,
-                                                                        amount: newStock
-                                                                    })
-                                                                });
-                                                                if (res.ok) {
-                                                                    fetchTrees();
-                                                                    setEditingStockId(null);
-                                                                } else {
-                                                                    alert('ไม่สามารถอัปเดตสต็อกได้');
-                                                                }
-                                                            } catch (error) {
-                                                                console.error('Failed to update stock:', error);
-                                                                alert('เกิดข้อผิดพลาด');
-                                                            }
-                                                        }} style={{ fontSize: '0.75rem' }}>บันทึก</Button>
-                                                        <Button size="sm" variant="outline" onClick={() => setEditingStockId(null)} style={{ fontSize: '0.75rem' }}>ยกเลิก</Button>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Button size="sm" variant="outline" onClick={() => {
-                                                            setStockAction('add');
-                                                            setEditingStockId(tree.id);
-                                                            setNewStock(0);
-                                                        }} style={{ fontSize: '0.75rem' }} title="เพิ่มสต็อก">+ เพิ่ม</Button>
-                                                        <Button size="sm" variant="outline" onClick={() => {
-                                                            setStockAction('set');
-                                                            setEditingStockId(tree.id);
-                                                            setNewStock(tree.stock || 0);
-                                                        }} style={{ fontSize: '0.75rem' }} title="ตั้งค่าสต็อก">ตั้งค่า</Button>
-                                                        <Button size="sm" variant="outline" onClick={() => openEdit(tree)}>แก้ไข</Button>
-                                                        <Button size="sm" variant="outline" onClick={() => handleDelete(tree.id)} style={{ borderColor: '#ef4444', color: '#ef4444' }}>ลบ</Button>
-                                                    </>
-                                                )}
+                                                <Button size="sm" variant="outline" onClick={() => openEdit(tree)}>แก้ไข</Button>
+                                                <Button size="sm" variant="outline" onClick={() => handleDelete(tree.id)} style={{ borderColor: '#ef4444', color: '#ef4444' }}>ลบ</Button>
                                             </div>
                                         </td>
                                     </tr>

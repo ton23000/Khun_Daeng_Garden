@@ -88,21 +88,62 @@ export default function BookingSuccessPage() {
             ) : (
                 <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb', textAlign: 'left', marginBottom: '2rem' }}>
                     <h3 style={{ fontWeight: 'bold', marginBottom: '1rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>รายละเอียดการชำระเงิน</h3>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <span>ธนาคาร</span>
-                        <span style={{ fontWeight: 'bold' }}>กสิกรไทย (KBank)</span>
+
+                    {/* PromptPay QR Code */}
+                    <div style={{
+                        backgroundColor: '#f0f9ff',
+                        padding: '1.5rem',
+                        borderRadius: '0.5rem',
+                        marginBottom: '1.5rem',
+                        border: '2px solid #0ea5e9',
+                        textAlign: 'center'
+                    }}>
+                        <p style={{ fontWeight: 'bold', marginBottom: '0.75rem', color: '#0369a1', fontSize: '1rem' }}>
+                            💳 สแกน QR Code เพื่อชำระเงิน
+                        </p>
+                        <div style={{
+                            backgroundColor: 'white',
+                            padding: '1rem',
+                            borderRadius: '0.5rem',
+                            display: 'inline-block',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                        }}>
+                            <img
+                                src={`https://promptpay.io/0616900908/${booking.deposit}.png`}
+                                alt="PromptPay QR Code"
+                                style={{
+                                    width: '250px',
+                                    height: '250px',
+                                    display: 'block'
+                                }}
+                            />
+                        </div>
+                        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.75rem' }}>
+                            สแกนด้วยแอพธนาคารเพื่อชำระ ฿{booking.deposit.toLocaleString()}
+                        </p>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <span>เลขที่บัญชี</span>
-                        <span style={{ fontWeight: 'bold', fontFamily: 'monospace' }}>123-4-56789-0</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <span>ชื่อบัญชี</span>
-                        <span>บจก. สวนคุณแดง</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', fontWeight: 'bold', fontSize: '1.125rem' }}>
-                        <span>ยอดมัดจำที่ต้องโอน</span>
-                        <span style={{ color: 'var(--primary)' }}>฿ {booking.deposit.toLocaleString()}</span>
+
+                    {/* Bank Transfer Details */}
+                    <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
+                        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '1rem', textAlign: 'center' }}>
+                            หรือโอนเงินผ่านบัญชีธนาคาร
+                        </p>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                            <span>ธนาคาร</span>
+                            <span style={{ fontWeight: 'bold' }}>กสิกรไทย (KBank)</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                            <span>เลขที่บัญชี</span>
+                            <span style={{ fontWeight: 'bold', fontFamily: 'monospace' }}>123-4-56789-0</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                            <span>ชื่อบัญชี</span>
+                            <span>บจก. สวนคุณแดง</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', fontWeight: 'bold', fontSize: '1.125rem' }}>
+                            <span>ยอดมัดจำที่ต้องโอน</span>
+                            <span style={{ color: 'var(--primary)' }}>฿ {booking.deposit.toLocaleString()}</span>
+                        </div>
                     </div>
 
                     {uploadSuccess && (

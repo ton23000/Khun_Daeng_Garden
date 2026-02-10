@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 
 export interface Notification {
@@ -25,9 +25,10 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
     const { user } = useAuth();
     const [notifications, setNotifications] = useState<Notification[]>([]);
+    const lastDataRef = useRef<string>('');
 
     // Fetch notifications from API
-    const fetchNotifications = async () => {
+    const fetchNotifications = useCallback(async () => {
         if (!user || !user.id) return;
         try {
             let url = `/api/notifications?userId=${user.id}`;
@@ -41,9 +42,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             if (res.ok) {
                 const data = await res.json();
 
+                let newData: Notification[];
                 // Map admin notifications if needed
                 if (user.role === 'admin') {
-                    const mapped = data.map((n: any) => ({
+                    newData = data.map((n: any) => ({
                         id: n.id,
                         userId: 'admin',
                         message: n.message,
@@ -51,28 +53,34 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                         date: n.createdAt,
                         type: n.type || 'info'
                     }));
-                    setNotifications(mapped);
                 } else {
-                    setNotifications(data);
+                    newData = data;
+                }
+
+                // Only update state if data actually changed to prevent unnecessary re-renders
+                const newDataStr = JSON.stringify(newData);
+                if (newDataStr !== lastDataRef.current) {
+                    lastDataRef.current = newDataStr;
+                    setNotifications(newData);
                 }
             }
         } catch (error) {
             // Suppress network errors during polling to avoid console spam
-            // console.error('Failed to fetch notifications', error);
         }
-    };
+    }, [user]);
 
     // Initial load and polling
     useEffect(() => {
         if (user) {
             fetchNotifications();
-            // Polling interval reduced to 5s for testing
-            const interval = setInterval(fetchNotifications, 5000);
+            // Poll every 30 seconds
+            const interval = setInterval(fetchNotifications, 30000);
             return () => clearInterval(interval);
         } else {
             setNotifications([]);
+            lastDataRef.current = '';
         }
-    }, [user]);
+    }, [user, fetchNotifications]);
 
     const unreadCount = notifications.filter(n => !n.read).length;
 

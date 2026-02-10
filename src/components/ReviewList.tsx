@@ -14,7 +14,6 @@ interface Review {
     user: {
         id: string;
         name: string;
-        nickname: string | null;
     };
 }
 
@@ -163,7 +162,6 @@ export default function ReviewList({ treeId, currentUserId }: ReviewListProps) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {sortedReviews.map((review) => {
                     const reviewImages = review.images ? JSON.parse(review.images) : [];
-                    const displayName = review.user.nickname || review.user.name;
 
                     return (
                         <div
@@ -178,7 +176,7 @@ export default function ReviewList({ treeId, currentUserId }: ReviewListProps) {
                             {/* Header */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                                 <div>
-                                    <p style={{ fontWeight: 600 }}>{displayName}</p>
+                                    <p style={{ fontWeight: 600 }}>{review.user.name}</p>
                                     <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
                                         {new Date(review.createdAt).toLocaleDateString('th-TH', {
                                             year: 'numeric',

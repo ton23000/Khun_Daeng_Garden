@@ -38,7 +38,6 @@ export async function GET(req: NextRequest) {
                 user: {
                     select: {
                         name: true,
-                        nickname: true,
                         phone: true
                     }
                 },

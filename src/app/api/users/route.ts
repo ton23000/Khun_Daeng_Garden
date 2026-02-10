@@ -10,7 +10,6 @@ export async function GET() {
                 name: true,
                 email: true,
                 phone: true,
-                nickname: true,
                 role: true,
                 createdAt: true
             }

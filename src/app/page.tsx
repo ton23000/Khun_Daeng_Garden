@@ -8,13 +8,72 @@ import { ScrollAnimation } from '@/components/ScrollAnimation';
 import { ParallaxSection } from '@/components/ParallaxSection';
 import FavoriteButton from '@/components/FavoriteButton';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Revalidate every 60 seconds instead of force-dynamic
 
 export default async function Home() {
   const featuredTrees = await prisma.tree.findMany({
     take: 3,
     orderBy: { createdAt: 'desc' }
   });
+
+  // Get best-selling tree based on completed bookings
+  const bestSellingData = await prisma.bookingItem.groupBy({
+    by: ['treeId'],
+    where: {
+      booking: {
+        status: 'COMPLETED'
+      }
+    },
+    _sum: {
+      quantity: true
+    },
+    orderBy: {
+      _sum: {
+        quantity: 'desc'
+      }
+    },
+    take: 1
+  });
+
+  let bestSellingTree = null;
+  if (bestSellingData.length > 0) {
+    bestSellingTree = await prisma.tree.findUnique({
+      where: { id: bestSellingData[0].treeId }
+    });
+  }
+
+  // Get best-selling tree this week (last 7 days)
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const weeklyBestSellingData = await prisma.bookingItem.groupBy({
+    by: ['treeId'],
+    where: {
+      booking: {
+        status: 'COMPLETED',
+        updatedAt: {
+          gte: sevenDaysAgo
+        }
+      }
+    },
+    _sum: {
+      quantity: true
+    },
+    orderBy: {
+      _sum: {
+        quantity: 'desc'
+      }
+    },
+    take: 1
+  });
+
+  let weeklyBestSellingTree = null;
+  if (weeklyBestSellingData.length > 0) {
+    weeklyBestSellingTree = await prisma.tree.findUnique({
+      where: { id: weeklyBestSellingData[0].treeId }
+    });
+  }
+
 
   return (
     <main>
@@ -132,40 +191,121 @@ export default async function Home() {
       <section className="container" style={{ margin: '-3rem auto 4rem', position: 'relative', zIndex: 10 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
           <ScrollAnimation animation="slide-in-left" delay={100}>
-            <div style={{
-              backgroundColor: '#1f2937',
-              borderRadius: '16px',
-              padding: '3rem',
-              color: 'white',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              minHeight: '200px'
-            }}>
-              <div>
-                <h3 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '2rem', marginBottom: '0.5rem' }}>กระบองเพชร</h3>
-                <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '1.5rem' }}>คอลเลคชั่นกระบองเพชรหายาก <br /> จองเลยวันนี้</p>
-                <Link href="/shop?category=cactus" style={{ color: 'white', textDecoration: 'underline' }}>จองเลย</Link>
+            <Link href="/weekly-best-sellers" style={{ textDecoration: 'none' }}>
+              <div style={{
+                backgroundColor: '#1f2937',
+                borderRadius: '16px',
+                padding: '2rem',
+                color: 'white',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                minHeight: '200px',
+                gap: '1.5rem',
+                cursor: 'pointer',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+              }}
+                className="hover:shadow-xl hover:-translate-y-1"
+              >
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '2rem', marginBottom: '0.5rem' }}>ขายดีสัปดาห์นี้</h3>
+                  <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                    {weeklyBestSellingTree ? weeklyBestSellingTree.name : 'สินค้ายอดนิยม'}
+                  </p>
+                  <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+                    {weeklyBestSellingTree ? `฿${weeklyBestSellingTree.price.toLocaleString()}` : 'ของสัปดาห์นี้'}
+                  </p>
+                  <span style={{ color: 'white', textDecoration: 'underline' }}>ดูเลย</span>
+                </div>
+                {weeklyBestSellingTree && (() => {
+                  let imageUrl = '/placeholder-tree.jpg';
+                  try {
+                    const images = JSON.parse(weeklyBestSellingTree.images);
+                    if (images && images.length > 0) {
+                      imageUrl = images[0];
+                    }
+                  } catch (e) {
+                    // Use placeholder
+                  }
+                  return (
+                    <div style={{
+                      width: '150px',
+                      height: '150px',
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      backgroundColor: 'white',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '0.5rem'
+                    }}>
+                      <img
+                        src={imageUrl}
+                        alt={weeklyBestSellingTree.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+                  );
+                })()}
               </div>
-            </div>
+            </Link>
           </ScrollAnimation>
           <ScrollAnimation animation="slide-in-right" delay={100}>
-            <div style={{
-              backgroundColor: '#fef3c7',
-              borderRadius: '16px',
-              padding: '3rem',
-              color: '#433422',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              minHeight: '200px'
-            }}>
-              <div>
-                <h3 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '2rem', marginBottom: '0.5rem' }}>ต้นไม้ในร่ม</h3>
-                <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '1.5rem' }}>เติมเต็มพื้นที่ของคุณ <br /> ด้วยต้นไม้ในร่มคุณภาพ</p>
-                <Link href="/shop?category=indoor" style={{ color: '#166534', textDecoration: 'underline', fontWeight: 'bold' }}>จองเลย</Link>
+            <Link href="/best-sellers" style={{ textDecoration: 'none' }}>
+              <div style={{
+                backgroundColor: '#fef3c7',
+                borderRadius: '16px',
+                padding: '2rem',
+                color: '#433422',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                minHeight: '200px',
+                gap: '1.5rem',
+                cursor: 'pointer',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+              }}
+                className="hover:shadow-xl hover:-translate-y-1"
+              >
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ fontFamily: 'var(--font-playfair), serif', fontSize: '2rem', marginBottom: '0.5rem' }}>ต้นไม้ที่ขายดีที่สุด</h3>
+                  <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '1.5rem' }}>ยอดนิยม อันดับหนึ่ง <br /> ของร้านเรา</p>
+                  <span style={{ color: '#166534', textDecoration: 'underline', fontWeight: 'bold' }}>ดูเลย</span>
+                </div>
+                {bestSellingTree && (() => {
+                  let imageUrl = '/placeholder-tree.jpg';
+                  try {
+                    const images = JSON.parse(bestSellingTree.images);
+                    if (images && images.length > 0) {
+                      imageUrl = images[0];
+                    }
+                  } catch (e) {
+                    // Use placeholder
+                  }
+                  return (
+                    <div style={{
+                      width: '150px',
+                      height: '150px',
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      backgroundColor: 'white',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '0.5rem'
+                    }}>
+                      <img
+                        src={imageUrl}
+                        alt={bestSellingTree.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+                  );
+                })()}
               </div>
-            </div>
+            </Link>
           </ScrollAnimation>
         </div>
       </section>

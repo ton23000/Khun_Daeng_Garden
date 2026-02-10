@@ -1,97 +1,139 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
+import Link from 'next/link';
 
 export default function ServicesPage() {
     return (
         <div className="container" style={{ padding: '2rem' }}>
             <ScrollAnimation animation="fade-up">
-                <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#166534' }}>บริการของเรา (Services)</h1>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#166534' }}>
+                    บริการของเรา
+                </h1>
+                <p style={{ fontSize: '1.1rem', color: '#6b7280', marginBottom: '2rem' }}>
+                    เลือกบริการที่คุณต้องการเพื่อดูรายละเอียดเพิ่มเติม
+                </p>
             </ScrollAnimation>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                 {/* วิธีการสั่งซื้อ */}
                 <ScrollAnimation animation="fade-up" delay={100}>
-                    <Card id="ordering">
-                        <CardHeader>
-                            <CardTitle style={{ fontSize: '1.5rem' }}>วิธีการสั่งซื้อ</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div style={{ lineHeight: '1.8' }}>
-                                <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>ขั้นตอนง่ายๆ ในการจองต้นไม้ผ่านเว็บไซต์ และการชำระเงิน</h3>
-                                <ol style={{ marginLeft: '1.5rem', marginTop: '1rem' }}>
-                                    <li>เลือกต้นไม้ที่ต้องการจากหน้า "ค้นหาสินค้า"</li>
-                                    <li>คลิก "เพิ่มในตะกร้า" และตรวจสอบรายการในตะกร้าสินค้า</li>
-                                    <li>กรอกข้อมูลการจัดส่งและเลือกวันที่รับสินค้า</li>
-                                    <li>ชำระเงินผ่านการโอนเงิน และอัปโหลดหลักฐานการชำระเงิน</li>
-                                    <li>รอการยืนยันจากทางร้าน และเตรียมรับสินค้าตามวันที่นัดหมาย</li>
-                                </ol>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <Link href="/how-to-order" style={{ textDecoration: 'none' }}>
+                        <Card style={{
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            height: '100%'
+                        }} className="hover:shadow-xl hover:-translate-y-2">
+                            <CardHeader>
+                                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🛒</div>
+                                <CardTitle style={{ fontSize: '1.5rem', color: '#166534' }}>
+                                    วิธีการสั่งซื้อ
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p style={{ color: '#6b7280', lineHeight: '1.6' }}>
+                                    ขั้นตอนง่ายๆ ในการจองต้นไม้ผ่านเว็บไซต์ และการชำระเงิน
+                                </p>
+                                <div style={{ marginTop: '1rem', color: '#166534', fontWeight: 'bold' }}>
+                                    อ่านเพิ่มเติม →
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 </ScrollAnimation>
 
                 {/* คำปรึกษาการปลูก */}
                 <ScrollAnimation animation="fade-up" delay={200}>
-                    <Card id="planting">
-                        <CardHeader>
-                            <CardTitle style={{ fontSize: '1.5rem' }}>คำปรึกษาการปลูก</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div style={{ lineHeight: '1.8' }}>
-                                <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>บริการให้คำแนะนำวิธีการดูแลรักษาต้นไม้แต่ละชนิดให้เติบโตสวยงาม</h3>
-                                <p style={{ marginTop: '1rem' }}>
-                                    ทีมงานผู้เชี่ยวชาญของเราพร้อมให้คำปรึกษาเกี่ยวกับ:
+                    <Link href="/consultation" style={{ textDecoration: 'none' }}>
+                        <Card style={{
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            height: '100%'
+                        }} className="hover:shadow-xl hover:-translate-y-2">
+                            <CardHeader>
+                                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🌱</div>
+                                <CardTitle style={{ fontSize: '1.5rem', color: '#166534' }}>
+                                    คำปรึกษาการปลูก
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p style={{ color: '#6b7280', lineHeight: '1.6' }}>
+                                    บริการให้คำแนะนำวิธีการดูแลรักษาต้นไม้แต่ละชนิดให้เติบโตสวยงาม
                                 </p>
-                                <ul style={{ marginLeft: '1.5rem', marginTop: '0.5rem' }}>
-                                    <li>การเลือกต้นไม้ที่เหมาะสมกับสภาพแวดล้อม</li>
-                                    <li>วิธีการปลูกและการดูแลรักษา</li>
-                                    <li>การให้น้ำและปุ๋ยที่เหมาะสม</li>
-                                    <li>การป้องกันและกำจัดโรคแมลง</li>
-                                </ul>
-                                <p style={{ marginTop: '1rem', color: '#166534', fontWeight: 500 }}>
-                                    📞 ติดต่อสอบถาม: 089-876-2045
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                <div style={{ marginTop: '1rem', color: '#166534', fontWeight: 'bold' }}>
+                                    อ่านเพิ่มเติม →
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 </ScrollAnimation>
-
-
 
                 {/* FAQ */}
                 <ScrollAnimation animation="fade-up" delay={300}>
-                    <Card id="faq">
-                        <CardHeader>
-                            <CardTitle style={{ fontSize: '1.5rem' }}>บริการตอบคำถาม (FAQ)</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div style={{ lineHeight: '1.8' }}>
-                                <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>รวมคำถามที่พบบ่อยเกี่ยวกับการดูแลต้นไม้และการสั่งซื้อ</h3>
-
-                                <div style={{ marginTop: '1.5rem' }}>
-                                    <p style={{ fontWeight: 'bold', color: '#166534' }}>Q: ต้นไม้ที่สั่งซื้อจะมีการรับประกันหรือไม่?</p>
-                                    <p style={{ marginLeft: '1rem', marginTop: '0.5rem' }}>A: รับประกันต้นไม้ทุกต้น 7 วัน หากพบปัญหาสามารถเปลี่ยนได้ฟรี</p>
+                    <Link href="/faq" style={{ textDecoration: 'none' }}>
+                        <Card style={{
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            height: '100%'
+                        }} className="hover:shadow-xl hover:-translate-y-2">
+                            <CardHeader>
+                                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>❓</div>
+                                <CardTitle style={{ fontSize: '1.5rem', color: '#166534' }}>
+                                    คำถามที่พบบ่อย
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p style={{ color: '#6b7280', lineHeight: '1.6' }}>
+                                    รวมคำถามที่พบบ่อยเกี่ยวกับการดูแลต้นไม้และการสั่งซื้อ
+                                </p>
+                                <div style={{ marginTop: '1rem', color: '#166534', fontWeight: 'bold' }}>
+                                    อ่านเพิ่มเติม →
                                 </div>
-
-                                <div style={{ marginTop: '1rem' }}>
-                                    <p style={{ fontWeight: 'bold', color: '#166534' }}>Q: ใช้เวลานานแค่ไหนในการจัดส่ง?</p>
-                                    <p style={{ marginLeft: '1rem', marginTop: '0.5rem' }}>A: จัดส่งภายใน 3-5 วันทำการ หรือตามวันที่นัดหมาย</p>
-                                </div>
-
-                                <div style={{ marginTop: '1rem' }}>
-                                    <p style={{ fontWeight: 'bold', color: '#166534' }}>Q: สามารถมารับสินค้าเองได้หรือไม่?</p>
-                                    <p style={{ marginLeft: '1rem', marginTop: '0.5rem' }}>A: สามารถมารับได้ที่ร้าน โดยแจ้งล่วงหน้า 1 วัน</p>
-                                </div>
-
-                                <div style={{ marginTop: '1rem' }}>
-                                    <p style={{ fontWeight: 'bold', color: '#166534' }}>Q: ต้นไม้ที่ซื้อควรดูแลอย่างไร?</p>
-                                    <p style={{ marginLeft: '1rem', marginTop: '0.5rem' }}>A: แต่ละชนิดมีวิธีดูแลแตกต่างกัน สามารถปรึกษาทีมงานได้ตลอดเวลา</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 </ScrollAnimation>
             </div>
+
+            {/* Contact Section */}
+            <ScrollAnimation animation="fade-up" delay={400}>
+                <div style={{
+                    marginTop: '3rem',
+                    padding: '2rem',
+                    backgroundColor: '#f0fdf4',
+                    borderRadius: '0.5rem',
+                    textAlign: 'center'
+                }}>
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#166534', marginBottom: '1rem' }}>
+                        ต้องการความช่วยเหลือเพิ่มเติม?
+                    </h3>
+                    <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
+                        ติดต่อเราได้ทุกวัน 08:00 - 18:00 น.
+                    </p>
+                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <a href="tel:0898762045" style={{
+                            backgroundColor: '#166534',
+                            color: 'white',
+                            padding: '0.75rem 1.5rem',
+                            borderRadius: '0.5rem',
+                            textDecoration: 'none',
+                            fontWeight: 'bold'
+                        }}>
+                            📞 089-876-2045
+                        </a>
+                        <Link href="/contact" style={{
+                            backgroundColor: 'white',
+                            color: '#166534',
+                            padding: '0.75rem 1.5rem',
+                            borderRadius: '0.5rem',
+                            textDecoration: 'none',
+                            fontWeight: 'bold',
+                            border: '2px solid #166534'
+                        }}>
+                            ติดต่อเรา
+                        </Link>
+                    </div>
+                </div>
+            </ScrollAnimation>
         </div>
     );
 }

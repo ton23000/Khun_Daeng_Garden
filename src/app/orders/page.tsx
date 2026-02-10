@@ -289,10 +289,49 @@ export default function MyOrdersPage() {
                                                     borderRadius: '0.5rem',
                                                     border: '2px solid #fbbf24'
                                                 }}>
-                                                    <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#92400e' }}>
+                                                    <h4 style={{ fontWeight: 'bold', marginBottom: '0.75rem', color: '#92400e' }}>
                                                         💰 ข้อมูลการชำระเงิน
                                                     </h4>
+
+                                                    {/* PromptPay QR Code */}
+                                                    <div style={{
+                                                        backgroundColor: '#f0f9ff',
+                                                        padding: '1rem',
+                                                        borderRadius: '0.5rem',
+                                                        marginBottom: '1rem',
+                                                        border: '2px solid #0ea5e9',
+                                                        textAlign: 'center'
+                                                    }}>
+                                                        <p style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#0369a1', fontSize: '0.875rem' }}>
+                                                            💳 สแกน QR Code เพื่อชำระเงิน
+                                                        </p>
+                                                        <div style={{
+                                                            backgroundColor: 'white',
+                                                            padding: '0.75rem',
+                                                            borderRadius: '0.5rem',
+                                                            display: 'inline-block',
+                                                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                                                        }}>
+                                                            <img
+                                                                src={`https://promptpay.io/0616900908/${booking.deposit}.png`}
+                                                                alt="PromptPay QR Code"
+                                                                style={{
+                                                                    width: '200px',
+                                                                    height: '200px',
+                                                                    display: 'block'
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                                                            สแกนด้วยแอพธนาคารเพื่อชำระ ฿{booking.deposit.toLocaleString()}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Bank Transfer Details */}
                                                     <div style={{ fontSize: '0.875rem', color: '#78350f' }}>
+                                                        <p style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.5rem', textAlign: 'center' }}>
+                                                            หรือโอนเงินผ่านบัญชีธนาคาร
+                                                        </p>
                                                         <p style={{ marginBottom: '0.25rem' }}>ธนาคาร: <strong>ไทยพาณิชย์</strong></p>
                                                         <p style={{ marginBottom: '0.25rem' }}>เลขที่บัญชี: <strong>123-456-7890</strong></p>
                                                         <p style={{ marginBottom: '0.25rem' }}>ชื่อบัญชี: <strong>คุณแดงการ์เด้น</strong></p>

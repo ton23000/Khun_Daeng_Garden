@@ -201,13 +201,30 @@ export default function ReportsPage() {
                         </div>
                         {dateFilter !== 'all' && (
                             <input
-                                type="date"
-                                value={selectedDate}
-                                onChange={(e) => setSelectedDate(e.target.value)}
+                                type={dateFilter === 'year' ? 'number' : dateFilter === 'month' ? 'month' : 'date'}
+                                value={
+                                    dateFilter === 'year'
+                                        ? new Date(selectedDate).getFullYear().toString()
+                                        : dateFilter === 'month'
+                                            ? selectedDate.substring(0, 7)
+                                            : selectedDate
+                                }
+                                onChange={(e) => {
+                                    if (dateFilter === 'year') {
+                                        setSelectedDate(`${e.target.value}-01-01`);
+                                    } else if (dateFilter === 'month') {
+                                        setSelectedDate(`${e.target.value}-01`);
+                                    } else {
+                                        setSelectedDate(e.target.value);
+                                    }
+                                }}
+                                min={dateFilter === 'year' ? '2020' : undefined}
+                                max={dateFilter === 'year' ? new Date().getFullYear().toString() : undefined}
                                 style={{
                                     padding: '0.5rem',
                                     borderRadius: '0.375rem',
-                                    border: '1px solid #d1d5db'
+                                    border: '1px solid #d1d5db',
+                                    width: dateFilter === 'year' ? '120px' : 'auto'
                                 }}
                             />
                         )}
@@ -220,40 +237,87 @@ export default function ReportsPage() {
 
             {/* Summary Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                <Card>
+                <Card
+                    onClick={() => router.push('/admin/reports/sales')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-4px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '';
+                    }}
+                >
                     <CardHeader>
-                        <CardTitle style={{ fontSize: '0.875rem', color: '#6b7280' }}>ยอดขายรวม</CardTitle>
+                        <CardTitle style={{ fontSize: '0.875rem', color: '#6b7280' }}>💰 ยอดขายรวม</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#166534' }}>฿ {totalSales.toLocaleString()}</div>
                         <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>เงินมัดจำ: ฿{totalDeposits.toLocaleString()}</p>
+                        <p style={{ fontSize: '0.75rem', color: '#166534', marginTop: '0.5rem', fontWeight: 600 }}>ดูรายละเอียด →</p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card
+                    onClick={() => router.push('/admin/reports/orders')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-4px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '';
+                    }}
+                >
                     <CardHeader>
-                        <CardTitle style={{ fontSize: '0.875rem', color: '#6b7280' }}>จำนวนออเดอร์</CardTitle>
+                        <CardTitle style={{ fontSize: '0.875rem', color: '#6b7280' }}>📦 จำนวนออเดอร์</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{totalOrders}</div>
                         <p style={{ fontSize: '0.75rem', color: '#d97706' }}>{pendingOrders} รอตรวจสอบ</p>
                         <p style={{ fontSize: '0.75rem', color: '#22c55e' }}>{completedOrders} เสร็จสิ้น</p>
+                        <p style={{ fontSize: '0.75rem', color: '#166534', marginTop: '0.5rem', fontWeight: 600 }}>ดูรายละเอียด →</p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card
+                    onClick={() => router.push('/admin/reports/trees-sold')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-4px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '';
+                    }}
+                >
                     <CardHeader>
-                        <CardTitle style={{ fontSize: '0.875rem', color: '#6b7280' }}>ต้นไม้ที่ขายได้</CardTitle>
+                        <CardTitle style={{ fontSize: '0.875rem', color: '#6b7280' }}>🌳 ต้นไม้ที่ขายได้</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{totalTreesSold} ต้น</div>
+                        <p style={{ fontSize: '0.75rem', color: '#166534', marginTop: '0.5rem', fontWeight: 600 }}>ดูรายละเอียด →</p>
                     </CardContent>
                 </Card>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
                 {/* Best Sellers */}
-                <Card>
+                <Card
+                    onClick={() => router.push('/admin/reports/best-sellers')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '';
+                    }}
+                >
                     <CardHeader>
-                        <CardTitle>สินค้าขายดี 5 อันดับแรก</CardTitle>
+                        <CardTitle>⭐ สินค้าขายดี 5 อันดับแรก</CardTitle>
                     </CardHeader>
                     <CardContent>
                         {sortedTrees.length > 0 ? (
@@ -277,33 +341,115 @@ export default function ReportsPage() {
                 </Card>
 
                 {/* Status Breakdown */}
-                <Card>
+                <Card
+                    onClick={() => router.push('/admin/reports/status-breakdown')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '';
+                    }}
+                >
                     <CardHeader>
-                        <CardTitle>สถานะออเดอร์</CardTitle>
+                        <CardTitle>📋 สถานะออเดอร์</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <ul style={{ listStyle: 'none', padding: 0 }}>
-                            <li style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid #f3f4f6' }}>
+                            <li
+                                onClick={() => router.push('/admin/orders/pending')}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    padding: '0.75rem 0',
+                                    borderBottom: '1px solid #f3f4f6',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
                                 <span>รอชำระเงิน</span>
                                 <span style={{ fontWeight: 'bold', color: '#f59e0b' }}>{statusCounts.PENDING}</span>
                             </li>
-                            <li style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid #f3f4f6' }}>
+                            <li
+                                onClick={() => router.push('/admin/orders/verifying-payment')}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    padding: '0.75rem 0',
+                                    borderBottom: '1px solid #f3f4f6',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
                                 <span>รอตรวจสอบ</span>
                                 <span style={{ fontWeight: 'bold', color: '#3b82f6' }}>{statusCounts.PAID}</span>
                             </li>
-                            <li style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid #f3f4f6' }}>
+                            <li
+                                onClick={() => router.push('/admin/orders/preparing')}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    padding: '0.75rem 0',
+                                    borderBottom: '1px solid #f3f4f6',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
                                 <span>กำลังเตรียม</span>
                                 <span style={{ fontWeight: 'bold', color: '#8b5cf6' }}>{statusCounts.PREPARING}</span>
                             </li>
-                            <li style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid #f3f4f6' }}>
+                            <li
+                                onClick={() => router.push('/admin/orders/ready')}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    padding: '0.75rem 0',
+                                    borderBottom: '1px solid #f3f4f6',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
                                 <span>พร้อมรับ</span>
                                 <span style={{ fontWeight: 'bold', color: '#22c55e' }}>{statusCounts.READY}</span>
                             </li>
-                            <li style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid #f3f4f6' }}>
+                            <li
+                                onClick={() => router.push('/admin/orders/completed')}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    padding: '0.75rem 0',
+                                    borderBottom: '1px solid #f3f4f6',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
                                 <span>เสร็จสิ้น</span>
                                 <span style={{ fontWeight: 'bold', color: '#6b7280' }}>{statusCounts.COMPLETED}</span>
                             </li>
-                            <li style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0' }}>
+                            <li
+                                onClick={() => router.push('/admin/orders/cancelled')}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    padding: '0.75rem 0',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
                                 <span>ยกเลิก</span>
                                 <span style={{ fontWeight: 'bold', color: '#ef4444' }}>{statusCounts.CANCELLED}</span>
                             </li>

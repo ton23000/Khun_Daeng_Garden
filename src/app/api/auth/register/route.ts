@@ -4,7 +4,6 @@ import { z } from 'zod';
 
 const registerSchema = z.object({
     name: z.string().min(1, 'Name is required'),
-    nickname: z.string().min(1, 'Nickname is required'),
     phone: z.string().min(10, 'Phone number must be at least 10 digits'),
     email: z.string().email().optional().or(z.literal('')),
     password: z.string().min(6, 'Password must be at least 6 characters')
@@ -36,16 +35,6 @@ export async function POST(request: Request) {
         const user = await prisma.user.create({
             data: {
                 name: validated.name,
-                // We might need to add nickname to schema if it's not there, 
-                // but based on previous view it wasn't in schema! 
-                // Let me check schema first in next step if needed, but for now assuming standard User model
-                // Wait, I see schema in previous turn, let me double check.
-                // Schema has: id, name, phone, email, password, role. MISSING nickname.
-                // I will add nickname to schema in a separate step.
-                // For now I'll map nickname to name or ignore it? 
-                // The Register page asks for nickname. 
-                // I will append it to name or just ignore?
-                // Better to add it to schema.
                 phone: validated.phone,
                 email: validated.email || null,
                 password: validated.password, // In prod, hash this!

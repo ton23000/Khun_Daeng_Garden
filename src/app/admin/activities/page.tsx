@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -27,7 +27,6 @@ interface Booking {
     user: {
         name: string;
         phone: string;
-        nickname?: string;
     };
     items: BookingItem[];
 }
@@ -36,7 +35,6 @@ export default function AdminActivitiesPage() {
     const router = useRouter();
     const { user, isLoading: isAuthLoading } = useAuth();
     const [bookings, setBookings] = useState<Booking[]>([]);
-    const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -49,10 +47,6 @@ export default function AdminActivitiesPage() {
         }
         fetchBookings();
     }, [user, isAuthLoading, router]);
-
-    useEffect(() => {
-        filterBookings();
-    }, [bookings, searchQuery, statusFilter]);
 
     const fetchBookings = async () => {
         try {
@@ -68,7 +62,7 @@ export default function AdminActivitiesPage() {
         }
     };
 
-    const filterBookings = () => {
+    const filteredBookings = useMemo(() => {
         let result = [...bookings];
 
         // Filter by search
@@ -86,8 +80,8 @@ export default function AdminActivitiesPage() {
             result = result.filter(b => b.status === statusFilter);
         }
 
-        setFilteredBookings(result);
-    };
+        return result;
+    }, [bookings, searchQuery, statusFilter]);
 
     const getStatusBadge = (status: string) => {
         const colors: Record<string, string> = {
@@ -183,7 +177,6 @@ export default function AdminActivitiesPage() {
                                     <div>
                                         <p style={{ fontSize: '0.875rem', fontWeight: 600 }}>
                                             {booking.user.name}
-                                            {booking.user.nickname && <span style={{ color: '#6b7280', fontWeight: 400 }}> ({booking.user.nickname})</span>}
                                         </p>
                                         <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
                                             {booking.user.phone}

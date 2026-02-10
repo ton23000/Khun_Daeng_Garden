@@ -11,7 +11,6 @@ interface User {
     id: string;
     name: string;
     email: string;
-    nickname: string;
     phone: string;
     role: string;
     createdAt: string;
@@ -85,7 +84,6 @@ export default function AdminUsersPage() {
             result = result.filter(u =>
                 u.name.toLowerCase().includes(query) ||
                 u.email?.toLowerCase().includes(query) ||
-                u.nickname?.toLowerCase().includes(query) ||
                 u.phone?.includes(query)
             );
         }
@@ -154,7 +152,7 @@ export default function AdminUsersPage() {
 
             <div style={{ marginBottom: '1rem' }}>
                 <SearchBar
-                    placeholder="ค้นหาชื่อ, อีเมล, ชื่อเล่น, เบอร์โทร..."
+                    placeholder="ค้นหาชื่อ, อีเมล, เบอร์โทร..."
                     onSearch={setSearchQuery}
                 />
             </div>
@@ -170,7 +168,6 @@ export default function AdminUsersPage() {
                                     currentSort={sortConfig}
                                     onSort={handleSort}
                                 />
-                                <th style={{ padding: '1rem' }}>ชื่อเล่น</th>
                                 <SortableTableHeader
                                     label="อีเมล"
                                     sortKey="email"
@@ -195,14 +192,13 @@ export default function AdminUsersPage() {
                         </thead>
                         <tbody>
                             {isLoading ? (
-                                <tr><td colSpan={7} style={{ padding: '2rem', textAlign: 'center' }}>Loading...</td></tr>
+                                <tr><td colSpan={6} style={{ padding: '2rem', textAlign: 'center' }}>Loading...</td></tr>
                             ) : filteredUsers.length === 0 ? (
-                                <tr><td colSpan={7} style={{ padding: '2rem', textAlign: 'center' }}>ไม่พบข้อมูลผู้ใช้งาน</td></tr>
+                                <tr><td colSpan={6} style={{ padding: '2rem', textAlign: 'center' }}>ไม่พบข้อมูลผู้ใช้งาน</td></tr>
                             ) : (
                                 filteredUsers.map(user => (
                                     <tr key={user.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{user.name}</td>
-                                        <td style={{ padding: '1rem' }}>{user.nickname || '-'}</td>
                                         <td style={{ padding: '1rem' }}>{user.email || '-'}</td>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{user.phone || '-'}</td>
                                         <td style={{ padding: '1rem' }}>

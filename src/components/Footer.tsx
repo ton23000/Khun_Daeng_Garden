@@ -116,15 +116,13 @@ export function Footer() {
                         <Link href="/services" style={linkStyle}>บริการของเรา</Link>
                         <Link href="/services#order" style={linkStyle}>วิธีการสั่งซื้อ</Link>
                         <Link href="/services#planting" style={linkStyle}>คำปรึกษาการปลูก</Link>
-                        <Link href="/services#faq" style={linkStyle}>คำถามที่พบบ่อย</Link>
+                        <Link href="/faq" style={linkStyle}>คำถามที่พบบ่อย</Link>
                     </div>
 
                     {/* Column 3: Shop */}
                     <div>
                         <h4 style={sectionTitleStyle}>ร้านค้า</h4>
                         <Link href="/shop" style={linkStyle}>สินค้าทั้งหมด</Link>
-                        <Link href="/shop?category=indoor" style={linkStyle}>ไม้ในร่ม</Link>
-                        <Link href="/shop?category=outdoor" style={linkStyle}>ไม้กลางแจ้ง</Link>
                         <Link href="/shop?category=cactus" style={linkStyle}>กระบองเพชร</Link>
                         <Link href="/promotion" style={linkStyle}>โปรโมชั่น</Link>
                     </div>
@@ -157,6 +155,7 @@ export function Footer() {
                         <Link href="/privacy" style={{ color: '#2d3e2d', textDecoration: 'none' }}>นโยบายความเป็นส่วนตัว</Link>
                         <Link href="/terms" style={{ color: '#2d3e2d', textDecoration: 'none' }}>ข้อกำหนดการใช้งาน</Link>
                         <Link href="/about" style={{ color: '#2d3e2d', textDecoration: 'none' }}>เกี่ยวกับเรา</Link>
+                        <Link href="/tech-stack" style={{ color: '#2d3e2d', textDecoration: 'none' }}>เทคโนโลยี</Link>
                     </div>
                     <div style={{ fontSize: '0.75rem', color: '#4a5a4a' }}>
                         Made with 🌿 by Khun Daeng Garden

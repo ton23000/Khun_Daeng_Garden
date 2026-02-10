@@ -36,7 +36,6 @@ interface Booking {
     user: {
         name: string;
         phone: string;
-        nickname?: string;
     };
     items: BookingItem[];
 }
@@ -299,45 +298,135 @@ export default function DashboardPage() {
                 <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#166534' }}>Dashboard</h1>
             </header>
 
+
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                <Card>
+                <Card
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                    onClick={() => router.push('/admin/orders/pending-approval')}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
                     <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>รายการจองรอตรวจสอบ</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#d97706' }}>
-                            {bookings.filter(b => b.status === 'PENDING' || b.status === 'PAID').length}
+                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>รอการอนุมัติ</p>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f97316' }}>
+                            {bookings.filter(b => b.status === 'PENDING_APPROVAL').length}
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                    onClick={() => router.push('/admin/orders/pending')}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
                     <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ยอดขายเดือนนี้</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--primary)' }}>
-                            ฿ {bookings
-                                .filter(b => !['CANCELLED', 'PENDING', 'VERIFYING_PAYMENT', 'PAID', 'PAYMENT_ISSUE'].includes(b.status))
-                                .reduce((s, b) => {
-                                    // For COMPLETED orders, count the full totalPrice
-                                    // For PREPARING/READY, count deposit only
-                                    return s + (b.status === 'COMPLETED' ? b.totalPrice : b.deposit);
-                                }, 0)
-                                .toLocaleString()}
+                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>รอชำระเงิน</p>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>
+                            {bookings.filter(b => b.status === 'PENDING').length}
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                    onClick={() => router.push('/admin/orders/verifying-payment')}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
                     <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ต้นไม้ที่ถูกจอง</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>
-                            {bookings.reduce((acc, b) => acc + b.items.reduce((s, i) => s + i.quantity, 0), 0)} ต้น
+                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ตรวจสอบการชำระเงิน</p>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3b82f6' }}>
+                            {bookings.filter(b => b.status === 'VERIFYING_PAYMENT').length}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                    onClick={() => router.push('/admin/orders/payment-issue')}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
+                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ชำระเงินมีปัญหา</p>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ef4444' }}>
+                            {bookings.filter(b => b.status === 'PAYMENT_ISSUE').length}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                    onClick={() => router.push('/admin/orders/confirmed')}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
+                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ยืนยันการจอง</p>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>
+                            {bookings.filter(b => b.status === 'CONFIRMED').length}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                    onClick={() => router.push('/admin/orders/preparing')}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
+                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>เตรียมต้นไม้</p>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#8b5cf6' }}>
+                            {bookings.filter(b => b.status === 'PREPARING').length}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                    onClick={() => router.push('/admin/orders/ready')}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
+                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>พร้อมรับที่ร้าน</p>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#22c55e' }}>
+                            {bookings.filter(b => b.status === 'READY').length}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                    onClick={() => router.push('/admin/orders/completed')}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
+                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>เสร็จสิ้น</p>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#6b7280' }}>
+                            {bookings.filter(b => b.status === 'COMPLETED').length}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                    onClick={() => router.push('/admin/orders/cancelled')}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
+                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ยกเลิกการจอง</p>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#dc2626' }}>
+                            {bookings.filter(b => b.status === 'CANCELLED').length}
                         </p>
                     </CardContent>
                 </Card>
                 <Card
                     style={{
                         borderColor: trees.filter(t => (t.stock - t.reserved) > 0 && (t.stock - t.reserved) < 5).length > 0 ? '#f59e0b' : '#e5e7eb',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s'
                     }}
                     onClick={() => router.push('/admin/inventory')}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
                     <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
                         <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>⚠️ สต็อกต่ำ</p>
@@ -468,7 +557,6 @@ export default function DashboardPage() {
                                         <td style={{ padding: '1rem' }}>
                                             <div>
                                                 {booking.user.name}
-                                                {booking.user.nickname && <span style={{ color: '#6b7280', fontSize: '0.875rem' }}> ({booking.user.nickname})</span>}
                                             </div>
                                             <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{booking.user.phone}</div>
                                         </td>

@@ -10,14 +10,13 @@ import Link from 'next/link';
 export default function RegisterPage() {
     const { register } = useAuth();
     const [name, setName] = useState('');
-    const [nickname, setNickname] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
@@ -44,11 +43,9 @@ export default function RegisterPage() {
             return;
         }
 
-        if (name && nickname && phone && email && password) {
-            const result = register(name, nickname, phone, email, password);
-            // If result is returned (meaning we updated context to return it), treat it.
-            // But if successful, context redirects.
-            if (result && !result.success) {
+        if (name && phone && email && password) {
+            const result = await register(name, phone, email, password);
+            if (!result.success) {
                 setError(result.error || 'การสมัครสมาชิกไม่สำเร็จ');
             }
         }
@@ -68,13 +65,6 @@ export default function RegisterPage() {
                             placeholder="สมชาย ใจดี"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            required
-                        />
-                        <Input
-                            label="ชื่อเล่น"
-                            placeholder="แดง"
-                            value={nickname}
-                            onChange={(e) => setNickname(e.target.value)}
                             required
                         />
                         <Input
