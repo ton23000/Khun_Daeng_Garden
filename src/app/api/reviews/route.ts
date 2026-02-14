@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
 
         // Update tree rating and count
         const allReviews = await prisma.review.findMany({
-            where: { treeId },
+            where: { treeId, hidden: false }, // Ensure only visible reviews contribute to rating
             select: { rating: true }
         });
 

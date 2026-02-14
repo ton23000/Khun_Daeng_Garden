@@ -23,6 +23,10 @@ interface Tree {
     growthTime?: string | null;
     rating?: number;
     reviewCount?: number;
+    isPromotion?: boolean;
+    originalPrice?: number | null;
+    promotionName?: string | null;
+    promotionEndDate?: string | null;
 }
 
 export default function ProductDetail({ tree }: { tree: Tree }) {
@@ -128,9 +132,47 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                         </div>
                     </div>
 
-                    <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '1rem' }}>
-                        ฿ {tree.price.toLocaleString()}
-                    </p>
+                    {/* Price with promotion support */}
+                    <div style={{ marginBottom: '1rem' }}>
+                        {tree.isPromotion && tree.originalPrice && tree.originalPrice > tree.price ? (
+                            <>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
+                                    <span style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#dc2626' }}>
+                                        ฿{tree.price.toLocaleString()}
+                                    </span>
+                                    <span style={{ fontSize: '1.125rem', color: '#9ca3af', textDecoration: 'line-through' }}>
+                                        ฿{tree.originalPrice.toLocaleString()}
+                                    </span>
+                                    <span style={{
+                                        backgroundColor: '#dc2626', color: 'white',
+                                        padding: '0.125rem 0.5rem', borderRadius: '9999px',
+                                        fontSize: '0.75rem', fontWeight: 'bold'
+                                    }}>
+                                        -{Math.round(((tree.originalPrice - tree.price) / tree.originalPrice) * 100)}%
+                                    </span>
+                                </div>
+                                {tree.promotionName && (
+                                    <span style={{
+                                        display: 'inline-block',
+                                        backgroundColor: '#fef3c7', color: '#92400e',
+                                        padding: '0.25rem 0.75rem', borderRadius: '9999px',
+                                        fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.25rem'
+                                    }}>
+                                        🔥 {tree.promotionName}
+                                    </span>
+                                )}
+                                {tree.promotionEndDate && (
+                                    <p style={{ fontSize: '0.75rem', color: '#dc2626', marginTop: '0.25rem' }}>
+                                        ⏰ หมดเขต {new Date(tree.promotionEndDate).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                    </p>
+                                )}
+                            </>
+                        ) : (
+                            <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--primary)' }}>
+                                ฿ {tree.price.toLocaleString()}
+                            </p>
+                        )}
+                    </div>
 
                     {tree.growthTime && (
                         <p style={{ marginBottom: '1rem', color: '#4b5563' }}>

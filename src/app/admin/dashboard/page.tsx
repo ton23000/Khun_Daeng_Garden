@@ -60,6 +60,7 @@ export default function DashboardPage() {
     const [viewMode, setViewMode] = useState<ViewMode>('all');
     const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
     const [sortConfig, setSortConfig] = useState<SortConfig>(null);
+    const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
     useEffect(() => {
         if (isLoading) return;
@@ -73,7 +74,7 @@ export default function DashboardPage() {
 
     useEffect(() => {
         filterAndSortBookings();
-    }, [bookings, searchQuery, viewMode, selectedCustomer, sortConfig]);
+    }, [bookings, searchQuery, viewMode, selectedCustomer, sortConfig, statusFilter]);
 
     const fetchBookings = async () => {
         try {
@@ -99,6 +100,12 @@ export default function DashboardPage() {
         }
     };
 
+    const handleStatusClick = (status: string | null) => {
+        setStatusFilter(status);
+        if (status) setViewMode('all');
+        setSelectedCustomer(null);
+    };
+
     const filterAndSortBookings = useCallback(() => {
         let result = [...bookings];
 
@@ -117,9 +124,13 @@ export default function DashboardPage() {
             result = result.filter(b => b.user.name === selectedCustomer);
         }
 
-        // Filter by pending approval
-        if (viewMode === 'pending-approval') {
-            result = result.filter(b => b.status === 'PENDING_APPROVAL');
+        // Filter by status
+        if (statusFilter) {
+            if (statusFilter === 'VERIFYING_PAYMENT') {
+                result = result.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID');
+            } else {
+                result = result.filter(b => b.status === statusFilter);
+            }
         }
 
         // Sort
@@ -156,7 +167,7 @@ export default function DashboardPage() {
         }
 
         setFilteredBookings(result);
-    }, [bookings, searchQuery, viewMode, selectedCustomer, sortConfig]);
+    }, [bookings, searchQuery, viewMode, selectedCustomer, sortConfig, statusFilter]);
 
     const handleSort = (key: string) => {
         setSortConfig(current => {
@@ -232,7 +243,7 @@ export default function DashboardPage() {
             COMPLETED: { color: '#6b7280', label: 'เสร็จสิ้น' },
             CANCELLED: { color: '#dc2626', label: 'ยกเลิกการจอง' },
             // Legacy statuses
-            PAID: { color: '#3b82f6', label: 'รอตรวจสอบ' }
+            PAID: { color: '#3b82f6', label: 'ตรวจสอบการชำระเงิน' }
         };
         const config = statusConfig[status] || { color: '#6b7280', label: status };
         return {
@@ -256,7 +267,7 @@ export default function DashboardPage() {
             READY: 'พร้อมรับที่ร้าน',
             COMPLETED: 'เสร็จสิ้น',
             CANCELLED: 'ยกเลิกการจอง',
-            PAID: 'รอตรวจสอบ'
+            PAID: 'ตรวจสอบการชำระเงิน'
         };
         return statusConfig[status] || status;
     };
@@ -264,7 +275,7 @@ export default function DashboardPage() {
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {
             PENDING: 'รอชำระเงิน',
-            PAID: 'รอตรวจสอบ',
+            PAID: 'ตรวจสอบการชำระเงิน',
             PREPARING: 'กำลังเตรียม',
             READY: 'พร้อมรับ',
             COMPLETED: 'เสร็จสิ้น',
@@ -302,8 +313,8 @@ export default function DashboardPage() {
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                 <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
-                    onClick={() => router.push('/admin/orders/pending-approval')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'PENDING_APPROVAL' ? '#f97316' : undefined }}
+                    onClick={() => handleStatusClick('PENDING_APPROVAL')}
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
@@ -315,8 +326,8 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
                 <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
-                    onClick={() => router.push('/admin/orders/pending')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'PENDING' ? '#f59e0b' : undefined }}
+                    onClick={() => handleStatusClick('PENDING')}
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
@@ -328,21 +339,21 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
                 <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
-                    onClick={() => router.push('/admin/orders/verifying-payment')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'VERIFYING_PAYMENT' ? '#3b82f6' : undefined }}
+                    onClick={() => handleStatusClick('VERIFYING_PAYMENT')}
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
                     <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
                         <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ตรวจสอบการชำระเงิน</p>
                         <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3b82f6' }}>
-                            {bookings.filter(b => b.status === 'VERIFYING_PAYMENT').length}
+                            {bookings.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID').length}
                         </p>
                     </CardContent>
                 </Card>
                 <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
-                    onClick={() => router.push('/admin/orders/payment-issue')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'PAYMENT_ISSUE' ? '#ef4444' : undefined }}
+                    onClick={() => handleStatusClick('PAYMENT_ISSUE')}
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
@@ -354,8 +365,8 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
                 <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
-                    onClick={() => router.push('/admin/orders/confirmed')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'CONFIRMED' ? '#10b981' : undefined }}
+                    onClick={() => handleStatusClick('CONFIRMED')}
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
@@ -367,8 +378,8 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
                 <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
-                    onClick={() => router.push('/admin/orders/preparing')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'PREPARING' ? '#8b5cf6' : undefined }}
+                    onClick={() => handleStatusClick('PREPARING')}
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
@@ -380,8 +391,8 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
                 <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
-                    onClick={() => router.push('/admin/orders/ready')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'READY' ? '#22c55e' : undefined }}
+                    onClick={() => handleStatusClick('READY')}
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
@@ -393,8 +404,8 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
                 <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
-                    onClick={() => router.push('/admin/orders/completed')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'COMPLETED' ? '#6b7280' : undefined }}
+                    onClick={() => handleStatusClick('COMPLETED')}
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
@@ -406,8 +417,8 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
                 <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
-                    onClick={() => router.push('/admin/orders/cancelled')}
+                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'CANCELLED' ? '#dc2626' : undefined }}
+                    onClick={() => handleStatusClick('CANCELLED')}
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
@@ -447,23 +458,17 @@ export default function DashboardPage() {
                     />
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <Button
-                            variant={viewMode === 'all' ? 'primary' : 'outline'}
-                            onClick={() => {
-                                setViewMode('all');
-                                setSelectedCustomer(null);
-                            }}
+                            variant={viewMode === 'all' && !statusFilter ? 'primary' : 'outline'}
+                            onClick={() => handleStatusClick(null)}
                         >
                             ทั้งหมด
                         </Button>
                         <Button
-                            variant={viewMode === 'pending-approval' ? 'primary' : 'outline'}
-                            onClick={() => {
-                                setViewMode('pending-approval');
-                                setSelectedCustomer(null);
-                            }}
+                            variant={statusFilter === 'PENDING_APPROVAL' ? 'primary' : 'outline'}
+                            onClick={() => handleStatusClick('PENDING_APPROVAL')}
                             style={{
-                                backgroundColor: viewMode === 'pending-approval' ? '#f59e0b' : undefined,
-                                borderColor: viewMode === 'pending-approval' ? '#f59e0b' : undefined
+                                backgroundColor: statusFilter === 'PENDING_APPROVAL' ? '#f97316' : undefined,
+                                borderColor: statusFilter === 'PENDING_APPROVAL' ? '#f97316' : undefined
                             }}
                         >
                             ⚠️ รอการอนุมัติ

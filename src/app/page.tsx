@@ -446,6 +446,78 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Store Location Section */}
+      <section style={{ backgroundColor: '#f0fdf4', padding: '5rem 1rem' }}>
+        <div className="container">
+          <ScrollAnimation animation="fade-up">
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+              <span style={{ color: '#4d7c0f', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Visit Us</span>
+              <h2 style={{ fontSize: '3rem', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>ที่ตั้งร้านของเรา</h2>
+              <p style={{ color: '#6b7280', marginTop: '0.5rem', fontSize: '1.125rem' }}>มาเยี่ยมชมสวนของเราได้ทุกวัน</p>
+            </div>
+          </ScrollAnimation>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem', alignItems: 'center' }}>
+            <ScrollAnimation animation="slide-in-left">
+              <div style={{
+                borderRadius: '1rem', overflow: 'hidden',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                border: '2px solid #dcfce7'
+              }}>
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3795.4!2d99.49!3d18.29!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDE3JzI0LjAiTiA5OcKwMjknMjQuMCJF!5e0!3m2!1sth!2sth!4v1"
+                  width="100%" height="350" style={{ border: 0 }}
+                  allowFullScreen loading="lazy"
+                  title="Khun Daeng Garden Location"
+                />
+              </div>
+            </ScrollAnimation>
+
+            <ScrollAnimation animation="slide-in-right">
+              <div style={{ padding: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', flexShrink: 0 }}>📍</div>
+                    <div>
+                      <h3 style={{ fontWeight: 'bold', fontSize: '1.125rem', marginBottom: '0.25rem' }}>ที่อยู่</h3>
+                      <p style={{ color: '#6b7280' }}>ต.บ้านเป้า อ.เมือง จ.ลำปาง 52100</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', flexShrink: 0 }}>📞</div>
+                    <div>
+                      <h3 style={{ fontWeight: 'bold', fontSize: '1.125rem', marginBottom: '0.25rem' }}>โทรศัพท์</h3>
+                      <p style={{ color: '#6b7280' }}>061-690-0908</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#fef9c3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', flexShrink: 0 }}>🕐</div>
+                    <div>
+                      <h3 style={{ fontWeight: 'bold', fontSize: '1.125rem', marginBottom: '0.25rem' }}>เวลาทำการ</h3>
+                      <p style={{ color: '#6b7280' }}>จันทร์ - เสาร์: 08:00 - 17:00</p>
+                      <p style={{ color: '#6b7280' }}>อาทิตย์: 09:00 - 15:00</p>
+                    </div>
+                  </div>
+                </div>
+                <a
+                  href="https://maps.google.com/?q=18.29,99.49"
+                  target="_blank" rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-block', marginTop: '2rem',
+                    padding: '0.75rem 2rem', backgroundColor: '#059669',
+                    color: 'white', borderRadius: '0.5rem',
+                    fontWeight: 'bold', textDecoration: 'none',
+                    transition: 'background 0.2s'
+                  }}
+                >
+                  🗺️ นำทาง Google Maps
+                </a>
+              </div>
+            </ScrollAnimation>
+          </div>
+        </div>
+      </section>
+
       {/* Blog Section (บทความใหม่) */}
       <section className="container" style={{ padding: '6rem 1rem' }}>
         <ScrollAnimation animation="fade-up">

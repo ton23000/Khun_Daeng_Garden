@@ -10,7 +10,11 @@ const updateSchema = z.object({
     images: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
     status: z.string().optional(),
-    growthTime: z.string().optional()
+    growthTime: z.string().optional(),
+    isPromotion: z.boolean().optional(),
+    originalPrice: z.number().nullable().optional(),
+    promotionName: z.string().nullable().optional(),
+    promotionEndDate: z.string().nullable().optional()
 });
 
 export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
@@ -27,6 +31,9 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
         }
         if (validated.tags) {
             updateData.tags = validated.tags.join(',');
+        }
+        if (validated.promotionEndDate !== undefined) {
+            updateData.promotionEndDate = validated.promotionEndDate ? new Date(validated.promotionEndDate) : null;
         }
 
         const tree = await prisma.tree.update({

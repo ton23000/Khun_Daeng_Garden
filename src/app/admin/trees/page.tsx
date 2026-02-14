@@ -23,6 +23,10 @@ interface Tree {
     stock?: number;
     reserved?: number;
     sold?: number;
+    isPromotion?: boolean;
+    originalPrice?: number | null;
+    promotionName?: string | null;
+    promotionEndDate?: string | null;
 }
 
 export default function AdminTreesPage() {
@@ -51,7 +55,11 @@ export default function AdminTreesPage() {
         category: '',
         images: [] as string[],
         tags: [] as string[],
-        growthTime: ''
+        growthTime: '',
+        isPromotion: false,
+        originalPrice: 0,
+        promotionName: '',
+        promotionEndDate: ''
     });
 
     useEffect(() => {
@@ -314,7 +322,7 @@ export default function AdminTreesPage() {
     };
 
     const resetForm = () => {
-        setFormData({ name: '', description: '', price: 0, category: '', images: [], tags: [], growthTime: '' });
+        setFormData({ name: '', description: '', price: 0, category: '', images: [], tags: [], growthTime: '', isPromotion: false, originalPrice: 0, promotionName: '', promotionEndDate: '' });
     };
 
     const openEdit = (tree: Tree) => {
@@ -326,7 +334,11 @@ export default function AdminTreesPage() {
             category: tree.category,
             images: tree.images || [],
             tags: tree.tags || [],
-            growthTime: tree.growthTime || ''
+            growthTime: tree.growthTime || '',
+            isPromotion: tree.isPromotion || false,
+            originalPrice: tree.originalPrice || 0,
+            promotionName: tree.promotionName || '',
+            promotionEndDate: tree.promotionEndDate ? new Date(tree.promotionEndDate).toISOString().split('T')[0] : ''
         });
         setIsModalOpen(true);
     };
@@ -434,7 +446,14 @@ export default function AdminTreesPage() {
                                             </div>
                                         </td>
                                         <td style={{ padding: '1rem' }}>{tree.growthTime || '-'}</td>
-                                        <td style={{ padding: '1rem' }}>฿{tree.price.toLocaleString()}</td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span>฿{tree.price.toLocaleString()}</span>
+                                                {(tree as any).isPromotion && (
+                                                    <span style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '0.125rem 0.375rem', borderRadius: '9999px', fontSize: '0.625rem', fontWeight: 'bold' }}>SALE</span>
+                                                )}
+                                            </div>
+                                        </td>
                                         <td style={{ padding: '1rem' }}>
                                             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                                                 <Button size="sm" variant="outline" onClick={() => openEdit(tree)}>แก้ไข</Button>
@@ -585,6 +604,32 @@ export default function AdminTreesPage() {
                                         onChange={tags => setFormData({ ...formData, tags })}
                                         suggestions={allTags}
                                     />
+                                </div>
+
+                                {/* Promotion Section */}
+                                <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '1rem', marginTop: '0.5rem' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', marginBottom: '1rem' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.isPromotion}
+                                            onChange={e => setFormData({ ...formData, isPromotion: e.target.checked })}
+                                            style={{ width: '18px', height: '18px', accentColor: '#dc2626' }}
+                                        />
+                                        <span style={{ fontWeight: 'bold', color: '#dc2626' }}>🔥 เปิดโปรโมชั่น</span>
+                                    </label>
+
+                                    {formData.isPromotion && (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem', backgroundColor: '#fef2f2', borderRadius: '0.5rem', border: '1px solid #fecaca' }}>
+                                            <Input label="ราคาเดิม (บาท)" type="number" value={formData.originalPrice} onChange={e => setFormData({ ...formData, originalPrice: Number(e.target.value) })} />
+                                            <Input label="ชื่อโปรโมชั่น" value={formData.promotionName} onChange={e => setFormData({ ...formData, promotionName: e.target.value })} placeholder="เช่น ลดราคาต้อนรับปีใหม่" />
+                                            <Input label="วันหมดเขต" type="date" value={formData.promotionEndDate} onChange={e => setFormData({ ...formData, promotionEndDate: e.target.value })} />
+                                            {formData.originalPrice > 0 && formData.price > 0 && (
+                                                <p style={{ fontSize: '0.875rem', color: '#dc2626', fontWeight: 'bold' }}>
+                                                    💰 ลด {Math.round(((formData.originalPrice - formData.price) / formData.originalPrice) * 100)}% (จาก ฿{formData.originalPrice.toLocaleString()} เหลือ ฿{formData.price.toLocaleString()})
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>

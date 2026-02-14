@@ -1,13 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
+import { validatePassword, getPasswordStrength } from '@/lib/passwordValidation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import Link from 'next/link';
 
 export default function RegisterPage() {
+    const router = useRouter();
     const { register } = useAuth();
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
@@ -20,9 +23,10 @@ export default function RegisterPage() {
         e.preventDefault();
         setError('');
 
-        // Password Length Check
-        if (password.length < 6) {
-            setError('รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร');
+        // Password validation
+        const validation = validatePassword(password);
+        if (!validation.isValid) {
+            setError('รหัสผ่านไม่ตรงตามเงื่อนไข: ' + validation.errors.join(', '));
             return;
         }
 

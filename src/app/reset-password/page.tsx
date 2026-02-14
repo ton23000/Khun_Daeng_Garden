@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import Link from 'next/link';
+import { validatePassword, getPasswordStrength } from '@/lib/passwordValidation';
 
 function ResetPasswordForm() {
     const router = useRouter();
@@ -59,8 +60,9 @@ function ResetPasswordForm() {
             return;
         }
 
-        if (newPassword.length < 6) {
-            setError('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');
+        const validation = validatePassword(newPassword);
+        if (!validation.isValid) {
+            setError('รหัสผ่านไม่ตรงตามเงื่อนไข: ' + validation.errors.join(', '));
             return;
         }
 
@@ -206,11 +208,27 @@ function ResetPasswordForm() {
                         <Input
                             label="รหัสผ่านใหม่"
                             type="password"
-                            placeholder="อย่างน้อย 6 ตัวอักษร"
+                            placeholder="อย่างน้อย 8 ตัวอักษร (ตัวใหญ่ + ตัวเล็ก + ตัวเลข)"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
                             required
                         />
+                        {newPassword && (
+                            <div style={{ marginTop: '-0.5rem' }}>
+                                <div style={{ display: 'flex', gap: '4px', marginBottom: '4px' }}>
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} style={{
+                                            flex: 1, height: '4px', borderRadius: '2px',
+                                            backgroundColor: getPasswordStrength(newPassword) === 'weak' ? (i <= 1 ? '#ef4444' : '#e5e7eb') :
+                                                getPasswordStrength(newPassword) === 'medium' ? (i <= 2 ? '#f59e0b' : '#e5e7eb') : '#22c55e'
+                                        }} />
+                                    ))}
+                                </div>
+                                <p style={{ fontSize: '0.75rem', color: getPasswordStrength(newPassword) === 'weak' ? '#ef4444' : getPasswordStrength(newPassword) === 'medium' ? '#f59e0b' : '#22c55e' }}>
+                                    {getPasswordStrength(newPassword) === 'weak' ? 'อ่อน' : getPasswordStrength(newPassword) === 'medium' ? 'ปานกลาง' : 'แข็งแรง'}
+                                </p>
+                            </div>
+                        )}
 
                         <Input
                             label="ยืนยันรหัสผ่าน"

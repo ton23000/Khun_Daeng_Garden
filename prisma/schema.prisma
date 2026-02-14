@@ -48,6 +48,13 @@ model Tree {
   sold        Int      @default(0)        // Total sold
   rating      Float    @default(0)        // Average rating
   reviewCount Int      @default(0)        // Total reviews
+  
+  // Promotion fields
+  isPromotion      Boolean   @default(false)
+  originalPrice    Float?
+  promotionName    String?
+  promotionEndDate DateTime?
+  
   bookings    BookingItem[]
   favorites   Favorite[]
   reviews     Review[]
@@ -140,6 +147,7 @@ model Review {
   comment   String?
   images    String?  // JSON array of URLs
   helpful   Int      @default(0)  // helpful count
+  hidden    Boolean  @default(false)  // Admin can hide reviews
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   

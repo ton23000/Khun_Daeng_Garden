@@ -3,234 +3,245 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { ScrollAnimation } from '@/components/ScrollAnimation';
+import { Input } from '@/components/ui/Input';
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        message: ''
+        name: '', email: '', phone: '', subject: '', message: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [submitted, setSubmitted] = useState(false);
+    const [error, setError] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setError('');
 
-        // Simulate form submission
-        setTimeout(() => {
-            setSubmitStatus('success');
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (res.ok) {
+                setSubmitted(true);
+                setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+            } else {
+                const data = await res.json();
+                setError(data.error || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+            }
+        } catch (err) {
+            setError('ไม่สามารถเชื่อมต่อได้ กรุณาลองใหม่');
+        } finally {
             setIsSubmitting(false);
-            setFormData({ name: '', email: '', phone: '', message: '' });
-
-            setTimeout(() => setSubmitStatus('idle'), 3000);
-        }, 1000);
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
+        }
     };
 
     return (
-        <div className="container" style={{ padding: '2rem' }}>
-            <ScrollAnimation animation="fade-up">
-                <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#166534' }}>
-                    ติดต่อเรา
-                </h1>
-                <p style={{ fontSize: '1rem', color: '#6b7280', marginBottom: '2rem', lineHeight: '1.6' }}>
-                    มีคำถามหรือต้องการสอบถามข้อมูล? ติดต่อเราได้ตามช่องทางด้านล่าง
-                </p>
-            </ScrollAnimation>
+        <div className="container" style={{ padding: '2rem 1rem', maxWidth: '1200px', margin: '0 auto' }}>
+            <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '0.5rem' }}>
+                📞 ติดต่อเรา
+            </h1>
+            <p style={{ textAlign: 'center', color: '#6b7280', marginBottom: '2rem', fontSize: '1.125rem' }}>
+                มีคำถามหรือต้องการข้อมูลเพิ่มเติม? ติดต่อเราได้เลย
+            </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-                {/* Contact Information */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <ScrollAnimation animation="fade-up" delay={100}>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>ข้อมูลติดต่อ</CardTitle>
-                            </CardHeader>
-                            <CardContent style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'start', gap: '0.75rem' }}>
-                                    <span style={{ fontSize: '1.5rem' }}>📞</span>
-                                    <div>
-                                        <p style={{ fontWeight: 600, marginBottom: '0.25rem' }}>เบอร์โทรศัพท์</p>
-                                        <a href="tel:0898762045" style={{ color: 'var(--primary)', textDecoration: 'none' }}>
-                                            089-876-2045
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <div style={{ display: 'flex', alignItems: 'start', gap: '0.75rem' }}>
-                                    <span style={{ fontSize: '1.5rem' }}>✉️</span>
-                                    <div>
-                                        <p style={{ fontWeight: 600, marginBottom: '0.25rem' }}>อีเมล</p>
-                                        <a href="mailto:kittitusjuprajak@gmail.com" style={{ color: 'var(--primary)', textDecoration: 'none' }}>
-                                            kittitusjuprajak@gmail.com
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <div style={{ display: 'flex', alignItems: 'start', gap: '0.75rem' }}>
-                                    <span style={{ fontSize: '1.5rem' }}>📱</span>
-                                    <div>
-                                        <p style={{ fontWeight: 600, marginBottom: '0.25rem' }}>Facebook</p>
-                                        <a
-                                            href="https://web.facebook.com/kittitusjupraja"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{ color: 'var(--primary)', textDecoration: 'none' }}
-                                        >
-                                            สวนคุณแดง
-                                        </a>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </ScrollAnimation>
-
-                    <ScrollAnimation animation="fade-up" delay={200}>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>เวลาทำการ</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span>จันทร์ - ศุกร์</span>
-                                        <span style={{ fontWeight: 600 }}>9:00 - 18:00</span>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span>เสาร์ - อาทิตย์</span>
-                                        <span style={{ fontWeight: 600 }}>9:00 - 17:00</span>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </ScrollAnimation>
-                </div>
-
-                {/* Contact Form */}
-                <ScrollAnimation animation="fade-up" delay={300}>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>ส่งข้อความถึงเรา</CardTitle>
-                        </CardHeader>
-                        <CardContent>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem' }}>
+                {/* Left: Contact Form */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>ส่งข้อความถึงเรา</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {submitted ? (
+                            <div style={{
+                                textAlign: 'center',
+                                padding: '2rem',
+                                backgroundColor: '#f0fdf4',
+                                borderRadius: '0.75rem'
+                            }}>
+                                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
+                                <h3 style={{ fontWeight: 'bold', color: '#059669', marginBottom: '0.5rem' }}>
+                                    ส่งข้อความเรียบร้อยแล้ว!
+                                </h3>
+                                <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
+                                    เราจะติดต่อกลับโดยเร็วที่สุด
+                                </p>
+                                <Button variant="outline" onClick={() => setSubmitted(false)}>
+                                    ส่งข้อความอีกครั้ง
+                                </Button>
+                            </div>
+                        ) : (
                             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>
-                                        ชื่อ-นามสกุล <span style={{ color: '#ef4444' }}>*</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                        style={{
-                                            width: '100%',
-                                            padding: '0.75rem',
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '0.375rem',
-                                            fontSize: '0.875rem'
-                                        }}
-                                        placeholder="กรอกชื่อของคุณ"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>
-                                        อีเมล <span style={{ color: '#ef4444' }}>*</span>
-                                    </label>
-                                    <input
+                                <Input
+                                    label="ชื่อ"
+                                    value={formData.name}
+                                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                    placeholder="ชื่อ-นามสกุล"
+                                    required
+                                />
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                    <Input
+                                        label="อีเมล"
                                         type="email"
-                                        name="email"
                                         value={formData.email}
-                                        onChange={handleChange}
-                                        required
-                                        style={{
-                                            width: '100%',
-                                            padding: '0.75rem',
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '0.375rem',
-                                            fontSize: '0.875rem'
-                                        }}
+                                        onChange={e => setFormData({ ...formData, email: e.target.value })}
                                         placeholder="example@email.com"
+                                        required
                                     />
-                                </div>
-
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>
-                                        เบอร์โทรศัพท์
-                                    </label>
-                                    <input
-                                        type="tel"
-                                        name="phone"
+                                    <Input
+                                        label="โทรศัพท์"
                                         value={formData.phone}
-                                        onChange={handleChange}
-                                        style={{
-                                            width: '100%',
-                                            padding: '0.75rem',
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '0.375rem',
-                                            fontSize: '0.875rem'
-                                        }}
-                                        placeholder="08X-XXX-XXXX"
+                                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                        placeholder="08x-xxx-xxxx"
                                     />
                                 </div>
-
+                                <Input
+                                    label="หัวข้อ"
+                                    value={formData.subject}
+                                    onChange={e => setFormData({ ...formData, subject: e.target.value })}
+                                    placeholder="เรื่องที่ต้องการสอบถาม"
+                                    required
+                                />
                                 <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>
-                                        ข้อความ <span style={{ color: '#ef4444' }}>*</span>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
+                                        ข้อความ
                                     </label>
                                     <textarea
-                                        name="message"
                                         value={formData.message}
-                                        onChange={handleChange}
-                                        required
+                                        onChange={e => setFormData({ ...formData, message: e.target.value })}
                                         rows={5}
+                                        required
+                                        placeholder="รายละเอียดที่ต้องการสอบถาม..."
                                         style={{
                                             width: '100%',
                                             padding: '0.75rem',
+                                            borderRadius: '0.5rem',
                                             border: '1px solid #d1d5db',
-                                            borderRadius: '0.375rem',
-                                            fontSize: '0.875rem',
-                                            resize: 'vertical'
+                                            resize: 'vertical',
+                                            fontFamily: 'inherit'
                                         }}
-                                        placeholder="เขียนข้อความของคุณที่นี่..."
                                     />
                                 </div>
 
-                                {submitStatus === 'success' && (
+                                {error && (
                                     <div style={{
                                         padding: '0.75rem',
-                                        backgroundColor: '#d1fae5',
-                                        color: '#065f46',
+                                        backgroundColor: '#fee2e2',
                                         borderRadius: '0.375rem',
-                                        fontSize: '0.875rem'
+                                        border: '1px solid #fecaca'
                                     }}>
-                                        ✓ ส่งข้อความเรียบร้อยแล้ว เราจะติดต่อกลับโดยเร็วที่สุด
+                                        <p style={{ color: '#991b1b', fontSize: '0.875rem' }}>❌ {error}</p>
                                     </div>
                                 )}
 
-                                <Button
-                                    type="submit"
-                                    variant="primary"
-                                    disabled={isSubmitting}
-                                    style={{ width: '100%' }}
-                                >
-                                    {isSubmitting ? 'กำลังส่ง...' : 'ส่งข้อความ'}
+                                <Button type="submit" fullWidth variant="primary" disabled={isSubmitting}>
+                                    {isSubmitting ? '⏳ กำลังส่ง...' : '📤 ส่งข้อความ'}
                                 </Button>
                             </form>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* Right: Contact Info + Map */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    {/* Contact Info */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>ข้อมูลติดต่อ</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <div style={{
+                                        width: '48px', height: '48px', borderRadius: '50%',
+                                        backgroundColor: '#dcfce7', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0
+                                    }}>📍</div>
+                                    <div>
+                                        <p style={{ fontWeight: 'bold' }}>ที่อยู่</p>
+                                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                                            ต.บ้านเป้า อ.เมือง จ.ลำปาง 52100
+                                        </p>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <div style={{
+                                        width: '48px', height: '48px', borderRadius: '50%',
+                                        backgroundColor: '#dbeafe', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0
+                                    }}>📞</div>
+                                    <div>
+                                        <p style={{ fontWeight: 'bold' }}>โทรศัพท์</p>
+                                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>061-690-0908</p>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <div style={{
+                                        width: '48px', height: '48px', borderRadius: '50%',
+                                        backgroundColor: '#fef9c3', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0
+                                    }}>✉️</div>
+                                    <div>
+                                        <p style={{ fontWeight: 'bold' }}>อีเมล</p>
+                                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>khundaenggarden@gmail.com</p>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <div style={{
+                                        width: '48px', height: '48px', borderRadius: '50%',
+                                        backgroundColor: '#fce7f3', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0
+                                    }}>🕐</div>
+                                    <div>
+                                        <p style={{ fontWeight: 'bold' }}>เวลาทำการ</p>
+                                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                                            จันทร์ - เสาร์: 08:00 - 17:00<br />
+                                            อาทิตย์: 09:00 - 15:00
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
-                </ScrollAnimation>
+
+                    {/* Google Maps */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>📍 แผนที่ร้าน</CardTitle>
+                        </CardHeader>
+                        <CardContent style={{ padding: 0, overflow: 'hidden', borderRadius: '0 0 0.75rem 0.75rem' }}>
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3795.4!2d99.49!3d18.29!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDE3JzI0LjAiTiA5OcKwMjknMjQuMCJF!5e0!3m2!1sth!2sth!4v1"
+                                width="100%"
+                                height="300"
+                                style={{ border: 0 }}
+                                allowFullScreen
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                title="Khun Daeng Garden Map"
+                            />
+                            <div style={{ padding: '1rem', backgroundColor: '#f0fdf4' }}>
+                                <a
+                                    href="https://maps.google.com/?q=18.29,99.49"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        display: 'block',
+                                        textAlign: 'center',
+                                        color: '#059669',
+                                        fontWeight: 'bold',
+                                        textDecoration: 'none'
+                                    }}
+                                >
+                                    🗺️ เปิดใน Google Maps
+                                </a>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     );

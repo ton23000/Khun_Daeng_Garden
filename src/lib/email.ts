@@ -150,3 +150,109 @@ export async function sendPasswordResetEmail({
         throw error;
     }
 }
+
+/**
+ * Send a generic email using Resend
+ */
+export async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'Khun Daeng Garden <onboarding@resend.dev>',
+            to: [to],
+            subject,
+            html,
+        });
+
+        if (error) {
+            console.error('❌ Resend error:', error);
+            return { success: false, error: error.message };
+        }
+
+        console.log('✅ Email sent:', data);
+        return { success: true, data };
+    } catch (error) {
+        console.error('❌ Error sending email:', error);
+        return { success: false, error: 'Email service unavailable' };
+    }
+}
+
+// Email Templates
+
+export function orderConfirmationEmail(refCode: string, items: Array<{ name: string; quantity: number; price: number }>, total: number, deposit: number, pickupDate: string): string {
+    const itemRows = items.map(item =>
+        `<tr><td style="padding:8px;border-bottom:1px solid #eee">${item.name}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center">${item.quantity}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right">฿${item.price.toLocaleString()}</td></tr>`
+    ).join('');
+
+    return `
+    <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1)">
+        <div style="background:linear-gradient(135deg,#059669,#10b981);padding:32px;text-align:center;color:white">
+            <h1 style="margin:0;font-size:24px">🌿 คุณแดงการ์เด้น</h1>
+            <p style="margin:8px 0 0">ยืนยันการสั่งจอง</p>
+        </div>
+        <div style="padding:24px">
+            <p style="color:#374151">สวัสดีค่ะ 🙏</p>
+            <p style="color:#374151">ออเดอร์ <strong>#${refCode}</strong> ถูกสร้างเรียบร้อยแล้ว</p>
+            <table style="width:100%;border-collapse:collapse;margin:16px 0">
+                <thead><tr style="background:#f9fafb"><th style="padding:8px;text-align:left">สินค้า</th><th style="padding:8px;text-align:center">จำนวน</th><th style="padding:8px;text-align:right">ราคา</th></tr></thead>
+                <tbody>${itemRows}</tbody>
+            </table>
+            <div style="background:#f0fdf4;padding:16px;border-radius:8px;margin:16px 0">
+                <p style="margin:4px 0"><strong>ยอดรวม:</strong> ฿${total.toLocaleString()}</p>
+                <p style="margin:4px 0"><strong>มัดจำ (30%):</strong> ฿${deposit.toLocaleString()}</p>
+                <p style="margin:4px 0"><strong>วันรับของ:</strong> ${pickupDate}</p>
+            </div>
+            <p style="color:#6b7280;font-size:14px">กรุณาชำระเงินมัดจำภายใน 24 ชั่วโมง</p>
+        </div>
+        <div style="background:#f9fafb;padding:16px;text-align:center;color:#6b7280;font-size:12px">
+            © คุณแดงการ์เด้น | ต.บ้านเป้า อ.เมือง จ.ลำปาง
+        </div>
+    </div>`;
+}
+
+export function orderStatusEmail(refCode: string, status: string, note?: string): string {
+    const statusMap: Record<string, { text: string; color: string; icon: string }> = {
+        'PAID': { text: 'ชำระเงินแล้ว', color: '#3b82f6', icon: '💰' },
+        'PREPARING': { text: 'กำลังเตรียมต้นไม้', color: '#8b5cf6', icon: '🌱' },
+        'READY': { text: 'พร้อมรับได้แล้ว', color: '#22c55e', icon: '✅' },
+        'COMPLETED': { text: 'เสร็จสิ้น', color: '#6b7280', icon: '🎉' },
+        'CANCELLED': { text: 'ยกเลิก', color: '#ef4444', icon: '❌' },
+    };
+    const s = statusMap[status] || { text: status, color: '#6b7280', icon: '📦' };
+
+    return `
+    <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1)">
+        <div style="background:linear-gradient(135deg,#059669,#10b981);padding:32px;text-align:center;color:white">
+            <h1 style="margin:0;font-size:24px">🌿 คุณแดงการ์เด้น</h1>
+            <p style="margin:8px 0 0">อัปเดตสถานะออเดอร์</p>
+        </div>
+        <div style="padding:24px;text-align:center">
+            <div style="font-size:48px;margin-bottom:16px">${s.icon}</div>
+            <h2 style="color:${s.color};margin:0 0 8px">${s.text}</h2>
+            <p style="color:#374151">ออเดอร์ <strong>#${refCode}</strong></p>
+            ${note ? `<p style="color:#6b7280;background:#f9fafb;padding:12px;border-radius:8px;margin-top:16px">${note}</p>` : ''}
+        </div>
+        <div style="background:#f9fafb;padding:16px;text-align:center;color:#6b7280;font-size:12px">
+            © คุณแดงการ์เด้น | ต.บ้านเป้า อ.เมือง จ.ลำปาง
+        </div>
+    </div>`;
+}
+
+export function contactFormEmail(name: string, email: string, phone: string, subject: string, message: string): string {
+    return `
+    <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1)">
+        <div style="background:linear-gradient(135deg,#059669,#10b981);padding:32px;text-align:center;color:white">
+            <h1 style="margin:0;font-size:24px">📩 ข้อความจากเว็บไซต์</h1>
+        </div>
+        <div style="padding:24px">
+            <table style="width:100%">
+                <tr><td style="padding:8px 0;color:#6b7280;width:100px">ชื่อ:</td><td style="padding:8px 0;font-weight:bold">${name}</td></tr>
+                <tr><td style="padding:8px 0;color:#6b7280">อีเมล:</td><td style="padding:8px 0">${email}</td></tr>
+                <tr><td style="padding:8px 0;color:#6b7280">โทรศัพท์:</td><td style="padding:8px 0">${phone || '-'}</td></tr>
+                <tr><td style="padding:8px 0;color:#6b7280">เรื่อง:</td><td style="padding:8px 0;font-weight:bold">${subject}</td></tr>
+            </table>
+            <div style="margin-top:16px;padding:16px;background:#f9fafb;border-radius:8px;border-left:4px solid #059669">
+                <p style="white-space:pre-line;margin:0;color:#374151">${message}</p>
+            </div>
+        </div>
+    </div>`;
+}

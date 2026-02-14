@@ -36,7 +36,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <Link href="/admin/dashboard" style={{
-                        display: 'block',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
                         padding: '0.75rem 1rem',
                         borderRadius: '0.5rem',
                         color: pathname === '/admin/dashboard' ? '#166534' : '#374151',
@@ -44,13 +46,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         fontWeight: pathname === '/admin/dashboard' ? 500 : 400,
                         textDecoration: 'none'
                     }}>
+                        <span style={{ fontSize: '1.25rem' }}>📊</span>
                         Dashboard
                     </Link>
 
                     {user?.role === 'admin' && (
                         <>
+                            {/* จัดการสินค้า */}
+                            <div style={{ marginTop: '1rem', marginBottom: '0.5rem', paddingLeft: '0.5rem', fontSize: '0.75rem', fontWeight: 'bold', color: '#9ca3af', textTransform: 'uppercase' }}>
+                                จัดการสินค้า
+                            </div>
+
                             <Link href="/admin/trees" style={{
-                                display: 'block',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
                                 padding: '0.75rem 1rem',
                                 borderRadius: '0.5rem',
                                 color: pathname === '/admin/trees' ? '#166534' : '#374151',
@@ -58,11 +68,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 fontWeight: pathname === '/admin/trees' ? 500 : 400,
                                 textDecoration: 'none'
                             }}>
-                                Manage Trees
+                                <span style={{ fontSize: '1.25rem' }}>🌳</span>
+                                จัดการต้นไม้
                             </Link>
 
                             <Link href="/admin/inventory" style={{
-                                display: 'block',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
                                 padding: '0.75rem 1rem',
                                 borderRadius: '0.5rem',
                                 color: pathname === '/admin/inventory' ? '#166534' : '#374151',
@@ -70,11 +83,54 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 fontWeight: pathname === '/admin/inventory' ? 500 : 400,
                                 textDecoration: 'none'
                             }}>
-                                📦 จัดการสต็อก
+                                <span style={{ fontSize: '1.25rem' }}>📦</span>
+                                จัดการสต็อก
                             </Link>
 
+                            {/* จัดการออเดอร์ */}
+                            <div style={{ marginTop: '1rem', marginBottom: '0.5rem', paddingLeft: '0.5rem', fontSize: '0.75rem', fontWeight: 'bold', color: '#9ca3af', textTransform: 'uppercase' }}>
+                                จัดการออเดอร์
+                            </div>
+
+                            <Link href="/admin/orders" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
+                                padding: '0.75rem 1rem',
+                                borderRadius: '0.5rem',
+                                color: pathname === '/admin/orders' ? '#166534' : '#374151',
+                                backgroundColor: pathname === '/admin/orders' ? '#dcfce7' : 'transparent',
+                                fontWeight: pathname === '/admin/orders' ? 500 : 400,
+                                textDecoration: 'none'
+                            }}>
+                                <span style={{ fontSize: '1.25rem' }}>🛒</span>
+                                ออเดอร์ทั้งหมด
+                            </Link>
+
+                            <Link href="/admin/reviews" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
+                                padding: '0.75rem 1rem',
+                                borderRadius: '0.5rem',
+                                color: pathname === '/admin/reviews' ? '#166534' : '#374151',
+                                backgroundColor: pathname === '/admin/reviews' ? '#dcfce7' : 'transparent',
+                                fontWeight: pathname === '/admin/reviews' ? 500 : 400,
+                                textDecoration: 'none'
+                            }}>
+                                <span style={{ fontSize: '1.25rem' }}>⭐</span>
+                                จัดการรีวิว
+                            </Link>
+
+                            {/* ผู้ใช้งาน & รายงาน */}
+                            <div style={{ marginTop: '1rem', marginBottom: '0.5rem', paddingLeft: '0.5rem', fontSize: '0.75rem', fontWeight: 'bold', color: '#9ca3af', textTransform: 'uppercase' }}>
+                                อื่นๆ
+                            </div>
+
                             <Link href="/admin/users" style={{
-                                display: 'block',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
                                 padding: '0.75rem 1rem',
                                 borderRadius: '0.5rem',
                                 color: pathname === '/admin/users' ? '#166534' : '#374151',
@@ -82,11 +138,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 fontWeight: pathname === '/admin/users' ? 500 : 400,
                                 textDecoration: 'none'
                             }}>
+                                <span style={{ fontSize: '1.25rem' }}>👥</span>
                                 ข้อมูลผู้ใช้งาน
                             </Link>
 
                             <Link href="/admin/reports" style={{
-                                display: 'block',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
                                 padding: '0.75rem 1rem',
                                 borderRadius: '0.5rem',
                                 color: pathname === '/admin/reports' ? '#166534' : '#374151',
@@ -94,6 +153,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 fontWeight: pathname === '/admin/reports' ? 500 : 400,
                                 textDecoration: 'none'
                             }}>
+                                <span style={{ fontSize: '1.25rem' }}>📈</span>
                                 รายงาน
                             </Link>
                         </>

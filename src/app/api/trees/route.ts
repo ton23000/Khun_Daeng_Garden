@@ -7,10 +7,14 @@ const treeSchema = z.object({
     description: z.string().min(1, "Description is required"),
     price: z.number().min(0, "Price must be positive"),
     category: z.string().min(1, "Category is required"),
-    images: z.array(z.string()).default([]), // Accept array, convert to string for DB
-    tags: z.array(z.string()).default([]),   // Accept array, convert to string
+    images: z.array(z.string()).default([]),
+    tags: z.array(z.string()).default([]),
     growthTime: z.string().optional(),
-    stock: z.number().min(0, "Stock must be non-negative").default(0)
+    stock: z.number().min(0, "Stock must be non-negative").default(0),
+    isPromotion: z.boolean().default(false),
+    originalPrice: z.number().optional(),
+    promotionName: z.string().optional(),
+    promotionEndDate: z.string().optional()
 });
 
 export async function GET() {
@@ -51,7 +55,11 @@ export async function POST(request: Request) {
                 images: JSON.stringify(validated.images),
                 tags: validated.tags.join(','),
                 growthTime: validated.growthTime || '1-2 อาทิตย์',
-                stock: validated.stock
+                stock: validated.stock,
+                isPromotion: validated.isPromotion,
+                originalPrice: validated.originalPrice || null,
+                promotionName: validated.promotionName || null,
+                promotionEndDate: validated.promotionEndDate ? new Date(validated.promotionEndDate) : null
             }
         });
 
