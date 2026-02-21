@@ -234,6 +234,12 @@
     gap: 0.25rem;
 }
 
+.dropdownWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 .verificationBanner {
     background: linear-gradient(135deg, #fbbf24, #f59e0b);
     color: #78350f;
@@ -266,7 +272,7 @@
 .dropdownMenu {
     position: absolute;
     top: 100%;
-    left: 0;
+    right: 0;
     background-color: white;
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
@@ -277,8 +283,8 @@
 }
 
 .dropdownMenuLeft {
-    right: 0;
-    left: auto;
+    right: auto;
+    left: 0;
 }
 
 .dropdownLink {

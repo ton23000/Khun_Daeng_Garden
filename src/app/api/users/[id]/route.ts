@@ -128,10 +128,12 @@ export async function DELETE(
 
         return NextResponse.json({ success: true, message: 'ลบบัญชีสำเร็จ' });
     } catch (error: any) {
-        console.error('[User Delete] Error:', error);
+        console.error('[User Delete] Error detail:', error);
         return NextResponse.json({
-            error: 'ไม่สามารถลบบัญชีได้',
-            message: error?.message
+            error: 'ไม่สามารถลบบัญชีได้: ' + (error?.message || String(error)),
+            message: error?.message,
+            stack: error?.stack,
+            code: error?.code
         }, { status: 500 });
     }
 }
