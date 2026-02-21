@@ -163,7 +163,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div style={{ marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid #e5e7eb' }}>
                     {user && (
                         <div style={{ marginBottom: '1rem', paddingLeft: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
-                            Signed in as: <br /><strong>{user.name}</strong>
+                            Signed in as: <br /><strong>{user.firstName} {user.lastName}</strong>
                         </div>
                     )}
                     <Link href="/logout" style={{ textDecoration: 'none', display: 'block' }}>

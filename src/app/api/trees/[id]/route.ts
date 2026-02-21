@@ -11,6 +11,7 @@ const updateSchema = z.object({
     tags: z.array(z.string()).optional(),
     status: z.string().optional(),
     growthTime: z.string().optional(),
+    stock: z.number().optional(),
     isPromotion: z.boolean().optional(),
     originalPrice: z.number().nullable().optional(),
     promotionName: z.string().nullable().optional(),

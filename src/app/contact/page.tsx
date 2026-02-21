@@ -163,7 +163,7 @@ export default function ContactPage() {
                                     <div>
                                         <p style={{ fontWeight: 'bold' }}>ที่อยู่</p>
                                         <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                                            ต.บ้านเป้า อ.เมือง จ.ลำปาง 52100
+                                            383 ถ.กาญจนวินิช ต.พะวง อ.เมือง จ.สงขลา 90100
                                         </p>
                                     </div>
                                 </div>
@@ -214,7 +214,7 @@ export default function ContactPage() {
                         </CardHeader>
                         <CardContent style={{ padding: 0, overflow: 'hidden', borderRadius: '0 0 0.75rem 0.75rem' }}>
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3795.4!2d99.49!3d18.29!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDE3JzI0LjAiTiA5OcKwMjknMjQuMCJF!5e0!3m2!1sth!2sth!4v1"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d989.7839558138357!2d100.56942377049576!3d7.110254269525753!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304d2d12b2a7590d%3A0x54372dfd81d5955b!2z4Lij4LmJ4Liy4LiZ4LiV4LmJ4LiZ4LmE4Lih4LmJIOC4quC4p-C4meC4hOC4uOC4k-C5geC4lOC4hw!5e0!3m2!1sth!2sth!4v1771097324381!5m2!1sth!2sth"
                                 width="100%"
                                 height="300"
                                 style={{ border: 0 }}
@@ -225,7 +225,7 @@ export default function ContactPage() {
                             />
                             <div style={{ padding: '1rem', backgroundColor: '#f0fdf4' }}>
                                 <a
-                                    href="https://maps.google.com/?q=18.29,99.49"
+                                    href="https://maps.app.goo.gl/r5xobpbgAoqpiH4r9"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{

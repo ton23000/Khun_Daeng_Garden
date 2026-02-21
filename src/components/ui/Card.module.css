@@ -5,11 +5,13 @@
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
     overflow: hidden;
-    transition: box-shadow 0.2s;
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
 }
 
 .card:hover {
+    transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
+    border-color: rgba(44, 85, 48, 0.2);
 }
 
 .header {

@@ -7,7 +7,7 @@ export async function GET() {
             orderBy: { createdAt: 'desc' },
             select: {
                 id: true,
-                name: true,
+                firstName: true, lastName: true,
                 email: true,
                 phone: true,
                 role: true,

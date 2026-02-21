@@ -2,7 +2,7 @@
 
 import { useCart } from '@/lib/CartContext';
 import { Button } from '@/components/ui/Button';
-import { Tree } from '@/data/mockData';
+import { Tree } from '@/types';
 import { useState } from 'react';
 
 export function AddToCartButton({ tree }: { tree: Tree }) {

@@ -13,7 +13,8 @@ interface Review {
     createdAt: string;
     user: {
         id: string;
-        name: string;
+        firstName: string;
+        lastName: string;
     };
 }
 
@@ -176,7 +177,7 @@ export default function ReviewList({ treeId, currentUserId }: ReviewListProps) {
                             {/* Header */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                                 <div>
-                                    <p style={{ fontWeight: 600 }}>{review.user.name}</p>
+                                    <p style={{ fontWeight: 600 }}>{review.user.firstName} {review.user.lastName}</p>
                                     <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
                                         {new Date(review.createdAt).toLocaleDateString('th-TH', {
                                             year: 'numeric',

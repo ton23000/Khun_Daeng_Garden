@@ -256,3 +256,60 @@ export function contactFormEmail(name: string, email: string, phone: string, sub
         </div>
     </div>`;
 }
+
+/**
+ * Generate email verification HTML template
+ */
+export function verificationEmailTemplate(userName: string, verifyLink: string): string {
+    return `
+    <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1)">
+        <div style="background:linear-gradient(135deg,#059669,#10b981);padding:32px;text-align:center;color:white">
+            <h1 style="margin:0;font-size:24px">🌿 คุณแดงการ์เด้น</h1>
+            <p style="margin:8px 0 0">ยืนยันการสมัครสมาชิก</p>
+        </div>
+        <div style="padding:24px">
+            <p style="color:#374151">สวัสดีค่ะ คุณ${userName} 🙏</p>
+            <p style="color:#374151">ขอบคุณที่สมัครสมาชิกกับคุณแดงการ์เด้น!</p>
+            <p style="color:#374151">กรุณากดปุ่มด้านล่างเพื่อยืนยันอีเมลของคุณ:</p>
+            <div style="text-align:center;margin:24px 0">
+                <a href="${verifyLink}" style="display:inline-block;padding:14px 32px;background-color:#059669;color:white!important;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px">
+                    ✅ ยืนยันอีเมล
+                </a>
+            </div>
+            <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px;margin-top:20px;font-size:14px;border-radius:0 8px 8px 0">
+                ⏰ ลิงก์นี้จะหมดอายุใน <strong>24 ชั่วโมง</strong>
+            </div>
+            <p style="margin-top:20px;color:#6b7280;font-size:13px">หากปุ่มไม่ทำงาน คัดลอกลิงก์นี้ไปวางในเบราว์เซอร์:</p>
+            <div style="word-break:break-all;font-size:12px;color:#6b7280;background:#f3f4f6;padding:10px;border-radius:4px">${verifyLink}</div>
+        </div>
+        <div style="background:#f9fafb;padding:16px;text-align:center;color:#6b7280;font-size:12px">
+            © คุณแดงการ์เด้น | ต.บ้านเป้า อ.เมือง จ.ลำปาง
+        </div>
+    </div>`;
+}
+
+/**
+ * Send email verification email
+ */
+export async function sendVerificationEmail({ email, verifyLink, userName }: { email: string; verifyLink: string; userName: string }) {
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'Khun Daeng Garden <onboarding@resend.dev>',
+            to: email,
+            subject: 'ยืนยันอีเมล - Khun Daeng Garden',
+            html: verificationEmailTemplate(userName, verifyLink)
+        });
+
+        if (error) {
+            console.error('❌ Verification email error:', error);
+            return { success: false, error: error.message };
+        }
+
+        console.log('✅ Verification email sent to:', email);
+        return { success: true, data };
+    } catch (error) {
+        console.error('❌ Error sending verification email:', error);
+        return { success: false, error: 'Email service unavailable' };
+    }
+}
+

@@ -13,7 +13,8 @@ interface Booking {
     status: string;
     createdAt: string;
     user: {
-        name: string;
+        firstName: string;
+        lastName: string;
         phone: string;
     };
     items: any[];
@@ -346,7 +347,7 @@ export default function OrdersOverviewPage() {
                                             </span>
                                         </div>
                                         <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                                            {b.user.name} • {new Date(b.createdAt).toLocaleDateString('th-TH')}
+                                            {b.user.firstName} {b.user.lastName} • {new Date(b.createdAt).toLocaleDateString('th-TH')}
                                         </div>
                                         <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#166534', marginTop: '0.25rem' }}>
                                             ฿{b.totalPrice.toLocaleString()}

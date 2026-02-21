@@ -16,6 +16,27 @@ export async function PATCH(
             data: { hidden: Boolean(hidden) }
         });
 
+        // Recalculate tree rating
+        const allReviews = await prisma.review.findMany({
+            where: {
+                treeId: review.treeId,
+                hidden: false
+            },
+            select: { rating: true }
+        });
+
+        const avgRating = allReviews.length > 0
+            ? allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length
+            : 0;
+
+        await prisma.tree.update({
+            where: { id: review.treeId },
+            data: {
+                rating: avgRating,
+                reviewCount: allReviews.length
+            }
+        });
+
         return NextResponse.json(review);
     } catch (error) {
         console.error('Error updating review:', error);

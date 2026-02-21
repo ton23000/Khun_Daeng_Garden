@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { randomUUID } from 'crypto';
+import { sendVerificationEmail } from '@/lib/email';
 
 const registerSchema = z.object({
-    name: z.string().min(1, 'Name is required'),
+    firstName: z.string().min(1, 'First name is required'),
+    lastName: z.string().min(1, 'Last name is required'),
     phone: z.string().min(10, 'Phone number must be at least 10 digits'),
     email: z.string().email().optional().or(z.literal('')),
     password: z.string().min(6, 'Password must be at least 6 characters')
@@ -32,25 +35,49 @@ export async function POST(request: Request) {
             );
         }
 
+        // Generate verification token
+        const verificationToken = randomUUID();
+
         const user = await prisma.user.create({
             data: {
-                name: validated.name,
+                firstName: validated.firstName,
+                lastName: validated.lastName,
                 phone: validated.phone,
                 email: validated.email || null,
                 password: validated.password, // In prod, hash this!
-                role: 'USER'
+                role: 'USER',
+                verified: false,
+                verificationToken
             }
         });
+
+        // Send verification email if email is provided
+        if (validated.email) {
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+            const verifyLink = `${baseUrl}/verify-email?token=${verificationToken}`;
+
+            // Send asynchronously - don't block registration
+            sendVerificationEmail({
+                email: validated.email,
+                verifyLink,
+                userName: `${validated.firstName} ${validated.lastName}`
+            }).catch(err => console.error('Failed to send verification email:', err));
+        }
 
         return NextResponse.json({
             success: true,
             user: {
                 id: user.id,
-                name: user.name,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 phone: user.phone,
                 email: user.email,
-                role: user.role
-            }
+                role: user.role,
+                verified: user.verified
+            },
+            message: validated.email
+                ? 'สมัครสมาชิกสำเร็จ! กรุณาตรวจสอบอีเมลเพื่อยืนยันบัญชี'
+                : 'สมัครสมาชิกสำเร็จ!'
         });
 
     } catch (error) {

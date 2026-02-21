@@ -15,10 +15,12 @@ export async function GET(req: NextRequest) {
             where: { id: userId },
             select: {
                 id: true,
-                name: true,
+                firstName: true,
+                lastName: true,
                 phone: true,
                 email: true,
-                role: true
+                role: true,
+                verified: true
             }
         });
 

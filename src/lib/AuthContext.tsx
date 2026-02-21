@@ -6,12 +6,14 @@ import { useRouter } from 'next/navigation';
 
 export interface User {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
     phone?: string;
     email?: string;
     password?: string;
     role?: 'user' | 'admin';
     image?: string;
+    verified?: boolean;
 }
 
 interface AuthContextType {
@@ -19,10 +21,11 @@ interface AuthContextType {
     isLoading: boolean;
     login: (identifier: string, password: string) => Promise<boolean>;
     loginAdmin: (password: string) => Promise<boolean>;
-    register: (name: string, phone: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+    register: (firstName: string, lastName: string, phone: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
     resetPassword: (identifier: string) => boolean;
     logout: () => void;
     refreshUser: () => Promise<void>;
+    deleteAccount: () => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -75,12 +78,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return login('admin', password);
     };
 
-    const register = async (name: string, phone: string, email: string, password: string) => {
+    const register = async (firstName: string, lastName: string, phone: string, email: string, password: string) => {
         try {
             const res = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, phone, email, password })
+                body: JSON.stringify({ firstName, lastName, phone, email, password })
             });
 
             const data = await res.json();
@@ -138,8 +141,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const deleteAccount = async () => {
+        if (!user) return { success: false, error: 'Not logged in' };
+        try {
+            const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const data = await res.json();
+                return { success: false, error: data.error || 'ลบบัญชีไม่สำเร็จ' };
+            }
+            // Clear auth state
+            setUser(null);
+            localStorage.removeItem('khun_daeng_user');
+            try { await fetch('/api/logout', { method: 'POST' }); } catch (e) { }
+            router.push('/');
+            return { success: true };
+        } catch (error) {
+            console.error('Delete account error:', error);
+            return { success: false, error: 'เกิดข้อผิดพลาด' };
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, isLoading, login, loginAdmin, register, resetPassword, logout, refreshUser }}>
+        <AuthContext.Provider value={{ user, isLoading, login, loginAdmin, register, resetPassword, logout, refreshUser, deleteAccount }}>
             {children}
         </AuthContext.Provider>
     );

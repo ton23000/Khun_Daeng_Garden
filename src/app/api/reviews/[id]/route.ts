@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 // PATCH - Update review
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const userId = req.headers.get('x-user-id');
@@ -12,7 +12,7 @@ export async function PATCH(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const reviewId = params.id;
+        const { id: reviewId } = await params;
         const body = await req.json();
         const { rating, comment, images } = body;
 
@@ -41,7 +41,7 @@ export async function PATCH(
                 user: {
                     select: {
                         id: true,
-                        name: true
+                        firstName: true, lastName: true
                     }
                 }
             }
@@ -72,7 +72,7 @@ export async function PATCH(
 // DELETE - Delete review
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const userId = req.headers.get('x-user-id');
@@ -82,7 +82,7 @@ export async function DELETE(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const reviewId = params.id;
+        const { id: reviewId } = await params;
 
         const review = await prisma.review.findUnique({
             where: { id: reviewId }

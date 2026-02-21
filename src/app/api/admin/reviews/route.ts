@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
         const reviews = await prisma.review.findMany({
             include: {
                 user: {
-                    select: { id: true, name: true, email: true }
+                    select: { id: true, firstName: true, lastName: true, email: true }
                 },
                 tree: {
                     select: { id: true, name: true, images: true }

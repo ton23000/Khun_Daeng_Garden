@@ -8,21 +8,25 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
-    const { user, refreshUser } = useAuth();
-    const [name, setName] = useState('');
+    const { user, refreshUser, deleteAccount } = useAuth();
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
     const [recentBooking, setRecentBooking] = useState<any>(null);
 
     useEffect(() => {
         if (user) {
-            setName(user.name);
+            setFirstName(user.firstName || '');
+            setLastName(user.lastName || '');
             setEmail(user.email || '');
-            setPhone(user.phone);
+            setPhone(user.phone || '');
 
             // Load recent booking
             fetchRecentBooking();
@@ -75,7 +79,7 @@ export default function ProfilePage() {
             const response = await fetch(`/api/users/${user.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, phone })
+                body: JSON.stringify({ firstName, lastName, email, phone })
             });
 
             const data = await response.json();
@@ -100,12 +104,23 @@ export default function ProfilePage() {
     };
 
     const handleCancel = () => {
-        setName(user.name);
+        setFirstName(user.firstName || '');
+        setLastName(user.lastName || '');
         setEmail(user.email || '');
-        setPhone(user.phone);
+        setPhone(user.phone || '');
         setIsEditing(false);
         setError('');
         setSuccess('');
+    };
+
+    const handleDeleteAccount = async () => {
+        setDeleteLoading(true);
+        const result = await deleteAccount();
+        if (!result.success) {
+            setError(result.error || 'ไม่สามารถลบบัญชีได้');
+            setShowDeleteConfirm(false);
+        }
+        setDeleteLoading(false);
     };
 
     return (
@@ -141,13 +156,25 @@ export default function ProfilePage() {
                             </div>
                         )}
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <label style={{ fontWeight: 'bold' }}>ชื่อ-นามสกุล</label>
-                            <Input
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                disabled={!isEditing}
-                            />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                <label style={{ fontWeight: 'bold' }}>ชื่อ</label>
+                                <Input
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    disabled={!isEditing}
+                                    placeholder="ชื่อ"
+                                />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                <label style={{ fontWeight: 'bold' }}>นามสกุล</label>
+                                <Input
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    disabled={!isEditing}
+                                    placeholder="นามสกุล"
+                                />
+                            </div>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -241,22 +268,47 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                {/* Logout Button */}
+                {/* Delete Account Section */}
                 <Card>
                     <CardContent style={{ padding: '2rem', textAlign: 'center' }}>
-                        <Link href="/logout" style={{ textDecoration: 'none', display: 'block' }}>
+                        {!showDeleteConfirm ? (
                             <Button
                                 variant="outline"
                                 fullWidth
+                                onClick={() => setShowDeleteConfirm(true)}
                                 style={{
-                                    color: '#ef4444',
-                                    borderColor: '#ef4444',
+                                    color: '#dc2626',
+                                    borderColor: '#dc2626',
                                     fontWeight: 'bold'
                                 }}
                             >
-                                ออกจากระบบ
+                                ลบบัญชี
                             </Button>
-                        </Link>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <p style={{ color: '#dc2626', fontWeight: 'bold' }}>
+                                    ⚠️ คุณแน่ใจหรือไม่ที่จะลบบัญชี? การกระทำนี้ไม่สามารถเลิกทำได้
+                                </p>
+                                <div style={{ display: 'flex', gap: '1rem' }}>
+                                    <Button
+                                        variant="primary"
+                                        onClick={handleDeleteAccount}
+                                        disabled={deleteLoading}
+                                        style={{ flex: 1, backgroundColor: '#dc2626' }}
+                                    >
+                                        {deleteLoading ? 'กำลังลบ...' : 'ยืนยันลบบัญชี'}
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setShowDeleteConfirm(false)}
+                                        disabled={deleteLoading}
+                                        style={{ flex: 1 }}
+                                    >
+                                        ยกเลิก
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             </div>

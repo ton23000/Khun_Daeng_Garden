@@ -26,10 +26,13 @@ export default async function TreePage({ params }: { params: Promise<{ id: strin
     // Tags are stored as comma-separated string
     const tags = treeData.tags ? treeData.tags.split(',').filter(t => t) : [];
 
-    const tree = {
+    const tree: any = {
         ...treeData,
         images,
-        tags
+        tags,
+        createdAt: treeData.createdAt.toISOString(),
+        updatedAt: treeData.updatedAt.toISOString(),
+        promotionEndDate: treeData.promotionEndDate?.toISOString() || null
     };
 
     return <ProductDetail tree={tree} />;

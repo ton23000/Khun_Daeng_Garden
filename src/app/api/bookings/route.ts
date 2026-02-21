@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
                 },
                 user: {
                     select: {
-                        name: true,
+                        firstName: true, lastName: true,
                         phone: true
                     }
                 },
@@ -82,7 +82,15 @@ export async function POST(req: NextRequest) {
                 userId: validated.userId
             }, { status: 400 });
         }
-        console.log('[Booking API] User found:', userExists.name);
+        console.log('[Booking API] User found:', userExists.firstName, userExists.lastName);
+
+        // Check email verification
+        if (!userExists.verified) {
+            return NextResponse.json({
+                error: 'EMAIL_NOT_VERIFIED',
+                message: 'กรุณายืนยันอีเมลก่อนทำการจอง'
+            }, { status: 403 });
+        }
 
         // Check stock availability and determine if this is a pre-order
         console.log('[Booking API] Checking stock availability...');
@@ -118,6 +126,7 @@ export async function POST(req: NextRequest) {
                 refCode,
                 pickupDate: new Date(validated.items[0].pickupDate),
                 status: isPreOrder ? 'PENDING_APPROVAL' : 'PENDING',
+                isPreorder: isPreOrder, // Save pre-order status
                 items: {
                     create: validated.items.map(item => ({
                         treeId: item.treeId,
@@ -137,9 +146,9 @@ export async function POST(req: NextRequest) {
         });
         console.log('[Booking API] Booking created:', booking.id);
 
-        // Reserve stock only for non-pre-orders
+        // Reserve stock only for regular bookings (not pre-orders)
         if (!isPreOrder) {
-            console.log('[Booking API] Reserving stock...');
+            console.log('[Booking API] Regular booking - Reserving stock...');
             for (const item of validated.items) {
                 await prisma.tree.update({
                     where: { id: item.treeId },

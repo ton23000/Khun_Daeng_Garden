@@ -59,7 +59,8 @@ export default function AdminTreesPage() {
         isPromotion: false,
         originalPrice: 0,
         promotionName: '',
-        promotionEndDate: ''
+        promotionEndDate: '',
+        stock: 0
     });
 
     useEffect(() => {
@@ -322,7 +323,7 @@ export default function AdminTreesPage() {
     };
 
     const resetForm = () => {
-        setFormData({ name: '', description: '', price: 0, category: '', images: [], tags: [], growthTime: '', isPromotion: false, originalPrice: 0, promotionName: '', promotionEndDate: '' });
+        setFormData({ name: '', description: '', price: 0, category: '', images: [], tags: [], growthTime: '', isPromotion: false, originalPrice: 0, promotionName: '', promotionEndDate: '', stock: 0 });
     };
 
     const openEdit = (tree: Tree) => {
@@ -338,7 +339,8 @@ export default function AdminTreesPage() {
             isPromotion: tree.isPromotion || false,
             originalPrice: tree.originalPrice || 0,
             promotionName: tree.promotionName || '',
-            promotionEndDate: tree.promotionEndDate ? new Date(tree.promotionEndDate).toISOString().split('T')[0] : ''
+            promotionEndDate: tree.promotionEndDate ? new Date(tree.promotionEndDate).toISOString().split('T')[0] : '',
+            stock: tree.stock || 0
         });
         setIsModalOpen(true);
     };
@@ -491,8 +493,9 @@ export default function AdminTreesPage() {
                                         required
                                     />
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                                     <Input label="ราคา (บาท)" type="number" value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} required />
+                                    <Input label="สต็อกสินค้า" type="number" value={formData.stock || 0} onChange={e => setFormData({ ...formData, stock: Number(e.target.value) })} required />
 
                                     <div>
                                         <label className="block text-sm font-medium mb-1">หมวดหมู่</label>

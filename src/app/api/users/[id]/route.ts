@@ -5,7 +5,8 @@ import { z } from 'zod';
 const UpdateUserSchema = z.object({
     email: z.string().email().optional().or(z.literal('')),
     phone: z.string().regex(/^\d{10}$/, 'Phone must be 10 digits').optional(),
-    name: z.string().min(1).optional()
+    firstName: z.string().min(1).optional(),
+    lastName: z.string().min(1).optional()
 });
 
 // PATCH - Update user profile
@@ -65,7 +66,8 @@ export async function PATCH(
 
         // Prepare update data
         const updateData: any = {};
-        if (validated.name !== undefined) updateData.name = validated.name;
+        if (validated.firstName !== undefined) updateData.firstName = validated.firstName;
+        if (validated.lastName !== undefined) updateData.lastName = validated.lastName;
         if (validated.email !== undefined) {
             updateData.email = validated.email === '' ? null : validated.email;
         }
@@ -77,7 +79,8 @@ export async function PATCH(
             data: updateData,
             select: {
                 id: true,
-                name: true,
+                firstName: true,
+                lastName: true,
                 phone: true,
                 email: true,
                 role: true
@@ -99,6 +102,35 @@ export async function PATCH(
 
         return NextResponse.json({
             error: 'Failed to update user',
+            message: error?.message
+        }, { status: 500 });
+    }
+}
+
+// DELETE - Delete user account
+export async function DELETE(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+
+        // Verify user exists
+        const user = await prisma.user.findUnique({ where: { id } });
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        // Delete user (cascade will handle related records)
+        await prisma.user.delete({ where: { id } });
+
+        console.log(`[User Delete] User ${id} deleted successfully`);
+
+        return NextResponse.json({ success: true, message: 'ลบบัญชีสำเร็จ' });
+    } catch (error: any) {
+        console.error('[User Delete] Error:', error);
+        return NextResponse.json({
+            error: 'ไม่สามารถลบบัญชีได้',
             message: error?.message
         }, { status: 500 });
     }

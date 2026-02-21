@@ -25,7 +25,8 @@ interface Booking {
     deposit: number;
     createdAt: string;
     user: {
-        name: string;
+        firstName: string;
+        lastName: string;
         phone: string;
     };
     items: BookingItem[];
@@ -70,7 +71,7 @@ export default function AdminActivitiesPage() {
             const query = searchQuery.toLowerCase();
             result = result.filter(b =>
                 b.refCode.toLowerCase().includes(query) ||
-                b.user.name.toLowerCase().includes(query) ||
+                `${b.user.firstName} ${b.user.lastName}`.toLowerCase().includes(query) ||
                 b.user.phone.includes(query)
             );
         }
@@ -176,7 +177,7 @@ export default function AdminActivitiesPage() {
                                     {/* Customer */}
                                     <div>
                                         <p style={{ fontSize: '0.875rem', fontWeight: 600 }}>
-                                            {booking.user.name}
+                                            {booking.user.firstName} {booking.user.lastName}
                                         </p>
                                         <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
                                             {booking.user.phone}

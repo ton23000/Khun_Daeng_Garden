@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
             await sendPasswordResetEmail({
                 email: user.email!,
                 resetLink,
-                userName: user.name
+                userName: `${user.firstName} ${user.lastName}`
             });
             console.log('Email sent successfully');
         } catch (emailError: any) {

@@ -7,6 +7,8 @@ import { useNotification } from '@/lib/NotificationContext';
 import { Button } from './ui/Button';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Menu, X } from 'lucide-react';
+import styles from './navbar.module.css';
 
 export function Navbar() {
     const { items } = useCart();
@@ -19,97 +21,82 @@ export function Navbar() {
     const [showServices, setShowServices] = useState(false);
     const [showAbout, setShowAbout] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-    const dropdownStyle: React.CSSProperties = {
-        position: 'absolute',
-        top: '100%',
-        left: 0,
-        backgroundColor: 'white',
-        border: '1px solid #e5e7eb',
-        borderRadius: '0.5rem',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-        zIndex: 50,
-        minWidth: '200px',
-        padding: '0.5rem 0'
+    const [resending, setResending] = useState(false);
+
+    const handleResendVerification = async () => {
+        setResending(true);
+        try {
+            const res = await fetch('/api/auth/verify', { method: 'POST' });
+            const data = await res.json();
+            if (res.ok) {
+                alert('ส่งอีเมลยืนยันใหม่แล้ว! กรุณาตรวจสอบอีเมลของคุณ');
+            } else {
+                alert(data.error || 'ไม่สามารถส่งอีเมลได้');
+            }
+        } catch (error) {
+            alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
+        } finally {
+            setResending(false);
+        }
     };
-
-    const linkStyle: React.CSSProperties = {
-        display: 'block',
-        padding: '0.5rem 1rem',
-        color: '#374151',
-        textDecoration: 'none',
-        fontSize: '0.875rem'
-    };
-
-    const topBarStyle: React.CSSProperties = {
-        backgroundColor: '#433422', // Dark Brown from image
-        color: '#ffffff',
-        fontSize: '0.75rem',
-        padding: '0.5rem 0'
-    };
-
-    const middleBarStyle: React.CSSProperties = {
-        backgroundColor: '#e6f5e6', // Light Green hint from image
-        padding: '1.5rem 0',
-        borderBottom: '1px solid #e5e7eb'
-    };
-
-    const bottomBarStyle: React.CSSProperties = {
-        backgroundColor: '#f6d896', // Pastel Orange/Yellow from image
-        padding: '0.75rem 0'
-    };
-
-    // ... (Keep existing dropdown styles)
 
     return (
-        <header>
+        <header className={`${styles.header} glass`}>
+            {/* Verification Banner */}
+            {user && user.role !== 'admin' && user.verified === false && (
+                <div className={styles.verificationBanner}>
+                    <span>📧 กรุณายืนยันอีเมลของคุณเพื่อใช้งานได้เต็มรูปแบบ</span>
+                    <button
+                        onClick={handleResendVerification}
+                        disabled={resending}
+                        className={styles.verifyButton}
+                    >
+                        {resending ? 'กำลังส่ง...' : 'ส่งอีเมลยืนยันอีกครั้ง'}
+                    </button>
+                </div>
+            )}
+
             {/* 1. Top Bar */}
-            <div style={topBarStyle}>
-                <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท</div>
-                    <div style={{ display: 'flex', gap: '1.5rem' }}>
+            <div className={`${styles.topBar} hidden-mobile`}>
+                <div className={`container ${styles.topBarContainer}`}>
+                    <div className={styles.topBarText}>ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท</div>
+                    <div className={styles.topBarLinks}>
                         <span>สายด่วน : +66 81 234 5678</span>
-                        <Link href="/faq" style={{ color: 'white', textDecoration: 'none' }}>คำถามที่พบบ่อย</Link>
-                        <Link href="/about" style={{ color: 'white', textDecoration: 'none' }}>เกี่ยวกับเรา</Link>
-                        <Link href="/contact" style={{ color: 'white', textDecoration: 'none' }}>ติดต่อ</Link>
+                        <Link href="/faq" className={styles.topBarLink}>คำถามที่พบบ่อย</Link>
+                        <Link href="/about" className={styles.topBarLink}>เกี่ยวกับเรา</Link>
+                        <Link href="/contact" className={styles.topBarLink}>ติดต่อ</Link>
                     </div>
                 </div>
             </div>
 
             {/* 2. Middle Bar */}
-            <div style={middleBarStyle}>
-                <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '2rem' }}>
+            <div className={styles.middleBar}>
+                <div className={`container ${styles.middleBarContainer}`}>
                     {/* Logo */}
-                    <Link href="/" style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--secondary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '2.5rem' }}>🌿</span> Khun Daeng Garden
+                    <Link href="/" className={styles.logo}>
+                        <span className={styles.logoIcon}>🌿</span> Khun Daeng Garden
                     </Link>
 
                     {/* Search Bar */}
-                    <div style={{ flex: 1, maxWidth: '600px', position: 'relative' }}>
+                    <div className={styles.searchWrapper}>
                         <input
                             type="text"
                             placeholder="ค้นหาสินค้า..."
-                            style={{
-                                width: '100%',
-                                padding: '0.75rem 1rem',
-                                paddingRight: '3rem',
-                                borderRadius: '9999px',
-                                border: '1px solid #d1fae5',
-                                backgroundColor: '#f0fdf4',
-                                outline: 'none'
-                            }}
+                            className={styles.searchInput}
                         />
-                        <button style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#166534' }}>
+                        <button className={styles.searchButton}>
                             🔍
                         </button>
                     </div>
 
                     {/* Actions (User, Heart, Cart) */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                    <div className={styles.actions}>
                         {/* User / Login */}
                         {user ? (
                             <div
-                                style={{ position: 'relative', cursor: 'pointer' }}
+                                className={styles.dropdownWrapper}
                                 onMouseEnter={() => setShowUserMenu(true)}
                                 onMouseLeave={() => setShowUserMenu(false)}
                             >
@@ -117,18 +104,18 @@ export function Navbar() {
                                     <div style={{ width: '40px', height: '40px', backgroundColor: 'var(--primary)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.2rem' }}>
                                         👤
                                     </div>
-                                    <div>
+                                    <div className="hidden-mobile">
                                         <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>ยินดีต้อนรับ</div>
-                                        <div style={{ fontWeight: 'bold', lineHeight: 1 }}>{user.name}</div>
+                                        <div style={{ fontWeight: 'bold', lineHeight: 1 }}>{user.firstName} {user.lastName}</div>
                                     </div>
                                 </div>
 
                                 {showUserMenu && (
-                                    <div style={{ ...dropdownStyle, top: '100%', right: 0, left: 'auto' }}>
-                                        <Link href="/profile" style={linkStyle}>โปรไฟล์</Link>
-                                        <Link href="/profile/bookings" style={linkStyle}>การจองของฉัน</Link>
+                                    <div className={`${styles.dropdownMenu} ${styles.dropdownMenuLeft}`}>
+                                        <Link href="/profile" className={styles.dropdownLink}>โปรไฟล์</Link>
+                                        <Link href="/profile/bookings" className={styles.dropdownLink}>การจองของฉัน</Link>
                                         <hr style={{ margin: '0.5rem 0', border: 'none', borderTop: '1px solid #e5e7eb' }} />
-                                        <Link href="/logout" style={{ ...linkStyle, color: '#ef4444', fontWeight: 'bold' }}>ออกจากระบบ</Link>
+                                        <Link href="/logout" className={styles.dropdownLink} style={{ color: '#ef4444', fontWeight: 'bold' }}>ออกจากระบบ</Link>
                                     </div>
                                 )}
                             </div>
@@ -137,7 +124,7 @@ export function Navbar() {
                         )}
 
                         {/* Notifications */}
-                        <div style={{ position: 'relative', cursor: 'pointer' }}>
+                        <div className={styles.dropdownWrapper}>
                             <div
                                 onClick={() => {
                                     setShowNotifications(!showNotifications);
@@ -257,49 +244,63 @@ export function Navbar() {
                                 </span>
                             )}
                         </Link>
+
+                        {/* Hamburger Menu Toggle (Mobile Only) */}
+                        <button
+                            className="hidden-desktop"
+                            onClick={() => setShowMobileMenu(!showMobileMenu)}
+                            style={{ border: 'none', background: 'none', padding: '0.5rem', color: 'var(--foreground)' }}
+                        >
+                            {showMobileMenu ? <X size={28} /> : <Menu size={28} />}
+                        </button>
                     </div>
                 </div>
             </div>
 
             {/* 3. Bottom Bar */}
-            <div style={bottomBarStyle}>
-                <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className={`${styles.bottomBar} ${showMobileMenu ? styles.showMobileMenu : ''}`}>
+                <div className={`container ${styles.bottomBarContainer}`}>
                     {/* Main Nav Links */}
-                    <div style={{ display: 'flex', gap: '2rem', fontWeight: 'bold', color: '#4b3b28' }}>
+                    <div className={styles.mainNav}>
                         <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>หน้าหลัก</Link>
 
                         {/* Dropdown: Shop */}
-                        <div style={{ position: 'relative', cursor: 'pointer' }} onMouseEnter={() => setShowServices(true)} onMouseLeave={() => setShowServices(false)}>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <div className={styles.dropdownWrapper} onMouseEnter={() => setShowServices(true)} onMouseLeave={() => setShowServices(false)}>
+                            <span className={styles.dropdownTitle}>
                                 ร้านค้า ▾
                             </span>
                             {showServices && (
-                                <div style={{ ...dropdownStyle, top: '100%', left: 0 }}>
-                                    <Link href="/shop" style={linkStyle}>สินค้าทั้งหมด</Link>
-                                    <Link href="/promotion" style={linkStyle}>โปรโมชั่น</Link>
+                                <div className={styles.dropdownMenu}>
+                                    <Link href="/shop" className={styles.dropdownLink}>สินค้าทั้งหมด</Link>
+                                    <Link href="/promotion" className={styles.dropdownLink}>โปรโมชั่น</Link>
                                 </div>
                             )}
                         </div>
 
                         {/* Dropdown: About */}
-                        <div style={{ position: 'relative', cursor: 'pointer' }} onMouseEnter={() => setShowAbout(true)} onMouseLeave={() => setShowAbout(false)}>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <div className={styles.dropdownWrapper} onMouseEnter={() => setShowAbout(true)} onMouseLeave={() => setShowAbout(false)}>
+                            <span className={styles.dropdownTitle}>
                                 บริการของเรา ▾
                             </span>
                             {showAbout && (
-                                <div style={{ ...dropdownStyle, top: '100%', left: 0 }}>
-                                    <Link href="/about" style={linkStyle}>เรื่องราวของเรา</Link>
-                                    <Link href="/services" style={linkStyle}>บริการ</Link>
-                                    <Link href="/contact" style={linkStyle}>ติดต่อเรา</Link>
+                                <div className={styles.dropdownMenu}>
+                                    <Link href="/about" className={styles.dropdownLink}>เรื่องราวของเรา</Link>
+                                    <Link href="/services" className={styles.dropdownLink}>บริการ</Link>
+                                    <Link href="/articles" className={styles.dropdownLink}>บทความน่ารู้</Link>
+                                    <Link href="/customer-service" className={styles.dropdownLink}>บริการลูกค้า</Link>
+                                    <Link href="/faq" className={styles.dropdownLink}>FAQ คำถามที่พบบ่อย</Link>
+                                    <Link href="/contact" className={styles.dropdownLink}>ติดต่อเรา</Link>
                                 </div>
                             )}
                         </div>
 
-                        <Link href="/profile/bookings" style={{ textDecoration: 'none', color: 'inherit' }}>การจองของฉัน</Link>
+                        {user && (
+                            <Link href="/profile/bookings" style={{ textDecoration: 'none', color: 'inherit' }}>การจองของฉัน</Link>
+                        )}
                     </div>
 
                     {/* Social Icons & Admin */}
-                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <div className={styles.socialAdmin}>
                         {user?.role === 'admin' && (
                             <Link href="/admin/dashboard" style={{ textDecoration: 'none' }}>
                                 <span style={{ backgroundColor: '#166534', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '4px', fontSize: '0.875rem' }}>Admin Panel</span>

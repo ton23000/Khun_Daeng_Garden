@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
         // Find valid reset code
         const resetCode = await prisma.passwordReset.findFirst({
             where: {
-                phone,
-                code,
+                email: phone, // Actually email is used for reset in schema
+                token: code,  // Token is the code
                 used: false,
                 expiresAt: {
                     gt: new Date() // Not expired

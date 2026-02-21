@@ -71,6 +71,7 @@ export async function POST(
             });
 
             // Reserve stock
+            /*
             for (const item of booking.items) {
                 await prisma.tree.update({
                     where: { id: item.treeId },
@@ -79,6 +80,8 @@ export async function POST(
                     }
                 });
             }
+            */
+            console.log('[Admin Action] Booking approved - Stock reservation DISABLED');
 
             // Notify customer
             await prisma.notification.create({

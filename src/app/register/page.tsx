@@ -12,7 +12,8 @@ import Link from 'next/link';
 export default function RegisterPage() {
     const router = useRouter();
     const { register } = useAuth();
-    const [name, setName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -47,8 +48,8 @@ export default function RegisterPage() {
             return;
         }
 
-        if (name && phone && email && password) {
-            const result = await register(name, phone, email, password);
+        if (firstName && lastName && phone && email && password) {
+            const result = await register(firstName, lastName, phone, email, password);
             if (!result.success) {
                 setError(result.error || 'การสมัครสมาชิกไม่สำเร็จ');
             }
@@ -65,10 +66,17 @@ export default function RegisterPage() {
                 <CardContent>
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <Input
-                            label="ชื่อ-นามสกุล"
-                            placeholder="สมชาย ใจดี"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            label="ชื่อ"
+                            placeholder="สมชาย"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            required
+                        />
+                        <Input
+                            label="นามสกุล"
+                            placeholder="ใจดี"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
                             required
                         />
                         <Input
@@ -87,16 +95,48 @@ export default function RegisterPage() {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         />
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <Input
                                 label="รหัสผ่าน"
                                 type="password"
-                                placeholder="อย่างน้อย 6 ตัวอักษร"
+                                placeholder="สร้างรหัสผ่านของคุณ"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
-                            <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>* อย่างน้อย 6 ตัวอักษร</p>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: '1fr 1fr',
+                                gap: '8px',
+                                fontSize: '0.8rem',
+                                backgroundColor: '#f9f9f9',
+                                padding: '10px',
+                                borderRadius: '6px',
+                                marginTop: '4px'
+                            }}>
+                                {[
+                                    { label: '8 ตัวอักษรขึ้นไป', valid: password.length >= 8 },
+                                    { label: 'ตัวพิมพ์เล็ก (a-z)', valid: /[a-z]/.test(password) },
+                                    { label: 'ตัวพิมพ์ใหญ่ (A-Z)', valid: /[A-Z]/.test(password) },
+                                    { label: 'ตัวเลข (0-9)', valid: /[0-9]/.test(password) },
+                                ].map((req, index) => (
+                                    <div key={index} style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        color: req.valid ? '#10b981' : '#9ca3af',
+                                        transition: 'color 0.2s'
+                                    }}>
+                                        <span style={{
+                                            fontSize: '1.2em',
+                                            lineHeight: 1
+                                        }}>
+                                            {req.valid ? '✓' : '•'}
+                                        </span>
+                                        {req.label}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                         <Input
                             label="ยืนยันรหัสผ่าน"

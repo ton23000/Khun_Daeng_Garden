@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
 import AdvancedFilters, { FilterState } from '@/components/AdvancedFilters';
 import FavoriteButton from '@/components/FavoriteButton';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 interface Tree {
     id: string;
@@ -14,23 +15,34 @@ interface Tree {
     category: string;
     status: string;
     images: string;
-    tags: string;
+    tags: string | string[];
     stock: number;
     reserved: number;
     rating: number;
     reviewCount: number;
 }
 
-export default function ShopPage() {
+function ShopContent() {
+    const searchParams = useSearchParams();
+    const initialQuery = searchParams.get('q') || '';
+
     const [trees, setTrees] = useState<Tree[]>([]);
     const [filteredTrees, setFilteredTrees] = useState<Tree[]>([]);
     const [categories, setCategories] = useState<string[]>([]);
     const [allTags, setAllTags] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState(initialQuery);
 
     useEffect(() => {
         fetchTrees();
     }, []);
+
+    // Filter whenever query or trees change
+    useEffect(() => {
+        if (trees.length > 0) {
+            handleSearch(initialQuery);
+        }
+    }, [trees, initialQuery]);
 
     const fetchTrees = async () => {
         try {
@@ -38,7 +50,7 @@ export default function ShopPage() {
             if (res.ok) {
                 const data = await res.json();
                 setTrees(data);
-                setFilteredTrees(data);
+                // Initial filter will be handled by the effect above
 
                 // Extract unique categories
                 const uniqueCategories = Array.from(new Set(data.map((t: Tree) => t.category))).filter(Boolean) as string[];
@@ -59,13 +71,42 @@ export default function ShopPage() {
             }
         } catch (error) {
             console.error('Failed to fetch trees:', error);
+            setIsLoading(false); // Stop loading on error
         } finally {
-            setIsLoading(false);
+            // Loading state will be managed after filtering
         }
+    };
+
+    const handleSearch = (query: string) => {
+        let filtered = [...trees];
+
+        if (query) {
+            const lowerQuery = query.toLowerCase();
+            filtered = filtered.filter(t =>
+                t.name.toLowerCase().includes(lowerQuery) ||
+                t.category.toLowerCase().includes(lowerQuery) ||
+                (t.tags && (
+                    typeof t.tags === 'string'
+                        ? t.tags.toLowerCase().includes(lowerQuery)
+                        : Array.isArray(t.tags) && t.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+                ))
+            );
+        }
+
+        setFilteredTrees(filtered);
+        setIsLoading(false);
     };
 
     const handleFilterChange = (filters: FilterState) => {
         let filtered = [...trees];
+
+        // Apply Search
+        if (initialQuery) {
+            const lowerQuery = initialQuery.toLowerCase();
+            filtered = filtered.filter(t =>
+                t.name.toLowerCase().includes(lowerQuery)
+            );
+        }
 
         // Filter by price
         if (filters.minPrice) {
@@ -112,8 +153,12 @@ export default function ShopPage() {
             <ScrollAnimation animation="fade-up">
                 <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
                     <span style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '0.5rem' }}>Shop Collection</span>
-                    <h1 style={{ fontSize: '3rem', marginBottom: '1rem', fontFamily: 'var(--font-playfair), serif', fontWeight: 'bold', color: 'var(--foreground)' }}>สินค้ามาใหม่</h1>
-                    <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>เลือกชมและจองต้นไม้ที่คุณชื่นชอบ</p>
+                    <h1 style={{ fontSize: '3rem', marginBottom: '1rem', fontFamily: 'var(--font-playfair), serif', fontWeight: 'bold', color: 'var(--foreground)' }}>
+                        {initialQuery ? `ผลการค้นหา "${initialQuery}"` : 'สินค้ามาใหม่'}
+                    </h1>
+                    <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>
+                        {initialQuery ? `พบ ${filteredTrees.length} รายการ` : 'เลือกชมและจองต้นไม้ที่คุณชื่นชอบ'}
+                    </p>
                 </header>
             </ScrollAnimation>
 
@@ -130,7 +175,7 @@ export default function ShopPage() {
             </div>
 
             {/* Product Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
                 {filteredTrees.map((tree, index) => {
                     // Get first image from array
                     let imageUrl = '/placeholder-tree.jpg';
@@ -154,13 +199,12 @@ export default function ShopPage() {
                                 <Card style={{
                                     border: 'none',
                                     boxShadow: 'none',
-                                    backgroundColor: '#f9fafb',
+                                    backgroundColor: '#fdfaf6',
                                     overflow: 'hidden',
-                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                                     cursor: 'pointer',
                                     opacity: tree.status === 'AVAILABLE' ? 1 : 0.7
                                 }}
-                                    className="hover:shadow-xl hover:-translate-y-2"
+                                    className="hover-card"
                                 >
                                     <div style={{ position: 'relative', height: '320px', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
                                         <img
@@ -233,5 +277,13 @@ export default function ShopPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function ShopPage() {
+    return (
+        <Suspense fallback={<div className="container" style={{ padding: '2rem 1rem', textAlign: 'center' }}><p>กำลังโหลด...</p></div>}>
+            <ShopContent />
+        </Suspense>
     );
 }

@@ -44,7 +44,14 @@ export default function CartPage() {
             return;
         }
 
-        console.log('[Cart] Creating booking for user:', user.id, user.name);
+        // Check email verification
+        if (!user.verified) {
+            alert('กรุณายืนยันอีเมลก่อนทำการจอง\nตรวจสอบกล่องจดหมายของคุณ หรือไปที่หน้ายืนยันอีเมล');
+            router.push('/verify-email');
+            return;
+        }
+
+        console.log('[Cart] Creating booking for user:', user.id, user.firstName, user.lastName);
 
         try {
             const res = await fetch('/api/bookings', {
@@ -52,7 +59,7 @@ export default function CartPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: user.id, // Use UUID
-                    userName: user.name,
+                    userName: `${user.firstName} ${user.lastName}`,
                     items: items.map(item => ({
                         treeId: item.id,
                         treeName: item.name,
@@ -84,7 +91,7 @@ export default function CartPage() {
             localStorage.setItem('last_booking', JSON.stringify(booking));
 
             addNotification(
-                user.phone,
+                user.phone || '',
                 `การจอง #${booking.refCode} ของคุณได้รับการบันทึกแล้ว กรุณาชำระเงินมัดจำ`,
                 'success'
             );
@@ -115,6 +122,15 @@ export default function CartPage() {
             {!user && (
                 <div style={{ backgroundColor: '#fef3c7', color: '#92400e', padding: '1rem', borderRadius: '0.5rem', marginBottom: '2rem' }}>
                     ⚠️ กรุณา <Link href="/login" style={{ textDecoration: 'underline', fontWeight: 'bold' }}>เข้าสู่ระบบ</Link> ก่อนยืนยันการจอง
+                </div>
+            )}
+
+            {user && !user.verified && (
+                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', padding: '1rem', borderRadius: '0.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <span>📧 กรุณายืนยันอีเมลก่อนทำการจอง</span>
+                    <Link href="/verify-email" style={{ backgroundColor: '#dc2626', color: 'white', padding: '0.375rem 1rem', borderRadius: '0.375rem', fontWeight: 'bold', textDecoration: 'none', fontSize: '0.875rem' }}>
+                        ยืนยันอีเมล
+                    </Link>
                 </div>
             )}
 

@@ -32,7 +32,8 @@ interface Booking {
     createdAt: string;
     slipUrl: string | null;
     user: {
-        name: string;
+        firstName: string;
+        lastName: string;
         phone: string;
     };
     items: BookingItem[];
@@ -112,7 +113,7 @@ export default function OrderStatusPage() {
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
             result = result.filter(b =>
-                b.user.name.toLowerCase().includes(query) ||
+                `${b.user.firstName} ${b.user.lastName}`.toLowerCase().includes(query) ||
                 b.user.phone.includes(query) ||
                 b.refCode.toLowerCase().includes(query)
             );
@@ -126,8 +127,8 @@ export default function OrderStatusPage() {
 
                 switch (sortConfig.key) {
                     case 'customer':
-                        aValue = a.user.name;
-                        bValue = b.user.name;
+                        aValue = `${a.user.firstName} ${a.user.lastName}`;
+                        bValue = `${b.user.firstName} ${b.user.lastName}`;
                         break;
                     case 'date':
                         aValue = new Date(a.createdAt).getTime();
@@ -330,7 +331,7 @@ export default function OrderStatusPage() {
                                     <tr key={booking.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{booking.refCode}</td>
                                         <td style={{ padding: '1rem' }}>
-                                            <div>{booking.user.name}</div>
+                                            <div>{booking.user.firstName} {booking.user.lastName}</div>
                                             <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{booking.user.phone}</div>
                                         </td>
                                         <td style={{ padding: '1rem' }}>

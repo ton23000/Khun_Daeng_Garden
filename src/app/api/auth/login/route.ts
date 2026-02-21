@@ -18,7 +18,8 @@ export async function POST(request: Request) {
                 success: true,
                 user: {
                     id: 'admin',
-                    name: 'Admin',
+                    firstName: 'Admin',
+                    lastName: '',
                     phone: '0000000000',
                     role: 'admin',
                     email: 'admin@khundaeng.com'
@@ -76,10 +77,11 @@ export async function POST(request: Request) {
             success: true,
             user: {
                 id: user.id,
-                name: user.name,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 phone: user.phone,
                 email: user.email,
-                role: user.role.toLowerCase() // Ensure lowercase for frontend compatibility
+                role: user.role.toLowerCase()
             }
         });
 

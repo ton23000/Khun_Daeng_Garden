@@ -14,7 +14,7 @@ interface Review {
     hidden: boolean;
     helpful: number;
     createdAt: string;
-    user: { id: string; name: string; email: string };
+    user: { id: string; firstName: string; lastName: string; email: string };
     tree: { id: string; name: string; images: string };
 }
 
@@ -158,7 +158,7 @@ export default function AdminReviewsPage() {
                                         {/* Review content */}
                                         <div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                                <span style={{ fontWeight: 'bold' }}>{review.user.name}</span>
+                                                <span style={{ fontWeight: 'bold' }}>{review.user.firstName} {review.user.lastName}</span>
                                                 <span style={{ color: '#f59e0b', fontSize: '1rem' }}>{renderStars(review.rating)}</span>
                                                 {review.hidden && (
                                                     <span style={{

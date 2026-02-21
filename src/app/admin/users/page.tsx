@@ -9,7 +9,8 @@ import { SortableTableHeader } from '@/components/admin/SortableTableHeader';
 
 interface User {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
     phone: string;
     role: string;
@@ -82,7 +83,7 @@ export default function AdminUsersPage() {
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
             result = result.filter(u =>
-                u.name.toLowerCase().includes(query) ||
+                `${u.firstName} ${u.lastName}`.toLowerCase().includes(query) ||
                 u.email?.toLowerCase().includes(query) ||
                 u.phone?.includes(query)
             );
@@ -96,8 +97,8 @@ export default function AdminUsersPage() {
 
                 switch (sortConfig.key) {
                     case 'name':
-                        aValue = a.name;
-                        bValue = b.name;
+                        aValue = `${a.firstName} ${a.lastName}`;
+                        bValue = `${b.firstName} ${b.lastName}`;
                         break;
                     case 'email':
                         aValue = a.email || '';
@@ -198,7 +199,7 @@ export default function AdminUsersPage() {
                             ) : (
                                 filteredUsers.map(user => (
                                     <tr key={user.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                                        <td style={{ padding: '1rem', fontWeight: 500 }}>{user.name}</td>
+                                        <td style={{ padding: '1rem', fontWeight: 500 }}>{user.firstName} {user.lastName}</td>
                                         <td style={{ padding: '1rem' }}>{user.email || '-'}</td>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{user.phone || '-'}</td>
                                         <td style={{ padding: '1rem' }}>
@@ -241,7 +242,7 @@ export default function AdminUsersPage() {
                     <CardContent style={{ padding: '1.5rem' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                             <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-                                ประวัติการสั่งซื้อของ {selectedUser.name}
+                                ประวัติการสั่งซื้อของ {selectedUser.firstName} {selectedUser.lastName}
                             </h2>
                             <button
                                 onClick={() => setSelectedUser(null)}

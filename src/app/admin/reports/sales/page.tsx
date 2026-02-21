@@ -14,7 +14,8 @@ interface Booking {
     status: string;
     createdAt: string;
     user: {
-        name: string;
+        firstName: string;
+        lastName: string;
     };
 }
 
@@ -317,7 +318,7 @@ export default function SalesOverviewPage() {
                                     <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: idx < 4 ? '1px solid #f3f4f6' : 'none' }}>
                                         <div>
                                             <div style={{ fontWeight: 500 }}>#{b.refCode}</div>
-                                            <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{b.user.name}</div>
+                                            <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{b.user.firstName} {b.user.lastName}</div>
                                         </div>
                                         <span style={{ fontWeight: 'bold', color: '#166534' }}>฿{b.totalPrice.toLocaleString()}</span>
                                     </div>

@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma';
 // POST - Mark review as helpful
 export async function POST(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const reviewId = params.id;
+        const { id: reviewId } = await params;
 
         const review = await prisma.review.update({
             where: { id: reviewId },

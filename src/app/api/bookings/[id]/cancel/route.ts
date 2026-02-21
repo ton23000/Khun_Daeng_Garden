@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const id = params.id;
+        const { id } = await params;
 
         // Find booking first to check status
         const booking = await prisma.booking.findUnique({
@@ -42,16 +42,22 @@ export async function PATCH(
             }
         });
 
-        // Release reserved stock
-        for (const item of updated.items) {
-            await prisma.tree.update({
-                where: { id: item.treeId },
-                data: {
-                    reserved: {
-                        decrement: item.quantity
+        // Release reserved stock only for regular bookings (not pre-orders)
+        if (!booking.isPreorder) {
+            console.log('[Booking Cancel] Regular booking - Releasing reserved stock...');
+            for (const item of updated.items) {
+                await prisma.tree.update({
+                    where: { id: item.treeId },
+                    data: {
+                        reserved: {
+                            decrement: item.quantity
+                        }
                     }
-                }
-            });
+                });
+            }
+            console.log('[Booking Cancel] Reserved stock released');
+        } else {
+            console.log('[Booking Cancel] Pre-order cancelled - No stock to release');
         }
 
         // Create notification for admin

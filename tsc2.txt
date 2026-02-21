@@ -1,0 +1,20 @@
+﻿auth.ts(1,22): error TS2307: Cannot find module 'next-auth' or its corresponding type declarations.
+auth.ts(2,26): error TS2307: Cannot find module 'next-auth/jwt' or its corresponding type declarations.
+auth.ts(3,36): error TS2307: Cannot find module 'next-auth' or its corresponding type declarations.
+auth.ts(4,20): error TS2307: Cannot find module 'next-auth/providers/google' or its corresponding type declarations.
+auth.ts(5,31): error TS2307: Cannot find module '@auth/prisma-adapter' or its corresponding type declarations.
+auth.ts(7,25): error TS2307: Cannot find module 'next-auth/providers/credentials' or its corresponding type declarations.
+auth.ts(23,29): error TS7006: Parameter 'credentials' implicitly has an 'any' type.
+src/app/cart/page.tsx(94,17): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/app/profile/page.tsx(29,22): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'SetStateAction<string>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<string>'.
+src/app/profile/page.tsx(110,18): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'SetStateAction<string>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<string>'.
+src/app/shop/[id]/page.tsx(18,25): error TS2322: Type '{ name: string; id: string; createdAt: Date; updatedAt: Date; status: string; rating: number; images: string; category: string; description: string; price: number; tags: string; growthTime: string | null; ... 7 more ...; promotionEndDate: Date | null; }' is not assignable to type 'Tree'.
+  Types of property 'images' are incompatible.
+    Type 'string' is not assignable to type 'string[]'.
+src/app/trees/[id]/page.tsx(35,27): error TS2322: Type '{ images: string[]; tags: string[]; name: string; id: string; createdAt: Date; updatedAt: Date; status: string; rating: number; category: string; description: string; price: number; growthTime: string | null; ... 7 more ...; promotionEndDate: Date | null; }' is not assignable to type 'Tree'.
+  Types of property 'promotionEndDate' are incompatible.
+    Type 'Date | null' is not assignable to type 'string | null | undefined'.
+      Type 'Date' is not assignable to type 'string'.

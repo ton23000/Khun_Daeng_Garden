@@ -10,7 +10,9 @@ export async function GET(req: NextRequest) {
         const limit = parseInt(searchParams.get('limit') || '10');
         const offset = parseInt(searchParams.get('offset') || '0');
 
-        const where: any = {};
+        const where: any = {
+            hidden: false // Only show visible reviews by default
+        };
         if (treeId) where.treeId = treeId;
         if (userId) where.userId = userId;
 
@@ -20,7 +22,7 @@ export async function GET(req: NextRequest) {
                 user: {
                     select: {
                         id: true,
-                        name: true
+                        firstName: true, lastName: true
                     }
                 },
                 tree: {
@@ -117,7 +119,7 @@ export async function POST(req: NextRequest) {
                 user: {
                     select: {
                         id: true,
-                        name: true
+                        firstName: true, lastName: true
                     }
                 }
             }
