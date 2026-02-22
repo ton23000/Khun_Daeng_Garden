@@ -112,6 +112,14 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
         setTimeout(() => setIsAdded(false), 2000);
     };
 
+    const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let val = parseInt(e.target.value);
+        if (isNaN(val) || val < 1) {
+            val = 1;
+        }
+        setQuantity(val);
+    };
+
     return (
         <div className="container" style={{ padding: '2rem 1rem' }}>
             <Link href="/shop" style={{ display: 'inline-block', marginBottom: '1rem', color: '#6b7280' }}>
@@ -246,7 +254,21 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <Button variant="outline" onClick={() => setQuantity(q => Math.max(1, q - 1))} disabled={quantity <= 1}>-</Button>
-                                            <span style={{ fontSize: '1.25rem', fontWeight: 'bold', width: '40px', textAlign: 'center' }}>{quantity}</span>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                value={quantity}
+                                                onChange={handleQuantityChange}
+                                                style={{
+                                                    fontSize: '1.25rem',
+                                                    fontWeight: 'bold',
+                                                    width: '60px',
+                                                    textAlign: 'center',
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '0.375rem',
+                                                    padding: '0.25rem',
+                                                }}
+                                            />
                                             <Button variant="outline" onClick={() => setQuantity(q => q + 1)}>+</Button>
                                         </div>
                                     </div>

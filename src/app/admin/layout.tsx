@@ -152,6 +152,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 <span style={{ fontSize: '1.25rem' }}>📈</span>
                                 รายงาน
                             </Link>
+
+                            <Link href="/admin/settings" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
+                                padding: '0.75rem 1rem',
+                                borderRadius: '0.5rem',
+                                color: pathname === '/admin/settings' ? '#166534' : '#374151',
+                                backgroundColor: pathname === '/admin/settings' ? '#dcfce7' : 'transparent',
+                                fontWeight: pathname === '/admin/settings' ? 500 : 400,
+                                textDecoration: 'none'
+                            }}>
+                                <span style={{ fontSize: '1.25rem' }}>⚙️</span>
+                                ตั้งค่าหน้าเพจ
+                            </Link>
                         </>
                     )}
                 </nav>

@@ -33,7 +33,7 @@ export function ImageSlider({ trees, title, subtitle }: { trees: Tree[], title: 
         <div style={{ position: 'relative', width: '100%', overflow: 'hidden', borderRadius: '1rem', backgroundColor: '#f9fafb', padding: '2rem' }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                 <span style={{ color: '#4d7c0f', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{subtitle}</span>
-                <h2 style={{ fontSize: '2.5rem', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>{title}</h2>
+                <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>{title}</h2>
             </div>
 
             <div style={{ display: 'flex', transition: 'transform 0.5s ease-in-out', transform: `translateX(-${currentIndex * 100}%)` }}>

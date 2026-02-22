@@ -58,6 +58,20 @@ export default async function Home() {
     where: { name: 'กวักพระพรหม' }
   });
 
+  // Fetch Site Settings
+  const settings = await prisma.siteSetting.findMany();
+  const settingsMap = settings.reduce((acc: Record<string, string>, curr: { key: string, value: string }) => {
+    acc[curr.key] = curr.value;
+    return acc;
+  }, {});
+
+  const heroTitle = settingsMap['hero_title'] || 'สวนสวยเริ่มต้นที่ สวนคุณแดง';
+  const heroSubtitle = settingsMap['hero_subtitle'] || 'ค้นพบความสุขในการปลูกต้นไม้กับเรา แหล่งรวมพันธุ์ไม้คัดพิเศษ\nพร้อมคำแนะนำจากผู้เชี่ยวชาญ เพื่อสวนสวยในบ้านคุณ';
+  const heroTag = settingsMap['hero_tag'] || '#ต้นไม้คุณภาพ จากคุณแดง';
+
+  const valTitle = settingsMap['valentine_title'] || 'มอบความรัก\nส่งต่อต้นไม้';
+  const valSubtitle = settingsMap['valentine_subtitle'] || 'หลงรักต้นไม้มงคล ที่พร้อมเบ่งบานในฤดูกาลนี้';
+
   return (
     <main>
       {/* Hero Section */}
@@ -84,7 +98,7 @@ export default async function Home() {
           <ScrollAnimation animation="fade-up">
             <div style={{ gridColumn: 'span 1' }}>
               <span style={{ color: '#6b7280', fontSize: '0.9rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1rem', display: 'block' }}>
-                #ต้นไม้คุณภาพ จากคุณแดง
+                {heroTag}
               </span>
               <h1 style={{
                 fontFamily: 'var(--font-playfair), serif',
@@ -96,17 +110,23 @@ export default async function Home() {
                 wordBreak: 'break-word',
                 overflowWrap: 'break-word'
               }}>
-                สวนสวยเริ่มต้นที่ <br className="hidden-mobile" />
-                <span style={{
-                  fontStyle: 'italic',
-                  fontWeight: '400',
-                  color: 'var(--primary)',
-                  display: 'inline-block'
-                }}>สวนคุณแดง</span>
+                {heroTitle.includes('|') ? (
+                  <>
+                    {heroTitle.split('|')[0]}
+                    <br className="hidden-mobile" />
+                    <span style={{
+                      fontStyle: 'italic',
+                      fontWeight: '400',
+                      color: 'var(--primary)',
+                      display: 'inline-block'
+                    }}>{heroTitle.split('|')[1]}</span>
+                  </>
+                ) : (
+                  heroTitle
+                )}
               </h1>
-              <p style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', color: '#6b7280', marginBottom: '2.5rem', lineHeight: '1.6' }}>
-                ค้นพบความสุขในการปลูกต้นไม้กับเรา แหล่งรวมพันธุ์ไม้คัดพิเศษ <br className="hidden-mobile" />
-                พร้อมคำแนะนำจากผู้เชี่ยวชาญ เพื่อสวนสวยในบ้านคุณ
+              <p style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', color: '#6b7280', marginBottom: '2.5rem', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
+                {heroSubtitle}
               </p>
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <Link href="/shop">
@@ -193,7 +213,7 @@ export default async function Home() {
       {/* Features Bar (Coral Pink) */}
       <ScrollAnimation animation="fade-in">
         <section style={{ padding: '4rem 0', backgroundColor: 'var(--primary)', color: 'white' }}>
-          <div className="container" style={{ display: 'flex', justifyContent: 'center', gap: '4rem', flexWrap: 'wrap' }}>
+          <div className="container" style={{ display: 'flex', justifyContent: 'center', gap: 'clamp(2rem, 4vw, 4rem)', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div style={{ padding: '1rem', border: '2px solid white', borderRadius: '50%' }}>
                 <Leaf color="white" />
@@ -235,24 +255,26 @@ export default async function Home() {
               overflow: 'hidden',
               position: 'relative',
               background: 'linear-gradient(135deg, #fecaca 0%, #fca5a5 100%)',
-              padding: '3rem',
+              padding: 'clamp(1.5rem, 5vw, 3rem)',
               color: '#7f1d1d',
               display: 'flex',
+              flexWrap: 'wrap-reverse',
               alignItems: 'center',
               justifyContent: 'space-between',
+              gap: '1.5rem',
               boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
             }} className="hover:scale-[1.01] transition-transform">
-              <div style={{ flex: 1, zIndex: 1 }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase' }}>💖 Valentine&apos;s Special</span>
-                <h2 style={{ fontSize: '3.5rem', fontWeight: 'bold', marginTop: '0.5rem', fontFamily: 'var(--font-playfair), serif', lineHeight: 1.1 }}>
-                  มอบความรัก <br />ส่งต่อต้นไม้
+              <div style={{ flex: '1 1 300px', zIndex: 1 }}>
+                <span style={{ fontSize: 'clamp(0.875rem, 3vw, 1.25rem)', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase' }}>💖 Valentine&apos;s Special</span>
+                <h2 style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', fontWeight: 'bold', marginTop: '0.5rem', fontFamily: 'var(--font-playfair), serif', lineHeight: 1.1, whiteSpace: 'pre-line' }}>
+                  {valTitle}
                 </h2>
-                <p style={{ fontSize: '1.1rem', marginTop: '1rem', opacity: 0.9 }}>หลงรักต้นไม้มงคล ที่พร้อมเบ่งบานในฤดูกาลนี้</p>
+                <p style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', marginTop: '0.75rem', opacity: 0.9 }}>{valSubtitle}</p>
                 <Button style={{ marginTop: '1.5rem', backgroundColor: '#7f1d1d', color: 'white', borderRadius: '9999px', padding: '0 2rem' }}>
                   ช้อปเลย →
                 </Button>
               </div>
-              <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', fontSize: '6rem', opacity: 0.8, zIndex: 0 }}>
+              <div style={{ flex: '1 1 100px', display: 'flex', justifyContent: 'flex-end', fontSize: 'clamp(3rem, 15vw, 6rem)', opacity: 0.8, zIndex: 0 }}>
                 🌹🌿
               </div>
             </div>
@@ -269,7 +291,7 @@ export default async function Home() {
                 <span style={{ color: '#ec4899', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <Heart size={16} /> Seasonal Specials
                 </span>
-                <h2 style={{ fontSize: '2.5rem', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>ต้อนรับเทศกาล</h2>
+                <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>ต้อนรับเทศกาล</h2>
               </div>
               <Link href="/shop" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ec4899', fontWeight: '600', textDecoration: 'none' }}>
                 ดูทั้งหมด <ArrowRight size={18} />
@@ -315,7 +337,7 @@ export default async function Home() {
                 <span style={{ color: '#dc2626', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <Percent size={16} /> Hot Deals
                 </span>
-                <h2 style={{ fontSize: '2.5rem', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>โปรโมชั่นพิเศษ</h2>
+                <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>โปรโมชั่นพิเศษ</h2>
               </div>
               <Link href="/promotion" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#dc2626', fontWeight: '600', textDecoration: 'none' }}>
                 ดูโปรโมชั่นทั้งหมด <ArrowRight size={18} />
@@ -369,7 +391,7 @@ export default async function Home() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '3rem' }}>
             <div>
               <span style={{ color: '#f87171', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>New Arrivals</span>
-              <h2 style={{ fontSize: '3rem', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>สินค้ามาใหม่</h2>
+              <h2 style={{ fontSize: 'clamp(1.75rem, 6vw, 3rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>สินค้ามาใหม่</h2>
             </div>
             <Link href="/shop" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f87171', fontWeight: '600', textDecoration: 'none' }}>
               ดูสินค้าทั้งหมด <ArrowRight size={18} />
@@ -437,7 +459,7 @@ export default async function Home() {
         <div className="container" style={{ textAlign: 'center' }}>
           <ScrollAnimation animation="fade-up">
             <span style={{ color: '#9ca3af', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Our Testimonials</span>
-            <h2 style={{ fontSize: '3rem', marginTop: '0.5rem', marginBottom: '4rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>
+            <h2 style={{ fontSize: 'clamp(1.75rem, 6vw, 3rem)', marginTop: '0.5rem', marginBottom: 'clamp(2rem, 6vw, 4rem)', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>
               เสียงตอบรับจาก<span style={{ fontStyle: 'italic', fontWeight: '400' }}>ลูกค้าของเรา</span>
             </h2>
           </ScrollAnimation>
@@ -469,7 +491,7 @@ export default async function Home() {
           <ScrollAnimation animation="fade-up">
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
               <span style={{ color: '#4d7c0f', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Visit Us</span>
-              <h2 style={{ fontSize: '3rem', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>ที่ตั้งร้านของเรา</h2>
+              <h2 style={{ fontSize: 'clamp(1.75rem, 6vw, 3rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>ที่ตั้งร้านของเรา</h2>
               <p style={{ color: '#6b7280', marginTop: '0.5rem', fontSize: '1.125rem' }}>มาเยี่ยมชมสวนของเราได้ทุกวัน</p>
             </div>
           </ScrollAnimation>
@@ -541,7 +563,7 @@ export default async function Home() {
         <ScrollAnimation animation="fade-up">
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <span style={{ color: '#4d7c0f', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Our Blog Posts</span>
-            <h2 style={{ fontSize: '3rem', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>บทความน่ารู้</h2>
+            <h2 style={{ fontSize: 'clamp(1.75rem, 6vw, 3rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>บทความน่ารู้</h2>
           </div>
         </ScrollAnimation>
 

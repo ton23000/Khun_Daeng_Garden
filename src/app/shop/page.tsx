@@ -149,17 +149,6 @@ function ShopContent() {
 
     return (
         <div className="container" style={{ padding: '2rem 1rem' }}>
-            <ScrollAnimation animation="fade-up">
-                <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
-                    <span style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '0.5rem' }}>Shop Collection</span>
-                    <h1 style={{ fontSize: '3rem', marginBottom: '1rem', fontFamily: 'var(--font-playfair), serif', fontWeight: 'bold', color: 'var(--foreground)' }}>
-                        {initialQuery ? `ผลการค้นหา "${initialQuery}"` : 'สินค้ามาใหม่'}
-                    </h1>
-                    <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>
-                        {initialQuery ? `พบ ${filteredTrees.length} รายการ` : 'เลือกชมและจองต้นไม้ที่คุณชื่นชอบ'}
-                    </p>
-                </header>
-            </ScrollAnimation>
 
             {/* Advanced Filters */}
             <AdvancedFilters
@@ -174,7 +163,7 @@ function ShopContent() {
             </div>
 
             {/* Product Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
                 {filteredTrees.map((tree, index) => {
                     // Get first image from array
                     let imageUrl = '/placeholder-tree.jpg';
@@ -198,67 +187,110 @@ function ShopContent() {
                                 <Card style={{
                                     border: 'none',
                                     boxShadow: 'none',
-                                    backgroundColor: '#fdfaf6',
+                                    backgroundColor: 'white',
                                     overflow: 'hidden',
                                     cursor: 'pointer',
-                                    opacity: tree.status === 'AVAILABLE' ? 1 : 0.7
+                                    opacity: tree.status === 'AVAILABLE' ? 1 : 0.8,
+                                    display: 'flex',
+                                    flexDirection: 'column'
                                 }}
                                     className="hover-card"
                                 >
-                                    <div style={{ position: 'relative', height: '320px', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                                    <div style={{ position: 'relative', aspectRatio: '4/5', backgroundColor: '#e5e5e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <img
                                             src={imageUrl}
                                             alt={tree.name}
-                                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />
 
-                                        {/* Status Badges */}
-                                        <div style={{ position: 'absolute', top: '15px', left: '15px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        {/* Low / Out of Stock Indicator */}
+                                        {((tree.stock - tree.reserved < 10)) && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '10px',
+                                                left: 0,
+                                                backgroundColor: '#ef4444',
+                                                color: 'white',
+                                                padding: '4px 12px',
+                                                borderTopRightRadius: '12px',
+                                                borderBottomRightRadius: '12px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 'bold',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                zIndex: 5
+                                            }}>
+                                                สินค้ามีน้อย
+                                            </div>
+                                        )}
+
+                                        {/* HOT Ribbon */}
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            right: 0,
+                                            width: '60px',
+                                            height: '60px',
+                                            overflow: 'hidden'
+                                        }}>
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '10px',
+                                                right: '-20px',
+                                                transform: 'rotate(45deg)',
+                                                backgroundColor: '#f97316',
+                                                background: 'linear-gradient(90deg, #ea580c 0%, #f97316 100%)',
+                                                color: 'white',
+                                                fontSize: '0.7rem',
+                                                fontWeight: 'bold',
+                                                padding: '2px 30px',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                            }}>
+                                                HOT
+                                            </div>
+                                        </div>
+
+                                        {/* Original Badges Context */}
+                                        <div style={{ position: 'absolute', top: '40px', left: '10px', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                                             {tree.status === 'BOOKED' && (
-                                                <div style={{ backgroundColor: '#fef3c7', color: '#d97706', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                                <div style={{ backgroundColor: '#fef3c7', color: '#d97706', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 'bold' }}>
                                                     จองแล้ว
                                                 </div>
                                             )}
-                                            {tree.stock - tree.reserved === 0 && (
-                                                <div style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                                                    หมดสต็อก - จองได้
-                                                </div>
-                                            )}
-                                            {tree.stock - tree.reserved > 0 && tree.stock - tree.reserved < 5 && (
-                                                <div style={{ backgroundColor: '#fef3c7', color: '#d97706', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                                                    เหลือน้อย ({tree.stock - tree.reserved})
-                                                </div>
-                                            )}
                                         </div>
 
-                                        {/* Favorite Button */}
-                                        <div style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 10 }}>
-                                            <FavoriteButton treeId={tree.id} size="md" />
+                                        {/* Favorite Button Overlay */}
+                                        <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 10 }}>
+                                            <FavoriteButton treeId={tree.id} size="sm" />
                                         </div>
                                     </div>
 
-                                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                                        <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', marginBottom: '0.5rem', color: '#1f2937' }}>{tree.name}</h3>
-                                        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>{tree.category}</p>
-                                        {tree.rating > 0 && tree.reviewCount > 0 ? (
-                                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                                                <span style={{ color: '#fbbf24', fontSize: '1rem' }}>⭐</span>
-                                                <span style={{ fontSize: '0.875rem', fontWeight: 500, color: '#374151' }}>
-                                                    {tree.rating.toFixed(1)}
-                                                </span>
-                                                <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
-                                                    ({tree.reviewCount})
-                                                </span>
-                                            </div>
-                                        ) : (
-                                            <p style={{ fontSize: '0.875rem', color: '#9ca3af', marginBottom: '1rem' }}>ยังไม่มีรีวิว</p>
-                                        )}
-                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                                            <p style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--primary)' }}>฿{tree.price.toLocaleString()}</p>
-                                            {tree.stock - tree.reserved > 0 && (
-                                                <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                                                    คงเหลือ: <span style={{ fontWeight: 600, color: tree.stock - tree.reserved < 5 ? '#f59e0b' : '#22c55e' }}>{tree.stock - tree.reserved}</span>
-                                                </p>
+                                    <CardContent style={{ padding: '0.75rem', textAlign: 'left', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                        <h3 style={{ fontSize: '1rem', fontWeight: 'bold', fontFamily: 'var(--font-prompt), sans-serif', color: '#115e59', marginBottom: '0.25rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{tree.name}</h3>
+                                        <p style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+                                            ฿ {tree.price.toLocaleString()}
+                                        </p>
+
+                                        <div style={{ marginTop: 'auto' }}>
+                                            {(tree.stock - tree.reserved <= 0) ? (
+                                                <div style={{
+                                                    border: '1px solid #ef4444',
+                                                    color: '#ef4444',
+                                                    padding: '0.4rem',
+                                                    textAlign: 'center',
+                                                    fontSize: '0.85rem',
+                                                    fontWeight: 'bold',
+                                                    width: '100%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    gap: '0.25rem'
+                                                }}>
+                                                    <span style={{ fontSize: '1rem' }}>⚠️</span> สินค้ามีน้อย
+                                                </div>
+                                            ) : (
+                                                <div style={{ border: '1px solid #10b981', color: '#10b981', padding: '0.4rem', textAlign: 'center', fontSize: '0.85rem', fontWeight: 'bold', width: '100%' }}>
+                                                    จองเลย
+                                                </div>
                                             )}
                                         </div>
                                     </CardContent>
