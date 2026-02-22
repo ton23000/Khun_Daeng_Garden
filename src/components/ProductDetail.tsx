@@ -38,7 +38,9 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
     const [isCheckingFavorite, setIsCheckingFavorite] = useState(true);
 
     // Calculate available stock
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const stock = (tree as any).stock || 0;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const reserved = (tree as any).reserved || 0;
     const availableStock = Math.max(0, stock - reserved);
     const isOutOfStock = availableStock === 0;
@@ -59,6 +61,7 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
             });
             if (res.ok) {
                 const favorites = await res.json();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 setIsFavorite(favorites.some((f: any) => f.treeId === tree.id));
             }
         } catch (error) {

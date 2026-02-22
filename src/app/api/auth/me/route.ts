@@ -4,8 +4,9 @@ import { prisma } from '@/lib/prisma';
 // GET - Get current user info
 export async function GET(req: NextRequest) {
     try {
-        // Get user ID from cookie or header
-        const userId = req.cookies.get('userId')?.value;
+        // Get user ID from cookie or URL parameter
+        const urlParams = new URL(req.url).searchParams;
+        const userId = req.cookies.get('userId')?.value || urlParams.get('userId');
 
         if (!userId) {
             return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });

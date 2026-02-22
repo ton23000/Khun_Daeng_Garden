@@ -55,11 +55,11 @@ export async function GET(req: NextRequest) {
             email: resetToken.email
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error verifying token:', error);
         return NextResponse.json({
             valid: false,
-            error: `เกิดข้อผิดพลาด: ${error.message || error}`
+            error: `เกิดข้อผิดพลาด: ${error instanceof Error ? error.message : String(error)}`
         }, { status: 500 });
     }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/lib/AuthContext';
@@ -74,22 +74,9 @@ export default function OrderStatusPage() {
 
     const statusConfig = STATUS_CONFIG[status];
 
-    useEffect(() => {
-        if (isLoading) return;
-        if (!user || user.role !== 'admin') {
-            router.push('/admin/login');
-        } else if (!statusConfig) {
-            router.push('/admin/dashboard');
-        } else {
-            fetchBookings();
-        }
-    }, [user, isLoading, router, statusConfig]);
 
-    useEffect(() => {
-        filterAndSortBookings();
-    }, [bookings, searchQuery, sortConfig]);
 
-    const fetchBookings = async () => {
+    const fetchBookings = useCallback(async () => {
         try {
             const res = await fetch('/api/bookings');
             if (res.ok) {
@@ -99,7 +86,7 @@ export default function OrderStatusPage() {
         } catch (error) {
             console.error('Failed to fetch bookings', error);
         }
-    };
+    }, []);
 
     const filterAndSortBookings = useCallback(() => {
         let result = [...bookings];
@@ -122,8 +109,8 @@ export default function OrderStatusPage() {
         // Sort
         if (sortConfig) {
             result.sort((a, b) => {
-                let aValue: any;
-                let bValue: any;
+                let aValue: string | number;
+                let bValue: string | number;
 
                 switch (sortConfig.key) {
                     case 'customer':
@@ -150,6 +137,23 @@ export default function OrderStatusPage() {
 
         setFilteredBookings(result);
     }, [bookings, searchQuery, sortConfig, statusConfig]);
+
+    useEffect(() => {
+        if (isLoading) return;
+        if (!user || user.role !== 'admin') {
+            router.push('/admin/login');
+        } else if (!statusConfig) {
+            router.push('/admin/dashboard');
+        } else {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            fetchBookings();
+        }
+    }, [user, isLoading, router, statusConfig, fetchBookings]);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        filterAndSortBookings();
+    }, [filterAndSortBookings]);
 
     const handleSort = (key: string) => {
         setSortConfig(current => {

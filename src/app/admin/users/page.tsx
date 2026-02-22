@@ -46,6 +46,7 @@ export default function AdminUsersPage() {
     }, [currentUser, router]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         filterAndSortUsers();
     }, [users, searchQuery, sortConfig]);
 
@@ -68,7 +69,7 @@ export default function AdminUsersPage() {
             const res = await fetch('/api/bookings');
             if (res.ok) {
                 const allBookings = await res.json();
-                const filtered = allBookings.filter((b: any) => b.userId === userId);
+                const filtered = allBookings.filter((b: Booking & { userId: string }) => b.userId === userId);
                 setUserBookings(filtered);
             }
         } catch (error) {
@@ -92,8 +93,8 @@ export default function AdminUsersPage() {
         // Sort
         if (sortConfig) {
             result.sort((a, b) => {
-                let aValue: any;
-                let bValue: any;
+                let aValue: string | number = 0;
+                let bValue: string | number = 0;
 
                 switch (sortConfig.key) {
                     case 'name':

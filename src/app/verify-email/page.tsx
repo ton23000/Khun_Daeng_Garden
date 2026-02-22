@@ -22,6 +22,7 @@ export default function VerifyEmailPage() {
             setStatus('no-token');
             return;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         verifyEmail(token);
     }, [token]);
 

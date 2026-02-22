@@ -100,7 +100,7 @@ export function Navbar() {
                                 onMouseEnter={() => setShowUserMenu(true)}
                                 onMouseLeave={() => setShowUserMenu(false)}
                             >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: '#1f2937' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: '#1f2937', cursor: 'pointer' }}>
                                     <div style={{ width: '40px', height: '40px', backgroundColor: 'var(--primary)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.2rem' }}>
                                         👤
                                     </div>
@@ -111,7 +111,7 @@ export function Navbar() {
                                 </div>
 
                                 {showUserMenu && (
-                                    <div className={`${styles.dropdownMenu} ${styles.dropdownMenuLeft}`}>
+                                    <div className={`${styles.dropdownMenu} ${styles.dropdownMenuRight}`}>
                                         <Link href="/profile" className={styles.dropdownLink}>โปรไฟล์</Link>
                                         <Link href="/profile/bookings" className={styles.dropdownLink}>การจองของฉัน</Link>
                                         <hr style={{ margin: '0.5rem 0', border: 'none', borderTop: '1px solid #e5e7eb' }} />
@@ -130,7 +130,7 @@ export function Navbar() {
                                     setShowNotifications(!showNotifications);
                                     if (unreadCount > 0) markAllAsRead();
                                 }}
-                                style={{ fontSize: '1.5rem', position: 'relative' }}
+                                style={{ fontSize: '1.5rem', position: 'relative', cursor: 'pointer' }}
                             >
                                 🔔
                                 {unreadCount > 0 && (
@@ -262,7 +262,7 @@ export function Navbar() {
                 <div className={`container ${styles.bottomBarContainer}`}>
                     {/* Main Nav Links */}
                     <div className={styles.mainNav}>
-                        <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>หน้าหลัก</Link>
+                        <Link href="/" className={styles.navLink}>หน้าหลัก</Link>
 
                         {/* Dropdown: Shop */}
                         <div className={styles.dropdownWrapper} onMouseEnter={() => setShowServices(true)} onMouseLeave={() => setShowServices(false)}>
@@ -295,7 +295,7 @@ export function Navbar() {
                         </div>
 
                         {user && (
-                            <Link href="/profile/bookings" style={{ textDecoration: 'none', color: 'inherit' }}>การจองของฉัน</Link>
+                            <Link href="/profile/bookings" className={styles.navLink}>การจองของฉัน</Link>
                         )}
                     </div>
 

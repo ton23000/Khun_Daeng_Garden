@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
+import { Card, CardContent } from '@/components/ui/Card';
 import Link from 'next/link';
 import { ArrowRight, Leaf, ShieldCheck, Truck, Percent, Heart } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
@@ -26,7 +25,7 @@ export default async function Home() {
     take: 5
   });
 
-  const bestSellingTreeIds = bestSellingData.map(d => d.treeId);
+  const bestSellingTreeIds = bestSellingData.map((d: { treeId: string }) => d.treeId);
   const bestSellingTrees = await prisma.tree.findMany({
     where: { id: { in: bestSellingTreeIds } }
   });
@@ -244,7 +243,7 @@ export default async function Home() {
               boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
             }} className="hover:scale-[1.01] transition-transform">
               <div style={{ flex: 1, zIndex: 1 }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase' }}>💖 Valentine's Special</span>
+                <span style={{ fontSize: '1.25rem', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase' }}>💖 Valentine&apos;s Special</span>
                 <h2 style={{ fontSize: '3.5rem', fontWeight: 'bold', marginTop: '0.5rem', fontFamily: 'var(--font-playfair), serif', lineHeight: 1.1 }}>
                   มอบความรัก <br />ส่งต่อต้นไม้
                 </h2>
@@ -278,12 +277,12 @@ export default async function Home() {
             </div>
           </ScrollAnimation>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-            {seasonalTrees.map((tree, index) => {
+            {seasonalTrees.map((tree: { id: string; images: string; name: string; price: number }, index: number) => {
               let imageUrl = '/placeholder-tree.jpg';
               try {
                 const images = JSON.parse(tree.images);
                 if (images && images.length > 0) imageUrl = images[0];
-              } catch (e) { }
+              } catch { }
               return (
                 <ScrollAnimation key={tree.id} animation="fade-up" delay={index * 100}>
                   <Link href={`/trees/${tree.id}`} className="group" style={{ textDecoration: 'none' }}>
@@ -324,12 +323,12 @@ export default async function Home() {
             </div>
           </ScrollAnimation>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-            {promotionalTrees.map((tree, index) => {
+            {promotionalTrees.map((tree: { id: string; images: string; name: string; price: number; originalPrice: number | null }, index: number) => {
               let imageUrl = '/placeholder-tree.jpg';
               try {
                 const images = JSON.parse(tree.images);
                 if (images && images.length > 0) imageUrl = images[0];
-              } catch (e) { }
+              } catch { }
 
               return (
                 <ScrollAnimation key={tree.id} animation="fade-up" delay={index * 100}>
@@ -379,7 +378,7 @@ export default async function Home() {
         </ScrollAnimation>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
-          {featuredTrees.map((tree, index) => {
+          {featuredTrees.map((tree: { id: string; images: string; name: string; price: number }, index: number) => {
             // Parse images safely
             let imageUrl = '/placeholder-tree.jpg';
             try {
@@ -387,7 +386,7 @@ export default async function Home() {
               if (images && images.length > 0) {
                 imageUrl = images[0];
               }
-            } catch (e) {
+            } catch {
               // Use placeholder if parsing fails
             }
 
@@ -449,7 +448,7 @@ export default async function Home() {
               <div>
                 <div style={{ color: '#fbbf24', marginBottom: '0.5rem' }}>★★★★★</div>
                 <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', paddingBottom: '0.5rem' }}>คุณสมชาย ใจดี</h4>
-                <p style={{ color: '#6b7280', fontStyle: 'italic' }}>"ต้นไม้สวยมากครับ แพ็คมาอย่างดีไม่มีเสียหายเลย ประทับใจบริการหลังการขายมากๆ"</p>
+                <p style={{ color: '#6b7280', fontStyle: 'italic' }}>&quot;ต้นไม้สวยมากครับ แพ็คมาอย่างดีไม่มีเสียหายเลย ประทับใจบริการหลังการขายมากๆ&quot;</p>
               </div>
             </div>
             <div style={{ textAlign: 'left', padding: '2rem', backgroundColor: '#fefcf9', borderRadius: '16px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
@@ -457,7 +456,7 @@ export default async function Home() {
               <div>
                 <div style={{ color: '#fbbf24', marginBottom: '0.5rem' }}>★★★★★</div>
                 <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', paddingBottom: '0.5rem' }}>คุณหญิง</h4>
-                <p style={{ color: '#6b7280', fontStyle: 'italic' }}>"หาต้นไม้หายากมานาน มาเจอที่นี่ราคาดี ต้นไม้แข็งแรง สั่งเพิ่มแน่นอนค่ะ"</p>
+                <p style={{ color: '#6b7280', fontStyle: 'italic' }}>&quot;หาต้นไม้หายากมานาน มาเจอที่นี่ราคาดี ต้นไม้แข็งแรง สั่งเพิ่มแน่นอนค่ะ&quot;</p>
               </div>
             </div>
           </div>

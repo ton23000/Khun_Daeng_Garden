@@ -65,7 +65,7 @@ export async function PATCH(
         }
 
         // Prepare update data
-        const updateData: any = {};
+        const updateData: Record<string, unknown> = {};
         if (validated.firstName !== undefined) updateData.firstName = validated.firstName;
         if (validated.lastName !== undefined) updateData.lastName = validated.lastName;
         if (validated.email !== undefined) {
@@ -90,7 +90,7 @@ export async function PATCH(
         console.log('[User Update] User updated successfully:', updatedUser.id);
 
         return NextResponse.json(updatedUser);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[User Update] Error:', error);
 
         if (error instanceof z.ZodError) {
@@ -102,7 +102,7 @@ export async function PATCH(
 
         return NextResponse.json({
             error: 'Failed to update user',
-            message: error?.message
+            message: error instanceof Error ? error.message : String(error)
         }, { status: 500 });
     }
 }
@@ -127,13 +127,13 @@ export async function DELETE(
         console.log(`[User Delete] User ${id} deleted successfully`);
 
         return NextResponse.json({ success: true, message: 'ลบบัญชีสำเร็จ' });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[User Delete] Error detail:', error);
         return NextResponse.json({
-            error: 'ไม่สามารถลบบัญชีได้: ' + (error?.message || String(error)),
-            message: error?.message,
-            stack: error?.stack,
-            code: error?.code
+            error: 'ไม่สามารถลบบัญชีได้: ' + (error instanceof Error ? error.message : String(error)),
+            message: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            code: error && typeof error === 'object' && 'code' in error ? String(error.code) : undefined
         }, { status: 500 });
     }
 }

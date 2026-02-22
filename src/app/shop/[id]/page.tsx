@@ -22,8 +22,9 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     images = ['/placeholder-tree.jpg'];
   }
 
-  const tags = tree.tags ? tree.tags.split(',').filter(t => t) : [];
+  const tags = tree.tags ? tree.tags.split(',').filter((t: string) => t) : [];
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const treeProps: any = {
     ...tree,
     images,

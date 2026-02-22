@@ -11,7 +11,7 @@ export async function PATCH(
         const body = await req.json();
 
         // Support both old format { stock: number } and new format { action: 'add'|'set', amount: number }
-        let updateData: any;
+        let updateData: Record<string, unknown>;
 
         if ('action' in body && 'amount' in body) {
             // New format with action

@@ -29,7 +29,7 @@ export async function PUT(
             return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
         }
 
-        const updateData: any = {};
+        const updateData: Record<string, unknown> = {};
         if (validated.status) {
             updateData.status = validated.status;
             // Enable reviews when booking is completed
@@ -211,7 +211,7 @@ export async function PATCH(
             }
         }
 
-        const updateData: any = {};
+        const updateData: Record<string, unknown> = {};
         if (validated.status) {
             updateData.status = validated.status;
             // Enable reviews when booking is completed

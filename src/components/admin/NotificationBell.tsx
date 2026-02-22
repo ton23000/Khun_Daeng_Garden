@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 
 interface AdminNotification {
@@ -17,14 +17,7 @@ export default function NotificationBell() {
     const [isOpen, setIsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
 
-    useEffect(() => {
-        fetchNotifications();
-        // Poll every 30 seconds
-        const interval = setInterval(fetchNotifications, 30000);
-        return () => clearInterval(interval);
-    }, []);
-
-    const fetchNotifications = async () => {
+    const fetchNotifications = useCallback(async () => {
         try {
             const res = await fetch('/api/admin/notifications');
             if (res.ok) {
@@ -35,7 +28,15 @@ export default function NotificationBell() {
         } catch (error) {
             console.error('Failed to fetch notifications:', error);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchNotifications();
+        // Poll every 30 seconds
+        const interval = setInterval(fetchNotifications, 30000);
+        return () => clearInterval(interval);
+    }, [fetchNotifications]);
 
     const markAsRead = async (ids: string[]) => {
         try {

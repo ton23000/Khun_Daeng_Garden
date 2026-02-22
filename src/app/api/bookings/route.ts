@@ -179,12 +179,13 @@ export async function POST(req: NextRequest) {
 
         console.log('[Booking API] Returning success response');
         return NextResponse.json(booking, { status: 201 });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[Booking API] Error creating booking:', error);
-        console.error('[Booking API] Error name:', error?.name);
-        console.error('[Booking API] Error message:', error?.message);
-        console.error('[Booking API] Error code:', error?.code);
-        console.error('[Booking API] Error stack:', error?.stack);
+        const err = error as Error & { code?: string; meta?: unknown };
+        console.error('[Booking API] Error name:', err?.name);
+        console.error('[Booking API] Error message:', err?.message);
+        console.error('[Booking API] Error code:', err?.code);
+        console.error('[Booking API] Error stack:', err?.stack);
 
         try {
             console.error('[Booking API] Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
@@ -197,11 +198,12 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid booking data', details: error.issues }, { status: 400 });
         }
 
+        const errObj = error as Error & { code?: string; meta?: unknown };
         return NextResponse.json({
             error: 'Failed to create booking',
-            message: error?.message || 'Unknown error',
-            code: error?.code, // Prisma error code
-            meta: error?.meta // Prisma error meta
+            message: errObj?.message || 'Unknown error',
+            code: errObj?.code, // Prisma error code
+            meta: errObj?.meta // Prisma error meta
         }, { status: 500 });
     }
 }

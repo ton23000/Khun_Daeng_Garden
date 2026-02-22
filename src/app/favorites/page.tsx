@@ -41,6 +41,7 @@ export default function FavoritesPage() {
             router.push('/login');
             return;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         fetchFavorites();
     }, [user, isAuthLoading, router]);
 

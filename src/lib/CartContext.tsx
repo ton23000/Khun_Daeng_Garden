@@ -33,9 +33,10 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
+    const [isMounted, setIsMounted] = useState(false);
 
-    // Load cart from localStorage on mount
     useEffect(() => {
+        setIsMounted(true);
         const savedCart = localStorage.getItem('khun_daeng_cart');
         if (savedCart) {
             try {
@@ -48,8 +49,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     // Save cart to localStorage on change
     useEffect(() => {
-        localStorage.setItem('khun_daeng_cart', JSON.stringify(items));
-    }, [items]);
+        if (isMounted) {
+            localStorage.setItem('khun_daeng_cart', JSON.stringify(items));
+        }
+    }, [items, isMounted]);
 
     const addItem = (tree: Tree, quantity: number = 1) => {
         setItems((prev) => {
@@ -100,6 +103,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const clearCart = () => {
         setItems([]);
     };
+
+    if (!isMounted) return null;
 
     return (
         <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, updateDate, clearCart }}>

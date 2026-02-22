@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import crypto from 'crypto';
 
 // GET - Verify email with token
 export async function GET(req: NextRequest) {
@@ -72,7 +73,6 @@ export async function POST(req: NextRequest) {
         }
 
         // Generate new token
-        const crypto = require('crypto');
         const newToken = crypto.randomUUID();
 
         await prisma.user.update({

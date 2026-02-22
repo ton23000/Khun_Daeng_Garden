@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
 import AdvancedFilters, { FilterState } from '@/components/AdvancedFilters';
 import FavoriteButton from '@/components/FavoriteButton';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 interface Tree {
@@ -31,18 +31,37 @@ function ShopContent() {
     const [categories, setCategories] = useState<string[]>([]);
     const [allTags, setAllTags] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState(initialQuery);
 
     useEffect(() => {
         fetchTrees();
     }, []);
+
+    const handleSearch = useCallback((query: string) => {
+        let filtered = [...trees];
+
+        if (query) {
+            const lowerQuery = query.toLowerCase();
+            filtered = filtered.filter(t =>
+                t.name.toLowerCase().includes(lowerQuery) ||
+                t.category.toLowerCase().includes(lowerQuery) ||
+                (t.tags && (
+                    typeof t.tags === 'string'
+                        ? t.tags.toLowerCase().includes(lowerQuery)
+                        : Array.isArray(t.tags) && t.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+                ))
+            );
+        }
+
+        setFilteredTrees(filtered);
+        setIsLoading(false);
+    }, [trees]);
 
     // Filter whenever query or trees change
     useEffect(() => {
         if (trees.length > 0) {
             handleSearch(initialQuery);
         }
-    }, [trees, initialQuery]);
+    }, [trees, initialQuery, handleSearch]);
 
     const fetchTrees = async () => {
         try {
@@ -75,26 +94,6 @@ function ShopContent() {
         } finally {
             // Loading state will be managed after filtering
         }
-    };
-
-    const handleSearch = (query: string) => {
-        let filtered = [...trees];
-
-        if (query) {
-            const lowerQuery = query.toLowerCase();
-            filtered = filtered.filter(t =>
-                t.name.toLowerCase().includes(lowerQuery) ||
-                t.category.toLowerCase().includes(lowerQuery) ||
-                (t.tags && (
-                    typeof t.tags === 'string'
-                        ? t.tags.toLowerCase().includes(lowerQuery)
-                        : Array.isArray(t.tags) && t.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
-                ))
-            );
-        }
-
-        setFilteredTrees(filtered);
-        setIsLoading(false);
     };
 
     const handleFilterChange = (filters: FilterState) => {

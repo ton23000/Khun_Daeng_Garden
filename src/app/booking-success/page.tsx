@@ -6,6 +6,7 @@ import Link from 'next/link';
 import PaymentModal from '@/components/PaymentModal';
 
 export default function BookingSuccessPage() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [booking, setBooking] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [uploadSuccess, setUploadSuccess] = useState(false);

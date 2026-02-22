@@ -17,7 +17,7 @@ interface Booking {
         lastName: string;
         phone: string;
     };
-    items: any[];
+    items: { [key: string]: unknown }[];
 }
 
 type DateFilter = 'day' | 'month' | 'year' | 'all';

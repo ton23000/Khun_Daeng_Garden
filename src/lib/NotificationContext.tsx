@@ -45,7 +45,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                 let newData: Notification[];
                 // Map admin notifications if needed
                 if (user.role === 'admin') {
-                    newData = data.map((n: any) => ({
+                    newData = data.map((n: { id: string; message: string; read: boolean; createdAt: string; type?: 'info' | 'success' | 'warning' | 'error' }) => ({
                         id: n.id,
                         userId: 'admin',
                         message: n.message,
@@ -72,6 +72,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     // Initial load and polling
     useEffect(() => {
         if (user) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             fetchNotifications();
             // Poll every 30 seconds
             const interval = setInterval(fetchNotifications, 30000);

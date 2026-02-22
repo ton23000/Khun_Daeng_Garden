@@ -13,7 +13,7 @@ interface Booking {
     deposit: number;
     status: string;
     createdAt: string;
-    items: any[];
+    items: { treeId: string; tree: { name: string }; quantity: number; price: number;[key: string]: unknown }[];
 }
 
 type DateFilter = 'day' | 'month' | 'year' | 'all';
@@ -98,7 +98,7 @@ export default function ReportsPage() {
     // Best Sellers
     const treeCounts: Record<string, { name: string; count: number; revenue: number }> = {};
     filteredBookings.forEach(b => {
-        b.items.forEach((item: any) => {
+        b.items.forEach(item => {
             if (!treeCounts[item.treeId]) {
                 treeCounts[item.treeId] = { name: item.tree.name, count: 0, revenue: 0 };
             }

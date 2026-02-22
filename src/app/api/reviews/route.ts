@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
         const limit = parseInt(searchParams.get('limit') || '10');
         const offset = parseInt(searchParams.get('offset') || '0');
 
-        const where: any = {
+        const where: { hidden: boolean; treeId?: string; userId?: string } = {
             hidden: false // Only show visible reviews by default
         };
         if (treeId) where.treeId = treeId;
@@ -94,13 +94,15 @@ export async function POST(req: NextRequest) {
         }
 
         // Check if tree is in booking
-        const treeInBooking = booking.items.some(item => item.treeId === treeId);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const treeInBooking = booking.items.some((item: any) => item.treeId === treeId);
         if (!treeInBooking) {
             return NextResponse.json({ error: 'Tree not in this booking' }, { status: 400 });
         }
 
         // Check if review already exists for this tree in this booking
-        const existingReview = booking.reviews.find(r => r.treeId === treeId);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const existingReview = booking.reviews.find((r: any) => r.treeId === treeId);
         if (existingReview) {
             return NextResponse.json({ error: 'Review already exists for this tree' }, { status: 400 });
         }
@@ -131,7 +133,7 @@ export async function POST(req: NextRequest) {
             select: { rating: true }
         });
 
-        const avgRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
+        const avgRating = allReviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / allReviews.length;
 
         await prisma.tree.update({
             where: { id: treeId },

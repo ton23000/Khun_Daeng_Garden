@@ -88,8 +88,8 @@ export default function InventoryPage() {
         .sort((a, b) => {
             if (!sortConfig) return 0;
 
-            let aValue: any = a[sortConfig.key as keyof Tree];
-            let bValue: any = b[sortConfig.key as keyof Tree];
+            let aValue: string | number = a[sortConfig.key as keyof Tree] as string | number;
+            let bValue: string | number = b[sortConfig.key as keyof Tree] as string | number;
 
             // Special cases for calculated fields
             if (sortConfig.key === 'available') {

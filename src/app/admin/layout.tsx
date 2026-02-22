@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const { user, logout, isLoading } = useAuth();
+    const { user, isLoading } = useAuth();
 
     if (pathname === '/admin/login') {
         return <>{children}</>;
@@ -21,10 +21,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // But layout renders first, so visual flicker might happen if not handled.
     // We rely on page-level protection for stricter security, layout just provides UI.
 
-    const navItems = [
-        { name: 'Dashboard', href: '/admin' },
-        { name: 'Manage Trees', href: '/admin/trees' },
-    ];
 
     return (
         <div style={{ display: 'flex', minHeight: 'calc(100vh - 64px)' }}>

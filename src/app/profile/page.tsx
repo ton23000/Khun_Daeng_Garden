@@ -19,7 +19,7 @@ export default function ProfilePage() {
     const [success, setSuccess] = useState('');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
-    const [recentBooking, setRecentBooking] = useState<any>(null);
+    const [recentBooking, setRecentBooking] = useState<{ refCode: string, status: string, items: Record<string, unknown>[], totalPrice: number } | null>(null);
 
     useEffect(() => {
         if (user) {
@@ -29,6 +29,7 @@ export default function ProfilePage() {
             setPhone(user.phone || '');
 
             // Load recent booking
+            // eslint-disable-next-line react-hooks/exhaustive-deps
             fetchRecentBooking();
         }
     }, [user]);

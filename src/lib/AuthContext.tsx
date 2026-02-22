@@ -35,17 +35,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
-    // Check localStorage for local auth on mount
+    // Check localStorage for local auth on mount and always refresh from server
     useEffect(() => {
-        const storedUser = localStorage.getItem('khun_daeng_user');
-        if (storedUser) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch (e) {
-                localStorage.removeItem('khun_daeng_user');
+        const initializeAuth = async () => {
+            const storedUser = localStorage.getItem('khun_daeng_user');
+            if (storedUser) {
+                try {
+                    const parsedUser = JSON.parse(storedUser);
+                    setUser(parsedUser);
+
+                    // Always try to fetch fresh data from server to catch things like "verified: true" changes
+                    // Only do it for real database users, not the hardcoded admin
+                    if (parsedUser.id !== 'admin') {
+                        try {
+                            const res = await fetch(`/api/auth/me?userId=${parsedUser.id}`);
+                            if (res.ok) {
+                                const data = await res.json();
+                                if (data.user) {
+                                    setUser(data.user);
+                                    localStorage.setItem('khun_daeng_user', JSON.stringify(data.user));
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Initial session fetch failed:', e);
+                        }
+                    }
+
+                } catch (e) {
+                    localStorage.removeItem('khun_daeng_user');
+                }
             }
-        }
-        setIsLoading(false);
+            setIsLoading(false);
+        };
+
+        initializeAuth();
     }, []);
 
     const login = async (identifier: string, password: string) => {
@@ -128,9 +151,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const refreshUser = async () => {
         if (!user) return;
+        if (user.id === 'admin') return;
 
         try {
-            const res = await fetch('/api/auth/me');
+            const res = await fetch(`/api/auth/me?userId=${user.id}`);
             if (res.ok) {
                 const data = await res.json();
                 setUser(data.user);

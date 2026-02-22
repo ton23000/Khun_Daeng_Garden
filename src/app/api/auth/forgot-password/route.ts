@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
             }
         });
 
-        const user = users.find(u => u.email?.toLowerCase() === email.toLowerCase());
+        const user = users.find((u: { email: string | null; id: string; firstName: string; lastName: string }) => u.email?.toLowerCase() === email.toLowerCase());
 
         if (!user) {
             console.log('User not found for email:', email);
@@ -83,11 +83,11 @@ export async function POST(req: NextRequest) {
                 userName: `${user.firstName} ${user.lastName}`
             });
             console.log('Email sent successfully');
-        } catch (emailError: any) {
+        } catch (emailError: unknown) {
             console.error('Failed to send email:', emailError);
             // TEMPORARY: Return actual error for debugging
             return NextResponse.json(
-                { error: `ไม่สามารถส่งอีเมลได้: ${emailError.message || emailError}` },
+                { error: `ไม่สามารถส่งอีเมลได้: ${emailError instanceof Error ? emailError.message : String(emailError)}` },
                 { status: 500 }
             );
         }
@@ -96,8 +96,8 @@ export async function POST(req: NextRequest) {
             message: 'หากอีเมลนี้มีในระบบ คุณจะได้รับลิงก์รีเซ็ตรหัสผ่านทางอีเมล'
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error in forgot-password:', error);
-        return NextResponse.json({ error: `เกิดข้อผิดพลาด: ${error.message || error}` }, { status: 500 });
+        return NextResponse.json({ error: `เกิดข้อผิดพลาด: ${error instanceof Error ? error.message : String(error)}` }, { status: 500 });
     }
 }

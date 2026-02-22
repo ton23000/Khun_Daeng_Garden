@@ -29,11 +29,11 @@ export default function HowToOrderPage() {
                                 <li style={{ marginBottom: '1rem' }}>
                                     <strong>เลือกต้นไม้ที่ต้องการ</strong>
                                     <p style={{ color: '#6b7280', marginTop: '0.5rem' }}>
-                                        จากหน้า "ค้นหาสินค้า" เลือกต้นไม้ที่คุณชื่นชอบ
+                                        จากหน้า &quot;ค้นหาสินค้า&quot; เลือกต้นไม้ที่คุณชื่นชอบ
                                     </p>
                                 </li>
                                 <li style={{ marginBottom: '1rem' }}>
-                                    <strong>คลิก "เพิ่มในตะกร้า"</strong>
+                                    <strong>คลิก &quot;เพิ่มในตะกร้า&quot;</strong>
                                     <p style={{ color: '#6b7280', marginTop: '0.5rem' }}>
                                         และตรวจสอบรายการในตะกร้าสินค้า
                                     </p>

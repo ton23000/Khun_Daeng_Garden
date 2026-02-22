@@ -24,8 +24,9 @@ export default async function TreePage({ params }: { params: Promise<{ id: strin
     }
 
     // Tags are stored as comma-separated string
-    const tags = treeData.tags ? treeData.tags.split(',').filter(t => t) : [];
+    const tags = treeData.tags ? treeData.tags.split(',').filter((t: string) => t) : [];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tree: any = {
         ...treeData,
         images,

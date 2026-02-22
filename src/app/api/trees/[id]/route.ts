@@ -25,7 +25,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
         const body = await request.json();
         const validated = updateSchema.parse(body);
 
-        const updateData: any = { ...validated };
+        const updateData: Record<string, unknown> = { ...validated };
 
         if (validated.images) {
             updateData.images = JSON.stringify(validated.images);

@@ -43,7 +43,7 @@ export function ScrollAnimation({
         };
     }, []);
 
-    const animationStyles: Record<string, any> = {
+    const animationStyles: Record<string, React.CSSProperties> = {
         'fade-up': {
             opacity: isVisible ? 1 : 0,
             transform: isVisible ? 'translateY(0)' : 'translateY(30px)',

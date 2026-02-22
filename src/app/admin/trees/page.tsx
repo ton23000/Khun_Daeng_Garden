@@ -199,8 +199,8 @@ export default function AdminTreesPage() {
         // Sort
         if (sortConfig) {
             result.sort((a, b) => {
-                let aValue: any;
-                let bValue: any;
+                let aValue: string | number = 0;
+                let bValue: string | number = 0;
 
                 switch (sortConfig.key) {
                     case 'name':
@@ -451,7 +451,7 @@ export default function AdminTreesPage() {
                                         <td style={{ padding: '1rem' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                 <span>฿{tree.price.toLocaleString()}</span>
-                                                {(tree as any).isPromotion && (
+                                                {tree.isPromotion && (
                                                     <span style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '0.125rem 0.375rem', borderRadius: '9999px', fontSize: '0.625rem', fontWeight: 'bold' }}>SALE</span>
                                                 )}
                                             </div>

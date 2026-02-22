@@ -49,7 +49,7 @@ export default function DashboardPage() {
     const router = useRouter();
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
-    const [trees, setTrees] = useState<any[]>([]);
+    const [trees, setTrees] = useState<{ id: string; stock: number; reserved: number;[key: string]: unknown }[]>([]);
     const [viewingSlip, setViewingSlip] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState({
@@ -63,21 +63,7 @@ export default function DashboardPage() {
     const [sortConfig, setSortConfig] = useState<SortConfig>(null);
     const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (isLoading) return;
-        if (!user || user.role !== 'admin') {
-            router.push('/admin/login');
-        } else {
-            fetchBookings();
-            fetchTrees();
-        }
-    }, [user, isLoading, router]);
-
-    useEffect(() => {
-        filterAndSortBookings();
-    }, [bookings, searchQuery, viewMode, selectedCustomer, sortConfig, statusFilter]);
-
-    const fetchBookings = async () => {
+    const fetchBookings = useCallback(async () => {
         try {
             const res = await fetch('/api/bookings');
             if (res.ok) {
@@ -87,9 +73,9 @@ export default function DashboardPage() {
         } catch (error) {
             console.error('Failed to fetch bookings', error);
         }
-    };
+    }, []);
 
-    const fetchTrees = async () => {
+    const fetchTrees = useCallback(async () => {
         try {
             const res = await fetch('/api/trees');
             if (res.ok) {
@@ -99,7 +85,18 @@ export default function DashboardPage() {
         } catch (error) {
             console.error('Failed to fetch trees', error);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        if (isLoading) return;
+        if (!user || user.role !== 'admin') {
+            router.push('/admin/login');
+        } else {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            fetchBookings();
+            fetchTrees();
+        }
+    }, [user, isLoading, router, fetchBookings, fetchTrees]);
 
     const handleStatusClick = (status: string | null) => {
         setStatusFilter(status);
@@ -137,8 +134,8 @@ export default function DashboardPage() {
         // Sort
         if (sortConfig) {
             result.sort((a, b) => {
-                let aValue: any;
-                let bValue: any;
+                let aValue: string | number;
+                let bValue: string | number;
 
                 switch (sortConfig.key) {
                     case 'customer':
@@ -169,6 +166,11 @@ export default function DashboardPage() {
 
         setFilteredBookings(result);
     }, [bookings, searchQuery, viewMode, selectedCustomer, sortConfig, statusFilter]);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        filterAndSortBookings();
+    }, [filterAndSortBookings]);
 
     const handleSort = (key: string) => {
         setSortConfig(current => {
@@ -257,21 +259,7 @@ export default function DashboardPage() {
         };
     };
 
-    const getStatusLabel = (status: string) => {
-        const statusConfig: Record<string, string> = {
-            PENDING_APPROVAL: 'รอการอนุมัติ',
-            PENDING: 'รอชำระเงิน',
-            VERIFYING_PAYMENT: 'ตรวจสอบการชำระเงิน',
-            PAYMENT_ISSUE: 'ชำระเงินมีปัญหา',
-            CONFIRMED: 'ยืนยันการจอง',
-            PREPARING: 'เตรียมต้นไม้',
-            READY: 'พร้อมรับที่ร้าน',
-            COMPLETED: 'เสร็จสิ้น',
-            CANCELLED: 'ยกเลิกการจอง',
-            PAID: 'ตรวจสอบการชำระเงิน'
-        };
-        return statusConfig[status] || status;
-    };
+
 
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {

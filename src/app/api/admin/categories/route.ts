@@ -12,7 +12,7 @@ export async function GET() {
             orderBy: { name: 'asc' }
         });
         return NextResponse.json(categories);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
     }
 }
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid data', details: error.issues }, { status: 400 });
         }
         // Handle unique constraint violation
-        if ((error as any).code === 'P2002') {
+        if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
             return NextResponse.json({ error: 'Category already exists' }, { status: 409 });
         }
         return NextResponse.json({ error: 'Failed to create category' }, { status: 500 });
