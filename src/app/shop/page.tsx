@@ -20,6 +20,8 @@ interface Tree {
     reserved: number;
     rating: number;
     reviewCount: number;
+    isPromotion?: boolean;
+    originalPrice?: number | null;
 }
 
 function ShopContent() {
@@ -182,8 +184,8 @@ function ShopContent() {
                     }
 
                     return (
-                        <ScrollAnimation key={tree.id} animation="fade-up" delay={index * 100}>
-                            <Link href={`/trees/${tree.id}`} className="group" style={{ textDecoration: 'none' }}>
+                        <ScrollAnimation key={tree.id} animation="fade-up" delay={index * 100} style={{ height: '100%' }}>
+                            <Link href={`/trees/${tree.id}`} className="group" style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
                                 <Card style={{
                                     border: 'none',
                                     boxShadow: 'none',
@@ -192,7 +194,8 @@ function ShopContent() {
                                     cursor: 'pointer',
                                     opacity: tree.status === 'AVAILABLE' ? 1 : 0.8,
                                     display: 'flex',
-                                    flexDirection: 'column'
+                                    flexDirection: 'column',
+                                    height: '100%'
                                 }}
                                     className="hover-card"
                                 >
@@ -258,6 +261,25 @@ function ShopContent() {
                                             )}
                                         </div>
 
+                                        {/* Sale Badge */}
+                                        {tree.isPromotion && tree.originalPrice && tree.originalPrice > tree.price && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '10px',
+                                                right: '10px',
+                                                backgroundColor: '#dc2626',
+                                                color: 'white',
+                                                padding: '0.2rem 0.6rem',
+                                                borderRadius: '9999px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 'bold',
+                                                zIndex: 5,
+                                                boxShadow: '0 2px 8px rgba(220,38,38,0.3)'
+                                            }}>
+                                                -{Math.round(((tree.originalPrice - tree.price) / tree.originalPrice) * 100)}%
+                                            </div>
+                                        )}
+
                                         {/* Favorite Button Overlay */}
                                         <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 10 }}>
                                             <FavoriteButton treeId={tree.id} size="sm" />
@@ -266,32 +288,19 @@ function ShopContent() {
 
                                     <CardContent style={{ padding: '0.75rem', textAlign: 'left', display: 'flex', flexDirection: 'column', flex: 1 }}>
                                         <h3 style={{ fontSize: '1rem', fontWeight: 'bold', fontFamily: 'var(--font-prompt), sans-serif', color: '#115e59', marginBottom: '0.25rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{tree.name}</h3>
-                                        <p style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+                                        <p style={{ fontSize: '0.9rem', color: tree.isPromotion ? '#dc2626' : '#6b7280', fontWeight: tree.isPromotion ? 'bold' : 'normal', marginBottom: '0.75rem' }}>
                                             ฿ {tree.price.toLocaleString()}
+                                            {tree.isPromotion && tree.originalPrice && tree.originalPrice > tree.price && (
+                                                <span style={{ fontSize: '0.75rem', color: '#9ca3af', textDecoration: 'line-through', marginLeft: '0.5rem', fontWeight: 'normal' }}>
+                                                    ฿{tree.originalPrice.toLocaleString()}
+                                                </span>
+                                            )}
                                         </p>
 
                                         <div style={{ marginTop: 'auto' }}>
-                                            {(tree.stock - tree.reserved <= 0) ? (
-                                                <div style={{
-                                                    border: '1px solid #ef4444',
-                                                    color: '#ef4444',
-                                                    padding: '0.4rem',
-                                                    textAlign: 'center',
-                                                    fontSize: '0.85rem',
-                                                    fontWeight: 'bold',
-                                                    width: '100%',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    gap: '0.25rem'
-                                                }}>
-                                                    <span style={{ fontSize: '1rem' }}>⚠️</span> สินค้ามีน้อย
-                                                </div>
-                                            ) : (
-                                                <div style={{ border: '1px solid #10b981', color: '#10b981', padding: '0.4rem', textAlign: 'center', fontSize: '0.85rem', fontWeight: 'bold', width: '100%' }}>
-                                                    จองเลย
-                                                </div>
-                                            )}
+                                            <div style={{ border: '1px solid #10b981', color: '#10b981', padding: '0.4rem', textAlign: 'center', fontSize: '0.85rem', fontWeight: 'bold', width: '100%' }}>
+                                                จองเลย
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>

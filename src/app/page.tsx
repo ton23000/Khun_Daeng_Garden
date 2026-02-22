@@ -370,8 +370,8 @@ export default async function Home() {
                           <FavoriteButton treeId={tree.id} size="md" />
                         </div>
                         {tree.originalPrice && tree.originalPrice > tree.price && (
-                          <div style={{ position: 'absolute', top: '15px', left: '15px', backgroundColor: '#dc2626', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.5rem', fontSize: '0.875rem', fontWeight: 'bold' }}>
-                            Sale!
+                          <div style={{ position: 'absolute', top: '15px', left: '15px', backgroundColor: '#dc2626', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: 'bold', boxShadow: '0 2px 8px rgba(220,38,38,0.3)' }}>
+                            -{Math.round(((tree.originalPrice - tree.price) / tree.originalPrice) * 100)}%
                           </div>
                         )}
                       </div>

@@ -55,7 +55,7 @@
 }
 
 .middleBar {
-    padding: 1rem 0;
+    padding: 0.65rem 0;
     border-bottom: 1px solid rgba(226, 232, 228, 0.5);
     background: transparent;
 }
@@ -84,6 +84,7 @@
     color: var(--secondary);
     text-decoration: none;
     order: 1;
+    white-space: nowrap;
 }
 
 .logoIcon {
@@ -97,7 +98,7 @@
     }
 
     .logoIcon {
-        font-size: 2.5rem;
+        font-size: 2rem;
     }
 }
 
@@ -153,7 +154,7 @@
 
 .bottomBar {
     background-color: rgba(217, 56, 30, 0.05);
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
     border-bottom: 1px solid rgba(226, 232, 228, 0.8);
     display: none;
     /* Hidden by default on mobile */
@@ -173,7 +174,6 @@
 .bottomBarContainer {
     display: flex;
     flex-direction: column;
-    min-width: 100%;
 }
 
 @media (min-width: 768px) {
@@ -200,6 +200,7 @@
         flex-direction: row;
         align-items: center;
         padding: 0;
+        gap: 2rem;
     }
 }
 
@@ -213,7 +214,7 @@
 
 @media (min-width: 768px) {
     .socialAdmin {
-        margin-left: 2rem;
+        margin-left: auto;
         margin-top: 0;
         padding-bottom: 0;
     }

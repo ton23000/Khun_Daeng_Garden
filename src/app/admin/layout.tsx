@@ -153,6 +153,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 รายงาน
                             </Link>
 
+                            <Link href="/admin/promotions" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
+                                padding: '0.75rem 1rem',
+                                borderRadius: '0.5rem',
+                                color: pathname === '/admin/promotions' ? '#166534' : '#374151',
+                                backgroundColor: pathname === '/admin/promotions' ? '#dcfce7' : 'transparent',
+                                fontWeight: pathname === '/admin/promotions' ? 500 : 400,
+                                textDecoration: 'none'
+                            }}>
+                                <span style={{ fontSize: '1.25rem' }}>🏷️</span>
+                                จัดการโปรโมชัน
+                            </Link>
+
                             <Link href="/admin/settings" style={{
                                 display: 'flex',
                                 alignItems: 'center',

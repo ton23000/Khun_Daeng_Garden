@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import CountdownTimer from '@/components/CountdownTimer';
 
 export default async function PromotionPage() {
     // Fetch trees marked as promotions
@@ -14,6 +15,12 @@ export default async function PromotionPage() {
         },
         orderBy: { updatedAt: 'desc' },
     });
+
+    // Find the nearest end date for countdown
+    const nearestEndDate = promotionTrees
+        .filter(t => t.promotionEndDate)
+        .sort((a, b) => new Date(a.promotionEndDate!).getTime() - new Date(b.promotionEndDate!).getTime())
+    [0]?.promotionEndDate;
 
     return (
         <div className="container" style={{ padding: '2rem 1rem' }}>
@@ -39,6 +46,11 @@ export default async function PromotionPage() {
                 <p style={{ fontSize: '1.25rem', opacity: 0.9, position: 'relative' }}>
                     ส่วนลดพิเศษ! ราคาดีที่สุดสำหรับต้นไม้คุณภาพ
                 </p>
+                {nearestEndDate && (
+                    <div style={{ marginTop: '1rem', position: 'relative', display: 'flex', justifyContent: 'center' }}>
+                        <CountdownTimer endDate={nearestEndDate.toISOString()} style={{ color: 'white' }} />
+                    </div>
+                )}
             </div>
 
             {/* Promotion Grid */}

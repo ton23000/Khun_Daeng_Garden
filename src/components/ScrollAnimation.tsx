@@ -7,13 +7,15 @@ interface ScrollAnimationProps {
     animation?: 'fade-up' | 'slide-in-left' | 'slide-in-right' | 'fade-in';
     delay?: number;
     className?: string;
+    style?: React.CSSProperties;
 }
 
 export function ScrollAnimation({
     children,
     animation = 'fade-up',
     delay = 0,
-    className = ''
+    className = '',
+    style
 }: ScrollAnimationProps) {
     const [isVisible, setIsVisible] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
@@ -66,7 +68,7 @@ export function ScrollAnimation({
     };
 
     return (
-        <div ref={ref} style={animationStyles[animation]} className={className}>
+        <div ref={ref} style={{ ...animationStyles[animation], ...style }} className={className}>
             {children}
         </div>
     );
