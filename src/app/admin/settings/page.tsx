@@ -51,9 +51,15 @@ export default function AdminSettingsPage() {
         setMessage({ text: '', type: '' });
 
         try {
+            const storedUser = localStorage.getItem('khun_daeng_user');
+            const userId = storedUser ? JSON.parse(storedUser).id : null;
+
             const res = await fetch('/api/settings', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(userId ? { 'x-user-id': userId } : {})
+                },
                 body: JSON.stringify(settings)
             });
 

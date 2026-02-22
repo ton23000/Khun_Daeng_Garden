@@ -7,6 +7,7 @@ import { ScrollAnimation } from '@/components/ScrollAnimation';
 import { ParallaxSection } from '@/components/ParallaxSection';
 import FavoriteButton from '@/components/FavoriteButton';
 import { ImageSlider } from '@/components/ImageSlider';
+import InlineEdit from '@/components/InlineEdit';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,38 +97,36 @@ export default async function Home() {
         <div className="container grid-hero" style={{ position: 'relative', zIndex: 1 }}>
           {/* Text Content */}
           <ScrollAnimation animation="fade-up">
-            <div style={{ gridColumn: 'span 1' }}>
-              <span style={{ color: '#6b7280', fontSize: '0.9rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1rem', display: 'block' }}>
-                {heroTag}
-              </span>
-              <h1 style={{
-                fontFamily: 'var(--font-playfair), serif',
-                fontSize: 'clamp(1.75rem, 8vw, 4.5rem)',
-                fontWeight: '700',
-                lineHeight: '1.2',
-                color: 'var(--foreground)',
-                marginBottom: '1rem',
-                wordBreak: 'break-word',
-                overflowWrap: 'break-word'
-              }}>
-                {heroTitle.includes('|') ? (
-                  <>
-                    {heroTitle.split('|')[0]}
-                    <br className="hidden-mobile" />
-                    <span style={{
-                      fontStyle: 'italic',
-                      fontWeight: '400',
-                      color: 'var(--primary)',
-                      display: 'inline-block'
-                    }}>{heroTitle.split('|')[1]}</span>
-                  </>
-                ) : (
-                  heroTitle
-                )}
-              </h1>
-              <p style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', color: '#6b7280', marginBottom: '2.5rem', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
-                {heroSubtitle}
-              </p>
+            <div style={{ gridColumn: 'span 1', position: 'relative' }}>
+              <InlineEdit
+                settingKey="hero_tag"
+                initialValue={heroTag}
+                renderAs="span"
+                style={{ color: '#6b7280', fontSize: '0.9rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1rem', display: 'block' }}
+              />
+              <InlineEdit
+                settingKey="hero_title"
+                initialValue={heroTitle}
+                renderAs="h1"
+                useSpecialTitleFormat
+                style={{
+                  fontFamily: 'var(--font-playfair), serif',
+                  fontSize: 'clamp(1.75rem, 8vw, 4.5rem)',
+                  fontWeight: '700',
+                  lineHeight: '1.2',
+                  color: 'var(--foreground)',
+                  marginBottom: '1rem',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word'
+                }}
+              />
+              <InlineEdit
+                settingKey="hero_subtitle"
+                initialValue={heroSubtitle}
+                renderAs="p"
+                multiline
+                style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', color: '#6b7280', marginBottom: '2.5rem', lineHeight: '1.6', whiteSpace: 'pre-line' }}
+              />
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <Link href="/shop">
                   <Button size="lg" style={{
@@ -266,10 +265,19 @@ export default async function Home() {
             }} className="hover:scale-[1.01] transition-transform">
               <div style={{ flex: '1 1 300px', zIndex: 1 }}>
                 <span style={{ fontSize: 'clamp(0.875rem, 3vw, 1.25rem)', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase' }}>💖 Valentine&apos;s Special</span>
-                <h2 style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', fontWeight: 'bold', marginTop: '0.5rem', fontFamily: 'var(--font-playfair), serif', lineHeight: 1.1, whiteSpace: 'pre-line' }}>
-                  {valTitle}
-                </h2>
-                <p style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', marginTop: '0.75rem', opacity: 0.9 }}>{valSubtitle}</p>
+                <InlineEdit
+                  settingKey="valentine_title"
+                  initialValue={valTitle}
+                  renderAs="h2"
+                  multiline
+                  style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', fontWeight: 'bold', marginTop: '0.5rem', fontFamily: 'var(--font-playfair), serif', lineHeight: 1.1, whiteSpace: 'pre-line' }}
+                />
+                <InlineEdit
+                  settingKey="valentine_subtitle"
+                  initialValue={valSubtitle}
+                  renderAs="p"
+                  style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', marginTop: '0.75rem', opacity: 0.9 }}
+                />
                 <Button style={{ marginTop: '1.5rem', backgroundColor: '#7f1d1d', color: 'white', borderRadius: '9999px', padding: '0 2rem' }}>
                   ช้อปเลย →
                 </Button>
