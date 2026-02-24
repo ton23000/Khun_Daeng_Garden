@@ -72,7 +72,7 @@ export default function InventoryPage() {
     };
 
     const getStockStatus = (stock: number, reserved: number) => {
-        const available = stock - reserved;
+        const available = Math.max(0, stock - reserved);
         if (available === 0) return { label: 'หมด', color: '#ef4444' };
         if (available < 5) return { label: 'ต่ำ', color: '#f59e0b' };
         return { label: 'พร้อมขาย', color: '#22c55e' };
@@ -80,7 +80,7 @@ export default function InventoryPage() {
 
     const filteredTrees = trees
         .filter(tree => {
-            const available = tree.stock - tree.reserved;
+            const available = Math.max(0, tree.stock - tree.reserved);
             if (filter === 'low') return available > 0 && available < 5;
             if (filter === 'out') return available === 0;
             return true;
@@ -93,12 +93,12 @@ export default function InventoryPage() {
 
             // Special cases for calculated fields
             if (sortConfig.key === 'available') {
-                aValue = a.stock - a.reserved;
-                bValue = b.stock - b.reserved;
+                aValue = Math.max(0, a.stock - a.reserved);
+                bValue = Math.max(0, b.stock - b.reserved);
             } else if (sortConfig.key === 'status') {
                 // Approximate status sorting by available stock
-                const aAvail = a.stock - a.reserved;
-                const bAvail = b.stock - b.reserved;
+                const aAvail = Math.max(0, a.stock - a.reserved);
+                const bAvail = Math.max(0, b.stock - b.reserved);
                 aValue = aAvail === 0 ? 0 : (aAvail < 5 ? 1 : 2);
                 bValue = bAvail === 0 ? 0 : (bAvail < 5 ? 1 : 2);
             }
@@ -108,14 +108,14 @@ export default function InventoryPage() {
             return 0;
         });
 
-    const totalAvailable = trees.reduce((sum, tree) => sum + (tree.stock - tree.reserved), 0);
+    const totalAvailable = trees.reduce((sum, tree) => sum + Math.max(0, tree.stock - tree.reserved), 0);
     const totalReserved = trees.reduce((sum, tree) => sum + tree.reserved, 0);
     const totalSold = trees.reduce((sum, tree) => sum + tree.sold, 0);
     const lowStockCount = trees.filter(tree => {
-        const available = tree.stock - tree.reserved;
+        const available = Math.max(0, tree.stock - tree.reserved);
         return available > 0 && available < 5;
     }).length;
-    const outOfStockCount = trees.filter(tree => tree.stock - tree.reserved === 0).length;
+    const outOfStockCount = trees.filter(tree => Math.max(0, tree.stock - tree.reserved) === 0).length;
 
     return (
         <div>
@@ -230,7 +230,7 @@ export default function InventoryPage() {
                         </div>
                     ) : filteredTrees.length > 0 ? (
                         <div style={{ overflowX: 'auto' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                                 <thead style={{ backgroundColor: '#f9fafb', borderBottom: '2px solid #e5e7eb' }}>
                                     <tr>
                                         <SortableTableHeader label="ชื่อ" sortKey="name" currentSort={sortConfig} onSort={handleSort} />
@@ -245,7 +245,7 @@ export default function InventoryPage() {
                                 </thead>
                                 <tbody>
                                     {filteredTrees.map((tree) => {
-                                        const available = tree.stock - tree.reserved;
+                                        const available = Math.max(0, tree.stock - tree.reserved);
                                         const status = getStockStatus(tree.stock, tree.reserved);
                                         const isEditing = editingId === tree.id;
 

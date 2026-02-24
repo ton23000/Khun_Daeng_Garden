@@ -8,6 +8,7 @@ import { ParallaxSection } from '@/components/ParallaxSection';
 import FavoriteButton from '@/components/FavoriteButton';
 import { ImageSlider } from '@/components/ImageSlider';
 import InlineEdit from '@/components/InlineEdit';
+import { User } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,14 +32,59 @@ export default async function Home() {
     where: { id: { in: bestSellingTreeIds } }
   });
 
+  const bestSellingTreesWithCount = bestSellingTrees.map(tree => {
+    const saleData = bestSellingData.find((d: { treeId: string, _sum: { quantity: number | null } }) => d.treeId === tree.id);
+    return {
+      ...tree,
+      soldCount: saleData?._sum.quantity || 0
+    };
+  }).sort((a, b) => b.soldCount - a.soldCount);
+
   // Fallback if no sales
-  const displayBestSellers = bestSellingTrees.length > 0 ? bestSellingTrees : featuredTrees;
+  const displayBestSellers = bestSellingTreesWithCount.length > 0 ? bestSellingTreesWithCount : featuredTrees;
+
+  // Weekly Best Sellers
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const weeklyBestSellingData = await prisma.bookingItem.groupBy({
+    by: ['treeId'],
+    where: {
+      booking: {
+        status: 'COMPLETED',
+        createdAt: { gte: sevenDaysAgo }
+      }
+    },
+    _sum: { quantity: true },
+    orderBy: { _sum: { quantity: 'desc' } },
+    take: 5
+  });
+
+  const weeklyBestSellingTreeIds = weeklyBestSellingData.map((d: { treeId: string }) => d.treeId);
+  const weeklyBestSellingTrees = await prisma.tree.findMany({
+    where: { id: { in: weeklyBestSellingTreeIds } }
+  });
+
+  const weeklyBestSellingTreesWithCount = weeklyBestSellingTrees.map(tree => {
+    const saleData = weeklyBestSellingData.find((d: { treeId: string, _sum: { quantity: number | null } }) => d.treeId === tree.id);
+    return {
+      ...tree,
+      soldCount: saleData?._sum.quantity || 0
+    };
+  }).sort((a, b) => b.soldCount - a.soldCount);
+
 
   // Promotional trees
   const promotionalTrees = await prisma.tree.findMany({
-    where: { isPromotion: true, stock: { gt: 0 } },
+    where: {
+      isPromotion: true,
+      OR: [
+        { promotionEndDate: null },
+        { promotionEndDate: { gte: new Date() } }
+      ]
+    },
     take: 4,
-    orderBy: { createdAt: 'desc' }
+    orderBy: { updatedAt: 'desc' }
   });
 
   // Seasonal/Festival trees (e.g. Valentine's / Rose)
@@ -67,11 +113,40 @@ export default async function Home() {
   }, {});
 
   const heroTitle = settingsMap['hero_title'] || 'สวนสวยเริ่มต้นที่ สวนคุณแดง';
+  const heroTitleColor = settingsMap['hero_title_color'] || 'var(--foreground)';
+  const heroTitleSize = settingsMap['hero_title_fontSize'] || 'clamp(1.75rem, 8vw, 4.5rem)';
+
   const heroSubtitle = settingsMap['hero_subtitle'] || 'ค้นพบความสุขในการปลูกต้นไม้กับเรา แหล่งรวมพันธุ์ไม้คัดพิเศษ\nพร้อมคำแนะนำจากผู้เชี่ยวชาญ เพื่อสวนสวยในบ้านคุณ';
+  const heroSubtitleColor = settingsMap['hero_subtitle_color'] || '#6b7280';
+  const heroSubtitleSize = settingsMap['hero_subtitle_fontSize'] || 'clamp(0.9rem, 3vw, 1.1rem)';
+
   const heroTag = settingsMap['hero_tag'] || '#ต้นไม้คุณภาพ จากคุณแดง';
+  const heroTagColor = settingsMap['hero_tag_color'] || '#6b7280';
+  const heroTagSize = settingsMap['hero_tag_fontSize'] || '0.9rem';
 
   const valTitle = settingsMap['valentine_title'] || 'มอบความรัก\nส่งต่อต้นไม้';
+  const valTitleColor = settingsMap['valentine_title_color'] || '#991b1b';
+  const valTitleSize = settingsMap['valentine_title_fontSize'] || 'clamp(1.75rem, 5vw, 3.5rem)';
+
   const valSubtitle = settingsMap['valentine_subtitle'] || 'หลงรักต้นไม้มงคล ที่พร้อมเบ่งบานในฤดูกาลนี้';
+  const valSubtitleColor = settingsMap['valentine_subtitle_color'] || '#b91c1c';
+  const valSubtitleSize = settingsMap['valentine_subtitle_fontSize'] || 'clamp(0.9rem, 2vw, 1.25rem)';
+
+  // Fetch real reviews for Testimonials section
+  const topReviews = await prisma.review.findMany({
+    where: {
+      rating: { gte: 4 }, // 4 or 5 stars
+      hidden: false,
+      comment: { not: null, notIn: [''] }
+    },
+    include: {
+      user: {
+        select: { firstName: true, lastName: true }
+      }
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 4 // Max 4 reviews displayed on the homepage
+  });
 
   return (
     <main>
@@ -101,31 +176,47 @@ export default async function Home() {
               <InlineEdit
                 settingKey="hero_tag"
                 initialValue={heroTag}
+                allowStyleEdit
+                initialColor={heroTagColor}
+                initialBgColor={settingsMap['hero_tag_bgColor']}
+                initialFontSize={heroTagSize}
                 renderAs="span"
-                style={{ color: '#6b7280', fontSize: '0.9rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1rem', display: 'block' }}
+                style={{ color: heroTagColor, background: settingsMap['hero_tag_bgColor'] || 'transparent', fontSize: heroTagSize, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1rem', display: 'inline-block', padding: '0.25rem 0.5rem', borderRadius: '0.25rem' }}
               />
               <InlineEdit
                 settingKey="hero_title"
                 initialValue={heroTitle}
+                allowStyleEdit
+                initialColor={heroTitleColor}
+                initialBgColor={settingsMap['hero_title_bgColor']}
+                initialFontSize={heroTitleSize}
                 renderAs="h1"
                 useSpecialTitleFormat
                 style={{
                   fontFamily: 'var(--font-playfair), serif',
-                  fontSize: 'clamp(1.75rem, 8vw, 4.5rem)',
+                  fontSize: heroTitleSize,
                   fontWeight: '700',
                   lineHeight: '1.2',
-                  color: 'var(--foreground)',
+                  color: heroTitleColor,
+                  background: settingsMap['hero_title_bgColor'] || 'transparent',
                   marginBottom: '1rem',
                   wordBreak: 'break-word',
-                  overflowWrap: 'break-word'
+                  overflowWrap: 'break-word',
+                  display: 'inline-block',
+                  padding: '0.25rem 0.5rem',
+                  borderRadius: '0.5rem'
                 }}
               />
               <InlineEdit
                 settingKey="hero_subtitle"
                 initialValue={heroSubtitle}
+                allowStyleEdit
+                initialColor={heroSubtitleColor}
+                initialBgColor={settingsMap['hero_subtitle_bgColor']}
+                initialFontSize={heroSubtitleSize}
                 renderAs="p"
                 multiline
-                style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', color: '#6b7280', marginBottom: '2.5rem', lineHeight: '1.6', whiteSpace: 'pre-line' }}
+                style={{ fontSize: heroSubtitleSize, color: heroSubtitleColor, background: settingsMap['hero_subtitle_bgColor'] || 'transparent', marginBottom: '2.5rem', lineHeight: '1.6', whiteSpace: 'pre-line', padding: '0.25rem 0.5rem', borderRadius: '0.5rem', display: 'inline-block' }}
               />
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <Link href="/shop">
@@ -201,10 +292,15 @@ export default async function Home() {
       </section>
 
       {/* Best Sellers Slider */}
-      <section className="container" style={{ margin: '-3rem auto 4rem', position: 'relative', zIndex: 10 }}>
-        <ScrollAnimation animation="fade-up" delay={100}>
+      <section className="container" style={{ margin: '-3rem auto 0', position: 'relative', zIndex: 10, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: '2rem', paddingBottom: '4rem' }}>
+        {weeklyBestSellingTreesWithCount.length > 0 && (
+          <ScrollAnimation animation="fade-up" delay={100} style={{ height: '100%' }}>
+            <ImageSlider trees={weeklyBestSellingTreesWithCount} title="ขายดีสัปดาห์นี้" subtitle="Weekly Best Sellers" />
+          </ScrollAnimation>
+        )}
+        <ScrollAnimation animation="fade-up" delay={150} style={{ height: '100%' }}>
           {displayBestSellers.length > 0 && (
-            <ImageSlider trees={displayBestSellers} title="ขายดีที่สุด" subtitle="Best Sellers" />
+            <ImageSlider trees={displayBestSellers} title="ขายดีตลอดกาล" subtitle="All Time Best Sellers" />
           )}
         </ScrollAnimation>
       </section>
@@ -247,45 +343,66 @@ export default async function Home() {
       {/* Festival Banner */}
       <section className="container" style={{ marginTop: '4rem', marginBottom: '2rem' }}>
         <ScrollAnimation animation="fade-up">
-          <Link href="/shop" style={{ textDecoration: 'none' }}>
-            <div style={{
-              width: '100%',
-              borderRadius: '1rem',
-              overflow: 'hidden',
-              position: 'relative',
-              background: 'linear-gradient(135deg, #fecaca 0%, #fca5a5 100%)',
-              padding: 'clamp(1.5rem, 5vw, 3rem)',
-              color: '#7f1d1d',
-              display: 'flex',
-              flexWrap: 'wrap-reverse',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '1.5rem',
-              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-            }} className="hover:scale-[1.01] transition-transform">
-              <div style={{ flex: '1 1 300px', zIndex: 1 }}>
+          <Link href="/promotion" style={{ textDecoration: 'none' }}>
+            <InlineEdit
+              settingKey="valentine_banner"
+              initialValue="" // No text content for the wrapper itself
+              initialBgColor={settingsMap['valentine_banner_bgColor'] || 'linear-gradient(135deg, #fecaca 0%, #fca5a5 100%)'}
+              allowStyleEdit
+              renderAs="div"
+              className="hover:scale-[1.01] transition-transform"
+              style={{
+                width: '100%',
+                borderRadius: '1rem',
+                position: 'relative',
+                background: settingsMap['valentine_banner_bgColor'] || 'linear-gradient(135deg, #fecaca 0%, #fca5a5 100%)',
+                padding: 'clamp(1.5rem, 5vw, 3rem)',
+                color: '#7f1d1d',
+                display: 'flex',
+                flexWrap: 'wrap-reverse',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '1.5rem',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+              }}
+            >
+              <div style={{ flex: '1 1 300px', zIndex: 10, position: 'relative' }}>
                 <span style={{ fontSize: 'clamp(0.875rem, 3vw, 1.25rem)', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase' }}>💖 Valentine&apos;s Special</span>
-                <InlineEdit
-                  settingKey="valentine_title"
-                  initialValue={valTitle}
-                  renderAs="h2"
-                  multiline
-                  style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', fontWeight: 'bold', marginTop: '0.5rem', fontFamily: 'var(--font-playfair), serif', lineHeight: 1.1, whiteSpace: 'pre-line' }}
-                />
-                <InlineEdit
-                  settingKey="valentine_subtitle"
-                  initialValue={valSubtitle}
-                  renderAs="p"
-                  style={{ fontSize: 'clamp(0.9rem, 3vw, 1.1rem)', marginTop: '0.75rem', opacity: 0.9 }}
-                />
-                <Button style={{ marginTop: '1.5rem', backgroundColor: '#7f1d1d', color: 'white', borderRadius: '9999px', padding: '0 2rem' }}>
+                <div style={{ display: 'inline-block', position: 'relative', zIndex: 20 }}>
+                  <InlineEdit
+                    settingKey="valentine_title"
+                    initialValue={valTitle}
+                    allowStyleEdit
+                    initialColor={valTitleColor}
+                    initialBgColor={settingsMap['valentine_title_bgColor']}
+                    initialFontSize={valTitleSize}
+                    renderAs="h2"
+                    multiline
+                    style={{ fontSize: valTitleSize, color: valTitleColor, background: settingsMap['valentine_title_bgColor'] || 'transparent', fontWeight: 'bold', marginTop: '0.5rem', fontFamily: 'var(--font-playfair), serif', lineHeight: 1.1, whiteSpace: 'pre-line', padding: '0.25rem 0.5rem', borderRadius: '0.5rem', display: 'inline-block' }}
+                  />
+                </div>
+                <br />
+                <div style={{ display: 'inline-block', position: 'relative', zIndex: 20 }}>
+                  <InlineEdit
+                    settingKey="valentine_subtitle"
+                    initialValue={valSubtitle}
+                    allowStyleEdit
+                    initialColor={valSubtitleColor}
+                    initialBgColor={settingsMap['valentine_subtitle_bgColor']}
+                    initialFontSize={valSubtitleSize}
+                    renderAs="p"
+                    style={{ fontSize: valSubtitleSize, color: valSubtitleColor, background: settingsMap['valentine_subtitle_bgColor'] || 'transparent', marginTop: '0.75rem', opacity: 0.9, padding: '0.25rem 0.5rem', borderRadius: '0.5rem', display: 'inline-block' }}
+                  />
+                </div>
+                <br />
+                <Button style={{ marginTop: '1.5rem', backgroundColor: '#7f1d1d', color: 'white', borderRadius: '9999px', padding: '0.75rem 2.5rem', fontSize: '1.25rem', fontWeight: 'bold', position: 'relative', zIndex: 10, cursor: 'pointer', pointerEvents: 'none', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(127, 29, 29, 0.3)' }} className="hover:scale-105 hover:bg-[#991b1b]">
                   ช้อปเลย →
                 </Button>
               </div>
               <div style={{ flex: '1 1 100px', display: 'flex', justifyContent: 'flex-end', fontSize: 'clamp(3rem, 15vw, 6rem)', opacity: 0.8, zIndex: 0 }}>
                 🌹🌿
               </div>
-            </div>
+            </InlineEdit>
           </Link>
         </ScrollAnimation>
       </section>
@@ -306,7 +423,7 @@ export default async function Home() {
               </Link>
             </div>
           </ScrollAnimation>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
             {seasonalTrees.map((tree: { id: string; images: string; name: string; price: number }, index: number) => {
               let imageUrl = '/placeholder-tree.jpg';
               try {
@@ -316,16 +433,38 @@ export default async function Home() {
               return (
                 <ScrollAnimation key={tree.id} animation="fade-up" delay={index * 100}>
                   <Link href={`/trees/${tree.id}`} className="group" style={{ textDecoration: 'none' }}>
-                    <Card style={{ border: '1px solid #fce7f3', backgroundColor: '#fff', overflow: 'hidden', cursor: 'pointer' }} className="hover:shadow-xl hover:-translate-y-1 transition-all">
-                      <div style={{ position: 'relative', height: '280px', backgroundColor: '#fdf2f8', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                        <img src={imageUrl} alt={tree.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                        <div style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 10 }}>
-                          <FavoriteButton treeId={tree.id} size="md" />
+                    <Card style={{
+                      border: 'none',
+                      boxShadow: 'none',
+                      backgroundColor: 'white',
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '100%'
+                    }}
+                      className="hover-card"
+                    >
+                      <div style={{ position: 'relative', aspectRatio: '4/5', backgroundColor: '#e5e5e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img src={imageUrl} alt={tree.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+
+                        {/* Favorite Button Overlay */}
+                        <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 10 }}>
+                          <FavoriteButton treeId={tree.id} size="sm" />
                         </div>
                       </div>
-                      <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', marginBottom: '0.5rem', color: '#1f2937' }}>{tree.name}</h3>
-                        <p style={{ fontSize: '1.1rem', fontWeight: '600', color: '#ec4899' }}>฿{tree.price.toLocaleString()}</p>
+
+                      <CardContent style={{ padding: '0.75rem', textAlign: 'left', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 'bold', fontFamily: 'var(--font-prompt), sans-serif', color: '#115e59', marginBottom: '0.25rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{tree.name}</h3>
+                        <p style={{ fontSize: '0.9rem', color: '#6b7280', fontWeight: 'normal', marginBottom: '0.75rem' }}>
+                          ฿ {tree.price.toLocaleString()}
+                        </p>
+
+                        <div style={{ marginTop: 'auto' }}>
+                          <div style={{ border: '1px solid #10b981', color: '#10b981', padding: '0.4rem', textAlign: 'center', fontSize: '0.85rem', fontWeight: 'bold', width: '100%' }}>
+                            จองเลย
+                          </div>
+                        </div>
                       </CardContent>
                     </Card>
                   </Link>
@@ -334,25 +473,27 @@ export default async function Home() {
             })}
           </div>
         </section>
-      )}
+      )
+      }
 
       {/* Promotions Section */}
-      {promotionalTrees.length > 0 && (
-        <section className="container" style={{ padding: '2rem 1rem 4rem' }}>
-          <ScrollAnimation animation="fade-up">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '3rem' }}>
-              <div>
-                <span style={{ color: '#dc2626', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Percent size={16} /> Hot Deals
-                </span>
-                <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>โปรโมชั่นพิเศษ</h2>
-              </div>
-              <Link href="/promotion" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#dc2626', fontWeight: '600', textDecoration: 'none' }}>
-                ดูโปรโมชั่นทั้งหมด <ArrowRight size={18} />
-              </Link>
-            </div>
-          </ScrollAnimation>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+      <section className="container" style={{ padding: '2rem 1rem 4rem' }}>
+        <ScrollAnimation animation="fade-up">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '3rem' }}>
+            <Link href="/promotion" style={{ textDecoration: 'none', color: 'inherit' }} className="hover:opacity-80 transition-opacity">
+              <span style={{ color: '#dc2626', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Percent size={16} /> Hot Deals
+              </span>
+              <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>โปรโมชั่นพิเศษ</h2>
+            </Link>
+            <Link href="/promotion" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#dc2626', fontWeight: '600', textDecoration: 'none' }}>
+              ดูโปรโมชั่นทั้งหมด <ArrowRight size={18} />
+            </Link>
+          </div>
+        </ScrollAnimation>
+
+        {promotionalTrees.length > 0 ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
             {promotionalTrees.map((tree: { id: string; images: string; name: string; price: number; originalPrice: number | null }, index: number) => {
               let imageUrl = '/placeholder-tree.jpg';
               try {
@@ -363,25 +504,49 @@ export default async function Home() {
               return (
                 <ScrollAnimation key={tree.id} animation="fade-up" delay={index * 100}>
                   <Link href={`/trees/${tree.id}`} className="group" style={{ textDecoration: 'none' }}>
-                    <Card style={{ border: '2px solid #fee2e2', backgroundColor: '#fff', overflow: 'hidden', cursor: 'pointer' }} className="hover:shadow-xl hover:-translate-y-1 transition-all">
-                      <div style={{ position: 'relative', height: '280px', backgroundColor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                        <img src={imageUrl} alt={tree.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                        <div style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 10 }}>
-                          <FavoriteButton treeId={tree.id} size="md" />
-                        </div>
+                    <Card style={{
+                      border: 'none',
+                      boxShadow: 'none',
+                      backgroundColor: 'white',
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '100%'
+                    }}
+                      className="hover-card"
+                    >
+                      <div style={{ position: 'relative', aspectRatio: '4/5', backgroundColor: '#e5e5e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img src={imageUrl} alt={tree.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+
+                        {/* Sale Badge */}
                         {tree.originalPrice && tree.originalPrice > tree.price && (
-                          <div style={{ position: 'absolute', top: '15px', left: '15px', backgroundColor: '#dc2626', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: 'bold', boxShadow: '0 2px 8px rgba(220,38,38,0.3)' }}>
+                          <div style={{ position: 'absolute', top: '10px', right: '10px', backgroundColor: '#dc2626', color: 'white', padding: '0.2rem 0.6rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 'bold', zIndex: 5, boxShadow: '0 2px 8px rgba(220,38,38,0.3)' }}>
                             -{Math.round(((tree.originalPrice - tree.price) / tree.originalPrice) * 100)}%
                           </div>
                         )}
+
+                        {/* Favorite Button Overlay */}
+                        <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 10 }}>
+                          <FavoriteButton treeId={tree.id} size="sm" />
+                        </div>
                       </div>
-                      <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', marginBottom: '0.5rem', color: '#1f2937' }}>{tree.name}</h3>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                          <p style={{ fontSize: '1.25rem', fontWeight: '600', color: '#dc2626' }}>฿{tree.price.toLocaleString()}</p>
+
+                      <CardContent style={{ padding: '0.75rem', textAlign: 'left', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 'bold', fontFamily: 'var(--font-prompt), sans-serif', color: '#115e59', marginBottom: '0.25rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{tree.name}</h3>
+                        <p style={{ fontSize: '0.9rem', color: '#dc2626', fontWeight: 'bold', marginBottom: '0.75rem' }}>
+                          ฿ {tree.price.toLocaleString()}
                           {tree.originalPrice && tree.originalPrice > tree.price && (
-                            <p style={{ fontSize: '0.9rem', color: '#9ca3af', textDecoration: 'line-through' }}>฿{tree.originalPrice.toLocaleString()}</p>
+                            <span style={{ fontSize: '0.75rem', color: '#9ca3af', textDecoration: 'line-through', marginLeft: '0.5rem', fontWeight: 'normal' }}>
+                              ฿{tree.originalPrice.toLocaleString()}
+                            </span>
                           )}
+                        </p>
+
+                        <div style={{ marginTop: 'auto' }}>
+                          <div style={{ border: '1px solid #10b981', color: '#10b981', padding: '0.4rem', textAlign: 'center', fontSize: '0.85rem', fontWeight: 'bold', width: '100%' }}>
+                            จองเลย
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -390,8 +555,13 @@ export default async function Home() {
               );
             })}
           </div>
-        </section>
-      )}
+        ) : (
+          <div style={{ textAlign: 'center', padding: '3rem', backgroundColor: '#fef2f2', borderRadius: '1rem', color: '#dc2626' }}>
+            <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>ยังไม่มีสินค้าจัดโปรโมชั่นในขณะนี้</p>
+            <p style={{ fontSize: '0.9rem', marginTop: '0.5rem', opacity: 0.8 }}>จัดเตรียมโปรโมชั่นดีๆ ให้คุณเร็วๆ นี้</p>
+          </div>
+        )}
+      </section>
 
       {/* New Arrivals (สินค้ามาใหม่) */}
       <section className="container" style={{ padding: '6rem 1rem' }}>
@@ -407,7 +577,7 @@ export default async function Home() {
           </div>
         </ScrollAnimation>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
           {featuredTrees.map((tree: { id: string; images: string; name: string; price: number }, index: number) => {
             // Parse images safely
             let imageUrl = '/placeholder-tree.jpg';
@@ -426,33 +596,35 @@ export default async function Home() {
                   <Card style={{
                     border: 'none',
                     boxShadow: 'none',
-                    backgroundColor: '#fdfaf6',
+                    backgroundColor: 'white',
                     overflow: 'hidden',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%'
                   }}
                     className="hover-card"
                   >
-                    <div style={{ position: 'relative', height: '320px', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                      <img
-                        src={imageUrl}
-                        alt={tree.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                      />
+                    <div style={{ position: 'relative', aspectRatio: '4/5', backgroundColor: '#e5e5e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img src={imageUrl} alt={tree.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 
-                      {/* Hover Action Overlay */}
-                      <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justifyContent-center">
-                      </div>
-
-                      {/* Favorite Button */}
-                      <div style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 10 }}>
-                        <FavoriteButton treeId={tree.id} size="md" />
+                      {/* Favorite Button Overlay */}
+                      <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 10 }}>
+                        <FavoriteButton treeId={tree.id} size="sm" />
                       </div>
                     </div>
 
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                      <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', marginBottom: '0.5rem', color: '#1f2937' }}>{tree.name}</h3>
-                      <p style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '1rem' }}>⭐⭐⭐⭐⭐</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: '600', color: '#f87171' }}>฿{tree.price.toLocaleString()}</p>
+                    <CardContent style={{ padding: '0.75rem', textAlign: 'left', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                      <h3 style={{ fontSize: '1rem', fontWeight: 'bold', fontFamily: 'var(--font-prompt), sans-serif', color: '#115e59', marginBottom: '0.25rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{tree.name}</h3>
+                      <p style={{ fontSize: '0.9rem', color: '#6b7280', fontWeight: 'normal', marginBottom: '0.75rem' }}>
+                        ฿ {tree.price.toLocaleString()}
+                      </p>
+
+                      <div style={{ marginTop: 'auto' }}>
+                        <div style={{ border: '1px solid #10b981', color: '#10b981', padding: '0.4rem', textAlign: 'center', fontSize: '0.85rem', fontWeight: 'bold', width: '100%' }}>
+                          จองเลย
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 </Link>
@@ -473,22 +645,45 @@ export default async function Home() {
           </ScrollAnimation>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '2rem' }}>
-            <div style={{ textAlign: 'left', padding: '2rem', backgroundColor: '#fefcf9', borderRadius: '16px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-              <div style={{ minWidth: '80px', height: '80px', backgroundColor: '#dcfce7', borderRadius: '50%' }}></div>
-              <div>
-                <div style={{ color: '#fbbf24', marginBottom: '0.5rem' }}>★★★★★</div>
-                <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', paddingBottom: '0.5rem' }}>คุณสมชาย ใจดี</h4>
-                <p style={{ color: '#6b7280', fontStyle: 'italic' }}>&quot;ต้นไม้สวยมากครับ แพ็คมาอย่างดีไม่มีเสียหายเลย ประทับใจบริการหลังการขายมากๆ&quot;</p>
-              </div>
-            </div>
-            <div style={{ textAlign: 'left', padding: '2rem', backgroundColor: '#fefcf9', borderRadius: '16px', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-              <div style={{ minWidth: '80px', height: '80px', backgroundColor: '#ffedd5', borderRadius: '50%' }}></div>
-              <div>
-                <div style={{ color: '#fbbf24', marginBottom: '0.5rem' }}>★★★★★</div>
-                <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', paddingBottom: '0.5rem' }}>คุณหญิง</h4>
-                <p style={{ color: '#6b7280', fontStyle: 'italic' }}>&quot;หาต้นไม้หายากมานาน มาเจอที่นี่ราคาดี ต้นไม้แข็งแรง สั่งเพิ่มแน่นอนค่ะ&quot;</p>
-              </div>
-            </div>
+            {topReviews.length > 0 ? (
+              topReviews.map((review, index) => {
+                const colors = ['#dcfce7', '#ffedd5', '#e0e7ff', '#fce7f3'];
+                const bgColor = colors[index % colors.length];
+
+                return (
+                  <ScrollAnimation key={review.id} animation="fade-up" delay={index * 100}>
+                    <div style={{ textAlign: 'left', padding: '2rem', backgroundColor: '#fefcf9', borderRadius: '16px', display: 'flex', gap: '1.5rem', alignItems: 'flex-start', border: '1px solid #f3f4f6', height: '100%' }}>
+                      <div style={{ minWidth: '60px', height: '60px', backgroundColor: bgColor, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <User size={30} style={{ color: '#4b5563', opacity: 0.5 }} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ color: '#fbbf24', marginBottom: '0.5rem', letterSpacing: '2px', fontSize: '1.2rem' }}>
+                          {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                        </div>
+                        <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', paddingBottom: '0.5rem' }}>คุณ{review.user.firstName}</h4>
+                        <p style={{ color: '#6b7280', fontStyle: 'italic', lineHeight: '1.6' }}>&quot;{review.comment}&quot;</p>
+                      </div>
+                    </div>
+                  </ScrollAnimation>
+                );
+              })
+            ) : (
+              // Fallback reviews if database has no valid ones yet
+              <>
+                <ScrollAnimation animation="fade-up">
+                  <div style={{ textAlign: 'left', padding: '2rem', backgroundColor: '#fefcf9', borderRadius: '16px', display: 'flex', gap: '1.5rem', alignItems: 'flex-start', border: '1px solid #f3f4f6' }}>
+                    <div style={{ minWidth: '60px', height: '60px', backgroundColor: '#dcfce7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <User size={30} style={{ color: '#4b5563', opacity: 0.5 }} />
+                    </div>
+                    <div>
+                      <div style={{ color: '#fbbf24', marginBottom: '0.5rem', letterSpacing: '2px', fontSize: '1.2rem' }}>★★★★★</div>
+                      <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', paddingBottom: '0.5rem' }}>รอรีวิวแรกจากคุณ</h4>
+                      <p style={{ color: '#6b7280', fontStyle: 'italic', lineHeight: '1.6' }}>&quot;กำลังเตรียมเสียงตอบรับจากลูกค้าตัวจริง มาแสดงในส่วนนี้&quot;</p>
+                    </div>
+                  </div>
+                </ScrollAnimation>
+              </>
+            )}
           </div>
         </div>
       </section>

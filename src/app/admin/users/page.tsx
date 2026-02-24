@@ -161,7 +161,7 @@ export default function AdminUsersPage() {
 
             <Card>
                 <CardContent style={{ padding: 0 }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
                         <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                             <tr>
                                 <SortableTableHeader

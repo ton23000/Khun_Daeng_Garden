@@ -207,7 +207,7 @@ function ShopContent() {
                                         />
 
                                         {/* Low / Out of Stock Indicator */}
-                                        {((tree.stock - tree.reserved < 10)) && (
+                                        {((tree.stock - tree.reserved > 0 && tree.stock - tree.reserved < 10)) && (
                                             <div style={{
                                                 position: 'absolute',
                                                 top: '10px',

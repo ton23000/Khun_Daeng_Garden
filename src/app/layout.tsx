@@ -4,6 +4,7 @@ import './globals.css';
 import Providers from '@/components/Providers';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { prisma } from '@/lib/prisma'; // Added prisma to fetch setting
 
 const prompt = Prompt({
   weight: ['300', '400', '500', '600', '700'],
@@ -17,16 +18,25 @@ export const metadata: Metadata = {
   description: 'Find and book your perfect tree at Khun Daeng Garden.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const topBarSetting = await prisma.siteSetting.findUnique({
+    where: { key: 'top_bar_text' }
+  });
+  const topBarBgSetting = await prisma.siteSetting.findUnique({
+    where: { key: 'top_bar_bgColor' }
+  });
+  const topBarText = topBarSetting?.value || 'ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท';
+  const topBarBgColor = topBarBgSetting?.value || '';
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${prompt.variable} font-sans`} suppressHydrationWarning={true} style={{ fontFamily: 'var(--font-prompt)' }}>
         <Providers>
-          <Navbar />
+          <Navbar topBarText={topBarText} topBarBgColor={topBarBgColor} />
           {children}
           <Footer />
         </Providers>

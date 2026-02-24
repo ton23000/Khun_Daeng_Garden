@@ -311,119 +311,208 @@ export default function AdminPromotionsPage() {
                 </div>
             </div>
 
-            {/* Table */}
-            <div style={{ overflowX: 'auto', backgroundColor: 'white', borderRadius: '0.75rem', border: '1px solid #e5e7eb' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
-                    <thead>
-                        <tr style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                            <th style={{ padding: '0.75rem', textAlign: 'center', width: '40px' }}>
-                                <input type="checkbox" checked={selected.size === filteredTrees.length && filteredTrees.length > 0} onChange={toggleSelectAll} />
-                            </th>
-                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>รูป</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>ชื่อ</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>หมวดหมู่</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'right' }}>ราคาเดิม</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'right' }}>ราคาขาย</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'center' }}>ส่วนลด</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'center' }}>สถานะ</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'center' }}>จัดการ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredTrees.map(tree => {
-                            const discount = getDiscountPercent(tree);
-                            let imageUrl = '/placeholder-tree.jpg';
-                            try {
-                                if (tree.images && tree.images.length > 0) imageUrl = tree.images[0];
-                            } catch { }
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .desktop-table-view { display: none; }
+                .mobile-card-view { display: flex; flex-direction: column; gap: 1rem; padding-bottom: 2rem; }
+                @media (min-width: 768px) {
+                    .desktop-table-view { display: block; }
+                    .mobile-card-view { display: none; }
+                }
+            `}} />
 
-                            return (
-                                <tr key={tree.id} style={{
-                                    borderBottom: '1px solid #e5e7eb',
-                                    backgroundColor: selected.has(tree.id) ? '#fef3c7' : 'transparent'
-                                }}>
-                                    <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                                        <input type="checkbox" checked={selected.has(tree.id)} onChange={() => toggleSelect(tree.id)} />
-                                    </td>
-                                    <td style={{ padding: '0.5rem' }}>
-                                        <div style={{ width: '45px', height: '45px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#f3f4f6' }}>
-                                            <img src={imageUrl} alt={tree.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: '0.75rem', fontWeight: '500' }}>{tree.name}</td>
-                                    <td style={{ padding: '0.75rem', color: '#6b7280' }}>{tree.category}</td>
-                                    <td style={{ padding: '0.75rem', textAlign: 'right', color: '#6b7280', textDecoration: tree.isPromotion ? 'line-through' : 'none' }}>
-                                        ฿{(tree.isPromotion && tree.originalPrice ? tree.originalPrice : tree.price).toLocaleString()}
-                                    </td>
-                                    <td style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 'bold', color: tree.isPromotion ? '#dc2626' : '#1f2937' }}>
-                                        ฿{tree.price.toLocaleString()}
-                                    </td>
-                                    <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                                        {discount ? (
-                                            <span style={{
-                                                backgroundColor: '#fee2e2',
-                                                color: '#dc2626',
-                                                padding: '0.25rem 0.75rem',
-                                                borderRadius: '9999px',
-                                                fontSize: '0.75rem',
-                                                fontWeight: 'bold'
-                                            }}>-{discount}%</span>
-                                        ) : (
-                                            <span style={{ color: '#9ca3af' }}>—</span>
-                                        )}
-                                    </td>
-                                    <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                                        <span style={{
-                                            display: 'inline-block',
-                                            width: '10px',
-                                            height: '10px',
-                                            borderRadius: '50%',
-                                            backgroundColor: tree.isPromotion ? '#16a34a' : '#d1d5db',
-                                            marginRight: '0.25rem'
-                                        }}></span>
-                                        <span style={{ fontSize: '0.75rem', color: tree.isPromotion ? '#166534' : '#9ca3af' }}>
-                                            {tree.isPromotion ? 'เปิดโปร' : 'ปกติ'}
+            {/* Mobile View (Cards) */}
+            <div className="mobile-card-view">
+                <div style={{ padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '0.5rem', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input type="checkbox" checked={selected.size === filteredTrees.length && filteredTrees.length > 0} onChange={toggleSelectAll} id="selectAllMobile" />
+                    <label htmlFor="selectAllMobile" style={{ fontWeight: 500 }}>เลือกทั้งหมด</label>
+                </div>
+                {filteredTrees.map(tree => {
+                    const discount = getDiscountPercent(tree);
+                    let imageUrl = '/placeholder-tree.jpg';
+                    try { if (tree.images && tree.images.length > 0) imageUrl = tree.images[0]; } catch { }
+
+                    return (
+                        <div key={tree.id} style={{
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '0.75rem',
+                            padding: '1rem',
+                            backgroundColor: selected.has(tree.id) ? '#fef3c7' : 'white',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '0.75rem'
+                        }}>
+                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                                <input type="checkbox" checked={selected.has(tree.id)} onChange={() => toggleSelect(tree.id)} style={{ marginTop: '0.25rem' }} />
+                                <div style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#f3f4f6', flexShrink: 0 }}>
+                                    <img src={imageUrl} alt={tree.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: 'bold' }}>{tree.name}</div>
+                                    <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                                        {tree.category} • <span style={{ color: tree.isPromotion ? '#166534' : '#9ca3af' }}>{tree.isPromotion ? 'เปิดโปร' : 'ปกติ'}</span>
+                                    </div>
+                                    <div style={{ marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                        <span style={{ fontWeight: 'bold', color: tree.isPromotion ? '#dc2626' : '#1f2937' }}>
+                                            ฿{tree.price.toLocaleString()}
                                         </span>
-                                    </td>
-                                    <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                                        <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'center' }}>
-                                            <button
-                                                onClick={() => openSingleEdit(tree)}
-                                                style={{
-                                                    padding: '0.375rem 0.75rem',
-                                                    backgroundColor: '#dc2626',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '0.375rem',
-                                                    cursor: 'pointer',
-                                                    fontSize: '0.75rem'
-                                                }}
-                                            >
-                                                🏷️ ตั้งโปร
-                                            </button>
-                                            {tree.isPromotion && (
-                                                <button
-                                                    onClick={() => handleRemovePromotion(tree)}
-                                                    style={{
-                                                        padding: '0.375rem 0.75rem',
-                                                        backgroundColor: '#f3f4f6',
-                                                        color: '#6b7280',
-                                                        border: '1px solid #d1d5db',
-                                                        borderRadius: '0.375rem',
-                                                        cursor: 'pointer',
-                                                        fontSize: '0.75rem'
-                                                    }}
-                                                >
-                                                    ยกเลิก
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
+                                        {tree.isPromotion && (
+                                            <>
+                                                <span style={{ textDecoration: 'line-through', color: '#6b7280', fontSize: '0.875rem' }}>
+                                                    ฿{(tree.originalPrice || tree.price).toLocaleString()}
+                                                </span>
+                                                {discount && (
+                                                    <span style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '0.125rem 0.5rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                                        -{discount}%
+                                                    </span>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+                                <button
+                                    onClick={() => openSingleEdit(tree)}
+                                    style={{
+                                        flex: 1, padding: '0.5rem', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500
+                                    }}
+                                >
+                                    🏷️ ตั้งโปร
+                                </button>
+                                {tree.isPromotion && (
+                                    <button
+                                        onClick={() => handleRemovePromotion(tree)}
+                                        style={{
+                                            flex: 1, padding: '0.5rem', backgroundColor: '#f3f4f6', color: '#6b7280', border: '1px solid #d1d5db', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500
+                                        }}
+                                    >
+                                        ยกเลิก
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* Desktop View (Table) */}
+            <div className="desktop-table-view">
+                <div style={{ maxWidth: '100vw', overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '1rem' }}>
+                    <div style={{ backgroundColor: 'white', borderRadius: '0.75rem', border: '1px solid #e5e7eb', minWidth: '800px' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+                            <thead>
+                                <tr style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                                    <th style={{ padding: '0.75rem', textAlign: 'center', width: '40px' }}>
+                                        <input type="checkbox" checked={selected.size === filteredTrees.length && filteredTrees.length > 0} onChange={toggleSelectAll} />
+                                    </th>
+                                    <th style={{ padding: '0.75rem', textAlign: 'left' }}>รูป</th>
+                                    <th style={{ padding: '0.75rem', textAlign: 'left' }}>ชื่อ</th>
+                                    <th style={{ padding: '0.75rem', textAlign: 'left' }}>หมวดหมู่</th>
+                                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>ราคาเดิม</th>
+                                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>ราคาขาย</th>
+                                    <th style={{ padding: '0.75rem', textAlign: 'center' }}>ส่วนลด</th>
+                                    <th style={{ padding: '0.75rem', textAlign: 'center' }}>สถานะ</th>
+                                    <th style={{ padding: '0.75rem', textAlign: 'center' }}>จัดการ</th>
                                 </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                {filteredTrees.map(tree => {
+                                    const discount = getDiscountPercent(tree);
+                                    let imageUrl = '/placeholder-tree.jpg';
+                                    try {
+                                        if (tree.images && tree.images.length > 0) imageUrl = tree.images[0];
+                                    } catch { }
+
+                                    return (
+                                        <tr key={tree.id} style={{
+                                            borderBottom: '1px solid #e5e7eb',
+                                            backgroundColor: selected.has(tree.id) ? '#fef3c7' : 'transparent'
+                                        }}>
+                                            <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                                                <input type="checkbox" checked={selected.has(tree.id)} onChange={() => toggleSelect(tree.id)} />
+                                            </td>
+                                            <td style={{ padding: '0.5rem' }}>
+                                                <div style={{ width: '45px', height: '45px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#f3f4f6' }}>
+                                                    <img src={imageUrl} alt={tree.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: '0.75rem', fontWeight: '500' }}>{tree.name}</td>
+                                            <td style={{ padding: '0.75rem', color: '#6b7280' }}>{tree.category}</td>
+                                            <td style={{ padding: '0.75rem', textAlign: 'right', color: '#6b7280', textDecoration: tree.isPromotion ? 'line-through' : 'none' }}>
+                                                ฿{(tree.isPromotion && tree.originalPrice ? tree.originalPrice : tree.price).toLocaleString()}
+                                            </td>
+                                            <td style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 'bold', color: tree.isPromotion ? '#dc2626' : '#1f2937' }}>
+                                                ฿{tree.price.toLocaleString()}
+                                            </td>
+                                            <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                                                {discount ? (
+                                                    <span style={{
+                                                        backgroundColor: '#fee2e2',
+                                                        color: '#dc2626',
+                                                        padding: '0.25rem 0.75rem',
+                                                        borderRadius: '9999px',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 'bold'
+                                                    }}>-{discount}%</span>
+                                                ) : (
+                                                    <span style={{ color: '#9ca3af' }}>—</span>
+                                                )}
+                                            </td>
+                                            <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                                                <span style={{
+                                                    display: 'inline-block',
+                                                    width: '10px',
+                                                    height: '10px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: tree.isPromotion ? '#16a34a' : '#d1d5db',
+                                                    marginRight: '0.25rem'
+                                                }}></span>
+                                                <span style={{ fontSize: '0.75rem', color: tree.isPromotion ? '#166534' : '#9ca3af' }}>
+                                                    {tree.isPromotion ? 'เปิดโปร' : 'ปกติ'}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                                                <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'center' }}>
+                                                    <button
+                                                        onClick={() => openSingleEdit(tree)}
+                                                        style={{
+                                                            padding: '0.375rem 0.75rem',
+                                                            backgroundColor: '#dc2626',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '0.375rem',
+                                                            cursor: 'pointer',
+                                                            fontSize: '0.75rem'
+                                                        }}
+                                                    >
+                                                        🏷️ ตั้งโปร
+                                                    </button>
+                                                    {tree.isPromotion && (
+                                                        <button
+                                                            onClick={() => handleRemovePromotion(tree)}
+                                                            style={{
+                                                                padding: '0.375rem 0.75rem',
+                                                                backgroundColor: '#f3f4f6',
+                                                                color: '#6b7280',
+                                                                border: '1px solid #d1d5db',
+                                                                borderRadius: '0.375rem',
+                                                                cursor: 'pointer',
+                                                                fontSize: '0.75rem'
+                                                            }}
+                                                        >
+                                                            ยกเลิก
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             {/* Modal */}
@@ -438,147 +527,151 @@ export default function AdminPromotionsPage() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    zIndex: 1000
+                    zIndex: 99999
                 }} onClick={() => setShowModal(false)}>
                     <div style={{
                         backgroundColor: 'white',
                         borderRadius: '1rem',
-                        padding: '2rem',
+                        padding: '0',
                         maxWidth: '500px',
                         width: '90%',
-                        maxHeight: '90vh',
-                        overflowY: 'auto'
+                        maxHeight: 'calc(100vh - 160px)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: 'hidden'
                     }} onClick={e => e.stopPropagation()}>
-                        <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
-                            {isBulk ? `🏷️ ตั้งโปรโมชัน ${selected.size} รายการ` : `🏷️ ตั้งโปรโมชัน: ${editingTree?.name}`}
-                        </h2>
+                        <div style={{ padding: '2rem 2rem 0', overflowY: 'auto', flex: 1 }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
+                                {isBulk ? `🏷️ ตั้งโปรโมชัน ${selected.size} รายการ` : `🏷️ ตั้งโปรโมชัน: ${editingTree?.name}`}
+                            </h2>
 
-                        <div style={{ display: 'grid', gap: '1.25rem' }}>
-                            {/* Discount Type */}
-                            <div>
-                                <label style={{ display: 'block', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.5rem' }}>ประเภทส่วนลด</label>
-                                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                    <button
-                                        onClick={() => { setDiscountType('percent'); setDiscountValue(0); }}
-                                        style={{
-                                            flex: 1,
-                                            padding: '0.75rem',
-                                            borderRadius: '0.5rem',
-                                            border: discountType === 'percent' ? '2px solid #dc2626' : '1px solid #d1d5db',
-                                            backgroundColor: discountType === 'percent' ? '#fee2e2' : 'white',
-                                            color: discountType === 'percent' ? '#dc2626' : '#374151',
-                                            fontWeight: 'bold',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        ลดเป็น %
-                                    </button>
-                                    <button
-                                        onClick={() => { setDiscountType('fixed'); setDiscountValue(0); }}
-                                        style={{
-                                            flex: 1,
-                                            padding: '0.75rem',
-                                            borderRadius: '0.5rem',
-                                            border: discountType === 'fixed' ? '2px solid #dc2626' : '1px solid #d1d5db',
-                                            backgroundColor: discountType === 'fixed' ? '#fee2e2' : 'white',
-                                            color: discountType === 'fixed' ? '#dc2626' : '#374151',
-                                            fontWeight: 'bold',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        ราคาต่อชิ้น (฿)
-                                    </button>
+                            <div style={{ display: 'grid', gap: '1.25rem' }}>
+                                {/* Discount Type */}
+                                <div>
+                                    <label style={{ display: 'block', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.5rem' }}>ประเภทส่วนลด</label>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button
+                                            onClick={() => { setDiscountType('percent'); setDiscountValue(0); }}
+                                            style={{
+                                                flex: 1,
+                                                padding: '0.75rem',
+                                                borderRadius: '0.5rem',
+                                                border: discountType === 'percent' ? '2px solid #dc2626' : '1px solid #d1d5db',
+                                                backgroundColor: discountType === 'percent' ? '#fee2e2' : 'white',
+                                                color: discountType === 'percent' ? '#dc2626' : '#374151',
+                                                fontWeight: 'bold',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            ลดเป็น %
+                                        </button>
+                                        <button
+                                            onClick={() => { setDiscountType('fixed'); setDiscountValue(0); }}
+                                            style={{
+                                                flex: 1,
+                                                padding: '0.75rem',
+                                                borderRadius: '0.5rem',
+                                                border: discountType === 'fixed' ? '2px solid #dc2626' : '1px solid #d1d5db',
+                                                backgroundColor: discountType === 'fixed' ? '#fee2e2' : 'white',
+                                                color: discountType === 'fixed' ? '#dc2626' : '#374151',
+                                                fontWeight: 'bold',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            ราคาต่อชิ้น (฿)
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Discount Value */}
-                            <div>
-                                <label style={{ display: 'block', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
-                                    {discountType === 'percent' ? 'ส่วนลด (%)' : 'ราคาขาย (บาท)'}
-                                </label>
-                                <div style={{ position: 'relative' }}>
+                                {/* Discount Value */}
+                                <div>
+                                    <label style={{ display: 'block', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+                                        {discountType === 'percent' ? 'ส่วนลด (%)' : 'ราคาขาย (บาท)'}
+                                    </label>
+                                    <div style={{ position: 'relative' }}>
+                                        <input
+                                            type="number"
+                                            value={discountValue || ''}
+                                            onChange={e => setDiscountValue(Number(e.target.value))}
+                                            min={0}
+                                            max={discountType === 'percent' ? 99 : undefined}
+                                            placeholder={discountType === 'percent' ? 'เช่น 20' : 'เช่น 250'}
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem',
+                                                paddingRight: '3rem',
+                                                border: '1px solid #d1d5db',
+                                                borderRadius: '0.5rem',
+                                                fontSize: '1.25rem',
+                                                fontWeight: 'bold'
+                                            }}
+                                        />
+                                        <span style={{
+                                            position: 'absolute',
+                                            right: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            color: '#6b7280',
+                                            fontWeight: 'bold',
+                                            fontSize: '1.25rem'
+                                        }}>
+                                            {discountType === 'percent' ? '%' : '฿'}
+                                        </span>
+                                    </div>
+
+                                    {/* Preview */}
+                                    {!isBulk && editingTree && discountValue > 0 && (
+                                        <div style={{ marginTop: '0.5rem', padding: '0.75rem', backgroundColor: '#fef3c7', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
+                                            {discountType === 'percent' ? (
+                                                <>ราคาเดิม ฿{(editingTree.originalPrice || editingTree.price).toLocaleString()} → <strong style={{ color: '#dc2626' }}>฿{Math.round((editingTree.originalPrice || editingTree.price) * (1 - discountValue / 100)).toLocaleString()}</strong></>
+                                            ) : (
+                                                <>ราคาเดิม ฿{(editingTree.originalPrice || editingTree.price).toLocaleString()} → <strong style={{ color: '#dc2626' }}>฿{discountValue.toLocaleString()}</strong> (ลด {Math.round((1 - discountValue / (editingTree.originalPrice || editingTree.price)) * 100)}%)</>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Promotion Name */}
+                                <div>
+                                    <label style={{ display: 'block', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.5rem' }}>ชื่อโปรโมชัน (ไม่บังคับ)</label>
                                     <input
-                                        type="number"
-                                        value={discountValue || ''}
-                                        onChange={e => setDiscountValue(Number(e.target.value))}
-                                        min={0}
-                                        max={discountType === 'percent' ? 99 : undefined}
-                                        placeholder={discountType === 'percent' ? 'เช่น 20' : 'เช่น 250'}
+                                        type="text"
+                                        value={promoName}
+                                        onChange={e => setPromoName(e.target.value)}
+                                        placeholder="เช่น Valentine Sale, ลดกระหน่ำ"
                                         style={{
                                             width: '100%',
                                             padding: '0.75rem',
-                                            paddingRight: '3rem',
                                             border: '1px solid #d1d5db',
-                                            borderRadius: '0.5rem',
-                                            fontSize: '1.25rem',
-                                            fontWeight: 'bold'
+                                            borderRadius: '0.5rem'
                                         }}
                                     />
-                                    <span style={{
-                                        position: 'absolute',
-                                        right: '1rem',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        color: '#6b7280',
-                                        fontWeight: 'bold',
-                                        fontSize: '1.25rem'
-                                    }}>
-                                        {discountType === 'percent' ? '%' : '฿'}
-                                    </span>
                                 </div>
 
-                                {/* Preview */}
-                                {!isBulk && editingTree && discountValue > 0 && (
-                                    <div style={{ marginTop: '0.5rem', padding: '0.75rem', backgroundColor: '#fef3c7', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
-                                        {discountType === 'percent' ? (
-                                            <>ราคาเดิม ฿{(editingTree.originalPrice || editingTree.price).toLocaleString()} → <strong style={{ color: '#dc2626' }}>฿{Math.round((editingTree.originalPrice || editingTree.price) * (1 - discountValue / 100)).toLocaleString()}</strong></>
-                                        ) : (
-                                            <>ราคาเดิม ฿{(editingTree.originalPrice || editingTree.price).toLocaleString()} → <strong style={{ color: '#dc2626' }}>฿{discountValue.toLocaleString()}</strong> (ลด {Math.round((1 - discountValue / (editingTree.originalPrice || editingTree.price)) * 100)}%)</>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Promotion Name */}
-                            <div>
-                                <label style={{ display: 'block', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.5rem' }}>ชื่อโปรโมชัน (ไม่บังคับ)</label>
-                                <input
-                                    type="text"
-                                    value={promoName}
-                                    onChange={e => setPromoName(e.target.value)}
-                                    placeholder="เช่น Valentine Sale, ลดกระหน่ำ"
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '0.5rem'
-                                    }}
-                                />
-                            </div>
-
-                            {/* End Date */}
-                            <div>
-                                <label style={{ display: 'block', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.5rem' }}>วันหมดอายุโปร (ไม่บังคับ)</label>
-                                <input
-                                    type="date"
-                                    value={promoEndDate}
-                                    onChange={e => setPromoEndDate(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '0.5rem'
-                                    }}
-                                />
+                                {/* End Date */}
+                                <div>
+                                    <label style={{ display: 'block', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.5rem' }}>วันหมดอายุโปร (ไม่บังคับ)</label>
+                                    <input
+                                        type="date"
+                                        value={promoEndDate}
+                                        onChange={e => setPromoEndDate(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '0.5rem'
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        {/* Actions */}
-                        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '2rem', justifyContent: 'flex-end' }}>
+                        {/* Actions - sticky at bottom */}
+                        <div style={{ display: 'flex', gap: '0.75rem', padding: '1rem 2rem 1.5rem', justifyContent: 'flex-end', borderTop: '1px solid #e5e7eb', backgroundColor: 'white', borderBottomLeftRadius: '1rem', borderBottomRightRadius: '1rem', flexShrink: 0 }}>
                             <Button variant="outline" onClick={() => setShowModal(false)} disabled={saving}>ยกเลิก</Button>
                             <Button
                                 onClick={handleSave}
-                                disabled={saving || discountValue <= 0}
+                                disabled={saving}
                                 style={{ backgroundColor: '#dc2626', color: 'white' }}
                             >
                                 {saving ? 'กำลังบันทึก...' : '✅ บันทึกโปรโมชัน'}

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import CountdownTimer from '@/components/CountdownTimer';
+import InlineEdit from '@/components/InlineEdit';
 
 export default async function PromotionPage() {
     // Fetch trees marked as promotions
@@ -22,6 +23,16 @@ export default async function PromotionPage() {
         .sort((a, b) => new Date(a.promotionEndDate!).getTime() - new Date(b.promotionEndDate!).getTime())
     [0]?.promotionEndDate;
 
+    // Fetch Site Settings
+    const settings = await prisma.siteSetting.findMany();
+    const settingsMap = settings.reduce((acc: Record<string, string>, curr: { key: string, value: string }) => {
+        acc[curr.key] = curr.value;
+        return acc;
+    }, {});
+
+    const promotionTitle = settingsMap['promotion_title'] || '🔥 โปรโมชั่นพิเศษ';
+    const promotionSubtitle = settingsMap['promotion_subtitle'] || 'ส่วนลดพิเศษ! ราคาดีที่สุดสำหรับต้นไม้คุณภาพ';
+
     return (
         <div className="container" style={{ padding: '2rem 1rem' }}>
             {/* Header */}
@@ -40,12 +51,23 @@ export default async function PromotionPage() {
                     background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat',
                     opacity: 0.3
                 }} />
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 0.5rem', position: 'relative' }}>
-                    🔥 โปรโมชั่นพิเศษ
-                </h1>
-                <p style={{ fontSize: '1.25rem', opacity: 0.9, position: 'relative' }}>
-                    ส่วนลดพิเศษ! ราคาดีที่สุดสำหรับต้นไม้คุณภาพ
-                </p>
+                <InlineEdit
+                    settingKey="promotion_title"
+                    initialValue={promotionTitle}
+                    initialBgColor={settingsMap['promotion_title_bgColor']}
+                    renderAs="h1"
+                    allowStyleEdit
+                    style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 0.5rem', position: 'relative', background: settingsMap['promotion_title_bgColor'] || 'transparent', padding: '0.25rem 0.5rem', borderRadius: '0.5rem', display: 'inline-block' }}
+                />
+                <br />
+                <InlineEdit
+                    settingKey="promotion_subtitle"
+                    initialValue={promotionSubtitle}
+                    initialBgColor={settingsMap['promotion_subtitle_bgColor']}
+                    renderAs="p"
+                    allowStyleEdit
+                    style={{ fontSize: '1.25rem', opacity: 0.9, position: 'relative', background: settingsMap['promotion_subtitle_bgColor'] || 'transparent', padding: '0.25rem 0.5rem', borderRadius: '0.5rem', display: 'inline-block' }}
+                />
                 {nearestEndDate && (
                     <div style={{ marginTop: '1rem', position: 'relative', display: 'flex', justifyContent: 'center' }}>
                         <CountdownTimer endDate={nearestEndDate.toISOString()} style={{ color: 'white' }} />
@@ -105,8 +127,7 @@ export default async function PromotionPage() {
                                     cursor: 'pointer',
                                     position: 'relative'
                                 }}
-                                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 24px rgba(0,0,0,0.15)'; }}
-                                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
+                                    className="hover:scale-[1.02] hover:shadow-xl"
                                 >
                                     {/* Discount badge */}
                                     {discount > 0 && (

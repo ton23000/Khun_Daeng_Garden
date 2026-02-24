@@ -300,124 +300,35 @@ export default function DashboardPage() {
 
 
             {/* Stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'PENDING_APPROVAL' ? '#f97316' : undefined }}
-                    onClick={() => handleStatusClick('PENDING_APPROVAL')}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>รอการอนุมัติ</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f97316' }}>
-                            {bookings.filter(b => b.status === 'PENDING_APPROVAL').length}
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'PENDING' ? '#f59e0b' : undefined }}
-                    onClick={() => handleStatusClick('PENDING')}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>รอชำระเงิน</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>
-                            {bookings.filter(b => b.status === 'PENDING').length}
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'VERIFYING_PAYMENT' ? '#3b82f6' : undefined }}
-                    onClick={() => handleStatusClick('VERIFYING_PAYMENT')}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ตรวจสอบการชำระเงิน</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3b82f6' }}>
-                            {bookings.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID').length}
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'PAYMENT_ISSUE' ? '#ef4444' : undefined }}
-                    onClick={() => handleStatusClick('PAYMENT_ISSUE')}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ชำระเงินมีปัญหา</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ef4444' }}>
-                            {bookings.filter(b => b.status === 'PAYMENT_ISSUE').length}
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'CONFIRMED' ? '#10b981' : undefined }}
-                    onClick={() => handleStatusClick('CONFIRMED')}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ยืนยันการจอง</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>
-                            {bookings.filter(b => b.status === 'CONFIRMED').length}
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'PREPARING' ? '#8b5cf6' : undefined }}
-                    onClick={() => handleStatusClick('PREPARING')}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>เตรียมต้นไม้</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#8b5cf6' }}>
-                            {bookings.filter(b => b.status === 'PREPARING').length}
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'READY' ? '#22c55e' : undefined }}
-                    onClick={() => handleStatusClick('READY')}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>พร้อมรับที่ร้าน</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#22c55e' }}>
-                            {bookings.filter(b => b.status === 'READY').length}
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'COMPLETED' ? '#6b7280' : undefined }}
-                    onClick={() => handleStatusClick('COMPLETED')}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>เสร็จสิ้น</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#6b7280' }}>
-                            {bookings.filter(b => b.status === 'COMPLETED').length}
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card
-                    style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === 'CANCELLED' ? '#dc2626' : undefined }}
-                    onClick={() => handleStatusClick('CANCELLED')}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>ยกเลิกการจอง</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#dc2626' }}>
-                            {bookings.filter(b => b.status === 'CANCELLED').length}
-                        </p>
-                    </CardContent>
-                </Card>
+            {/* Stats */}
+            <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
+                {[
+                    { id: 'PENDING_APPROVAL', label: 'รอการอนุมัติ', color: '#f97316' },
+                    { id: 'PENDING', label: 'รอชำระเงิน', color: '#f59e0b' },
+                    { id: 'VERIFYING_PAYMENT', label: 'รอตรวจสอบ', color: '#3b82f6', count: bookings.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID').length },
+                    { id: 'PAYMENT_ISSUE', label: 'ชำระมีปัญหา', color: '#ef4444' },
+                    { id: 'CONFIRMED', label: 'ยืนยันจอง', color: '#10b981' },
+                    { id: 'PREPARING', label: 'เตรียมสินค้า', color: '#8b5cf6' },
+                    { id: 'READY', label: 'พร้อมรับ', color: '#22c55e' },
+                    { id: 'COMPLETED', label: 'เสร็จสิ้น', color: '#6b7280' },
+                    { id: 'CANCELLED', label: 'ยกเลิก', color: '#dc2626' },
+                ].map(stat => (
+                    <Card
+                        key={stat.id}
+                        style={{ cursor: 'pointer', transition: 'transform 0.2s', borderColor: statusFilter === stat.id ? stat.color : undefined }}
+                        onClick={() => handleStatusClick(stat.id)}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                        <CardContent style={{ padding: '1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+                            <p style={{ color: '#6b7280', fontSize: '0.8rem', marginBottom: '0.25rem', fontWeight: 500 }}>{stat.label}</p>
+                            <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: stat.color }}>
+                                {stat.count !== undefined ? stat.count : bookings.filter(b => b.status === stat.id).length}
+                            </p>
+                        </CardContent>
+                    </Card>
+                ))}
+
                 <Card
                     style={{
                         borderColor: trees.filter(t => (t.stock - t.reserved) > 0 && (t.stock - t.reserved) < 5).length > 0 ? '#f59e0b' : '#e5e7eb',
@@ -425,12 +336,12 @@ export default function DashboardPage() {
                         transition: 'transform 0.2s'
                     }}
                     onClick={() => router.push('/admin/inventory')}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>⚠️ สต็อกต่ำ</p>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>
+                    <CardContent style={{ padding: '1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+                        <p style={{ color: '#6b7280', fontSize: '0.8rem', marginBottom: '0.25rem', fontWeight: 500 }}>⚠️ สต็อกต่ำ</p>
+                        <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#f59e0b' }}>
                             {trees.filter(t => (t.stock - t.reserved) > 0 && (t.stock - t.reserved) < 5).length}
                         </p>
                     </CardContent>
@@ -438,17 +349,20 @@ export default function DashboardPage() {
             </div>
 
             {/* Order Management Section */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>จัดการออเดอร์</h2>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <SearchBar
-                        placeholder="ค้นหาชื่อลูกค้า, เบอร์โทร, รหัสออเดอร์..."
-                        onSearch={setSearchQuery}
-                    />
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ width: '100%', maxWidth: '350px' }}>
+                        <SearchBar
+                            placeholder="ค้นหาชื่อลูกค้า, เบอร์โทร, รหัสออเดอร์..."
+                            onSearch={setSearchQuery}
+                        />
+                    </div>
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <Button
                             variant={viewMode === 'all' && !statusFilter ? 'primary' : 'outline'}
                             onClick={() => handleStatusClick(null)}
+                            style={{ minWidth: '100px', display: 'flex', justifyContent: 'center' }}
                         >
                             ทั้งหมด
                         </Button>
@@ -457,7 +371,11 @@ export default function DashboardPage() {
                             onClick={() => handleStatusClick('PENDING_APPROVAL')}
                             style={{
                                 backgroundColor: statusFilter === 'PENDING_APPROVAL' ? '#f97316' : undefined,
-                                borderColor: statusFilter === 'PENDING_APPROVAL' ? '#f97316' : undefined
+                                borderColor: statusFilter === 'PENDING_APPROVAL' ? '#f97316' : undefined,
+                                color: statusFilter === 'PENDING_APPROVAL' ? 'white' : undefined,
+                                minWidth: '130px',
+                                display: 'flex',
+                                justifyContent: 'center'
                             }}
                         >
                             ⚠️ รอการอนุมัติ
@@ -465,6 +383,7 @@ export default function DashboardPage() {
                         <Button
                             variant={viewMode === 'by-customer' ? 'primary' : 'outline'}
                             onClick={() => setViewMode('by-customer')}
+                            style={{ minWidth: '120px', display: 'flex', justifyContent: 'center' }}
                         >
                             แยกตามลูกค้า
                         </Button>
@@ -506,190 +425,202 @@ export default function DashboardPage() {
                 </Card>
             )}
 
-            <Card>
-                <CardContent style={{ padding: 0 }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                        <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                            <tr>
-                                <th style={{ padding: '1rem' }}>รหัส</th>
-                                <SortableTableHeader
-                                    label="ลูกค้า"
-                                    sortKey="customer"
-                                    currentSort={sortConfig}
-                                    onSort={handleSort}
-                                />
-                                <th style={{ padding: '1rem' }}>รายการ</th>
-                                <SortableTableHeader
-                                    label="ยอดรวม"
-                                    sortKey="price"
-                                    currentSort={sortConfig}
-                                    onSort={handleSort}
-                                />
-                                <th style={{ padding: '1rem' }}>สลิป</th>
-                                <SortableTableHeader
-                                    label="วันรับของ"
-                                    sortKey="date"
-                                    currentSort={sortConfig}
-                                    onSort={handleSort}
-                                />
-                                <SortableTableHeader
-                                    label="สถานะ"
-                                    sortKey="status"
-                                    currentSort={sortConfig}
-                                    onSort={handleSort}
-                                />
-                                <th style={{ padding: '1rem' }}>จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredBookings.length === 0 ? (
-                                <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>ไม่มีออเดอร์</td></tr>
-                            ) : (
-                                filteredBookings.map(booking => (
-                                    <tr key={booking.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                                        <td style={{ padding: '1rem', fontWeight: 500 }}>{booking.refCode}</td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <div>
-                                                {booking.user.firstName} {booking.user.lastName}
-                                            </div>
-                                            <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{booking.user.phone}</div>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            {booking.items.map((item, idx) => (
-                                                <div key={idx} style={{ fontSize: '0.875rem' }}>
-                                                    {item.tree.name} x{item.quantity}
-                                                </div>
-                                            ))}
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>฿{booking.totalPrice.toLocaleString()}</td>
-                                        <td style={{ padding: '1rem' }}>
-                                            {booking.slipUrl ? (
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', borderColor: '#bbf7d0', color: '#166534' }}
-                                                    onClick={() => setViewingSlip(booking.slipUrl)}
-                                                >
-                                                    📎 ดูสลิป
-                                                </Button>
-                                            ) : (
-                                                <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>-</span>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .desktop-table-view { display: none; }
+                .mobile-card-view { display: flex; flex-direction: column; gap: 1rem; padding-bottom: 2rem; }
+                @media (min-width: 768px) {
+                    .desktop-table-view { display: block; }
+                    .mobile-card-view { display: none; }
+                }
+            `}} />
+
+            {/* Mobile View (Cards) */}
+            <div className="mobile-card-view">
+                {filteredBookings.length === 0 ? (
+                    <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>ไม่มีออเดอร์</div>
+                ) : (
+                    filteredBookings.map(booking => (
+                        <Card key={booking.id} style={{ border: '1px solid #e5e7eb', marginBottom: '1rem' }}>
+                            <CardContent style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ fontWeight: 'bold' }}>{booking.refCode}</span>
+                                    <span style={{ ...getStatusBadge(booking.status), whiteSpace: 'nowrap' }}>
+                                        {getStatusText(booking.status)}
+                                    </span>
+                                </div>
+                                <div style={{ borderBottom: '1px solid #e5e7eb', paddingBottom: '0.75rem' }}>
+                                    <div style={{ fontWeight: 500 }}>{booking.user.firstName} {booking.user.lastName}</div>
+                                    <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>{booking.user.phone}</div>
+                                </div>
+                                <div style={{ fontSize: '0.875rem' }}>
+                                    {booking.items.map((item, idx) => (
+                                        <div key={idx}>• {item.tree.name} x{item.quantity}</div>
+                                    ))}
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 'bold' }}>
+                                    <span>ยอดรวม:</span>
+                                    <span style={{ color: '#166534' }}>฿{booking.totalPrice.toLocaleString()}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem' }}>
+                                    <span>วันรับของ:</span>
+                                    <span>{new Date(booking.pickupDate).toLocaleDateString('th-TH')}</span>
+                                </div>
+                                {booking.slipUrl && (
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', borderColor: '#bbf7d0', color: '#166534', width: '100%' }}
+                                        onClick={() => setViewingSlip(booking.slipUrl)}
+                                    >
+                                        📎 ดูสลิป
+                                    </Button>
+                                )}
+                                <div style={{ paddingTop: '0.5rem', borderTop: '1px solid #e5e7eb' }}>
+                                    {booking.status === 'PENDING_APPROVAL' ? (
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <Button
+                                                size="sm"
+                                                onClick={async () => {
+                                                    if (!confirm(`อนุมัติออเดอร์ #${booking.refCode}?`)) return;
+                                                    try {
+                                                        const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'approve' }) });
+                                                        if (res.ok) fetchBookings(); else alert('เกิดข้อผิดพลาด');
+                                                    } catch (e) { alert('เกิดข้อผิดพลาด'); }
+                                                }}
+                                                style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1 }}
+                                            >✅ อนุมัติ</Button>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={async () => {
+                                                    if (!confirm(`ปฏิเสธออเดอร์ #${booking.refCode}?`)) return;
+                                                    try {
+                                                        const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'reject' }) });
+                                                        if (res.ok) fetchBookings(); else alert('เกิดข้อผิดพลาด');
+                                                    } catch (e) { alert('เกิดข้อผิดพลาด'); }
+                                                }}
+                                                style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1 }}
+                                            >❌ ปฏิเสธ</Button>
+                                        </div>
+                                    ) : (
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <Button size="sm" variant="outline" onClick={() => handleEdit(booking)} style={{ flex: 1 }}>แก้ไข</Button>
+                                            {booking.status !== 'COMPLETED' && (
+                                                <Button size="sm" variant="outline" onClick={() => handleDelete(booking.id, booking.refCode)} style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1 }}>ลบ</Button>
                                             )}
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            {editingId === booking.id ? (
-                                                <Input
-                                                    type="date"
-                                                    value={editForm.pickupDate}
-                                                    onChange={(e) => setEditForm({ ...editForm, pickupDate: e.target.value })}
-                                                />
-                                            ) : (
-                                                new Date(booking.pickupDate).toLocaleDateString('th-TH')
-                                            )}
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            {editingId === booking.id ? (
-                                                <select
-                                                    value={editForm.status}
-                                                    onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                                                    style={{ padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db' }}
-                                                >
-                                                    <option value="PENDING_APPROVAL">รอการอนุมัติ</option>
-                                                    <option value="PENDING">รอชำระเงิน</option>
-                                                    <option value="PAID">รอตรวจสอบ</option>
-                                                    <option value="PREPARING">กำลังเตรียม</option>
-                                                    <option value="READY">พร้อมรับ</option>
-                                                    <option value="COMPLETED">เสร็จสิ้น</option>
-                                                    <option value="CANCELLED">ยกเลิก</option>
-                                                </select>
-                                            ) : (
-                                                <span style={getStatusBadge(booking.status)}>
-                                                    {getStatusText(booking.status)}
-                                                </span>
-                                            )}
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            {editingId === booking.id ? (
-                                                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                    <Button size="sm" onClick={() => handleUpdate(booking.id)}>บันทึก</Button>
-                                                    <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>ยกเลิก</Button>
-                                                </div>
-                                            ) : booking.status === 'PENDING_APPROVAL' ? (
-                                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                                    <Button
-                                                        size="sm"
-                                                        onClick={async () => {
-                                                            if (!confirm(`อนุมัติออเดอร์ #${booking.refCode}?`)) return;
-                                                            try {
-                                                                const res = await fetch(`/api/admin/bookings/${booking.id}/action`, {
-                                                                    method: 'POST',
-                                                                    headers: { 'Content-Type': 'application/json' },
-                                                                    body: JSON.stringify({ action: 'approve' })
-                                                                });
-                                                                if (res.ok) {
-                                                                    alert('อนุมัติออเดอร์เรียบร้อย');
-                                                                    fetchBookings();
-                                                                } else {
-                                                                    const data = await res.json();
-                                                                    alert(data.error || 'เกิดข้อผิดพลาด');
-                                                                }
-                                                            } catch (error) {
-                                                                console.error('Approve error:', error);
-                                                                alert('เกิดข้อผิดพลาด');
-                                                            }
-                                                        }}
-                                                        style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white' }}
-                                                    >
-                                                        ✅ อนุมัติ
-                                                    </Button>
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        onClick={async () => {
-                                                            if (!confirm(`ปฏิเสธออเดอร์ #${booking.refCode}?`)) return;
-                                                            try {
-                                                                const res = await fetch(`/api/admin/bookings/${booking.id}/action`, {
-                                                                    method: 'POST',
-                                                                    headers: { 'Content-Type': 'application/json' },
-                                                                    body: JSON.stringify({ action: 'reject' })
-                                                                });
-                                                                if (res.ok) {
-                                                                    alert('ปฏิเสธออเดอร์เรียบร้อย');
-                                                                    fetchBookings();
-                                                                } else {
-                                                                    alert('เกิดข้อผิดพลาด');
-                                                                }
-                                                            } catch (error) {
-                                                                console.error('Reject error:', error);
-                                                                alert('เกิดข้อผิดพลาด');
-                                                            }
-                                                        }}
-                                                        style={{ borderColor: '#ef4444', color: '#ef4444' }}
-                                                    >
-                                                        ❌ ปฏิเสธ
-                                                    </Button>
-                                                </div>
-                                            ) : (
-                                                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                    <Button size="sm" variant="outline" onClick={() => handleEdit(booking)}>แก้ไข</Button>
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        onClick={() => handleDelete(booking.id, booking.refCode)}
-                                                        style={{ borderColor: '#ef4444', color: '#ef4444' }}
-                                                    >
-                                                        ลบ
-                                                    </Button>
-                                                </div>
-                                            )}
-                                        </td>
+                                        </div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))
+                )}
+            </div>
+
+            {/* Desktop View (Table) */}
+            <div className="desktop-table-view">
+                <div style={{ maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '1rem' }}>
+                    <Card style={{ minWidth: '800px', border: '1px solid #e5e7eb' }}>
+                        <CardContent style={{ padding: 0 }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                                    <tr>
+                                        <th style={{ padding: '1rem' }}>รหัส</th>
+                                        <SortableTableHeader label="ลูกค้า" sortKey="customer" currentSort={sortConfig} onSort={handleSort} />
+                                        <th style={{ padding: '1rem' }}>รายการ</th>
+                                        <SortableTableHeader label="ยอดรวม" sortKey="price" currentSort={sortConfig} onSort={handleSort} />
+                                        <th style={{ padding: '1rem' }}>สลิป</th>
+                                        <SortableTableHeader label="วันรับของ" sortKey="date" currentSort={sortConfig} onSort={handleSort} />
+                                        <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} />
+                                        <th style={{ padding: '1rem' }}>จัดการ</th>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </CardContent>
-            </Card>
+                                </thead>
+                                <tbody>
+                                    {filteredBookings.length === 0 ? (
+                                        <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>ไม่มีออเดอร์</td></tr>
+                                    ) : (
+                                        filteredBookings.map(booking => (
+                                            <tr key={booking.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                                                <td style={{ padding: '1rem', fontWeight: 500 }}>{booking.refCode}</td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    <div>{booking.user.firstName} {booking.user.lastName}</div>
+                                                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{booking.user.phone}</div>
+                                                </td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    {booking.items.map((item, idx) => (
+                                                        <div key={idx} style={{ fontSize: '0.875rem' }}>{item.tree.name} x{item.quantity}</div>
+                                                    ))}
+                                                </td>
+                                                <td style={{ padding: '1rem' }}>฿{booking.totalPrice.toLocaleString()}</td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    {booking.slipUrl ? (
+                                                        <Button size="sm" variant="outline" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', borderColor: '#bbf7d0', color: '#166534', whiteSpace: 'nowrap' }} onClick={() => setViewingSlip(booking.slipUrl)}>
+                                                            📎 ดูสลิป
+                                                        </Button>
+                                                    ) : <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>-</span>}
+                                                </td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    {editingId === booking.id ? (
+                                                        <Input type="date" value={editForm.pickupDate} onChange={(e) => setEditForm({ ...editForm, pickupDate: e.target.value })} />
+                                                    ) : new Date(booking.pickupDate).toLocaleDateString('th-TH')}
+                                                </td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    {editingId === booking.id ? (
+                                                        <select value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} style={{ padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db' }}>
+                                                            <option value="PENDING_APPROVAL">รอการอนุมัติ</option>
+                                                            <option value="PENDING">รอชำระเงิน</option>
+                                                            <option value="PAID">รอตรวจสอบ</option>
+                                                            <option value="PREPARING">กำลังเตรียม</option>
+                                                            <option value="READY">พร้อมรับ</option>
+                                                            <option value="COMPLETED">เสร็จสิ้น</option>
+                                                            <option value="CANCELLED">ยกเลิก</option>
+                                                        </select>
+                                                    ) : (
+                                                        <span style={{ ...getStatusBadge(booking.status), whiteSpace: 'nowrap' }}>{getStatusText(booking.status)}</span>
+                                                    )}
+                                                </td>
+                                                <td style={{ padding: '1rem' }}>
+                                                    {editingId === booking.id ? (
+                                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                            <Button size="sm" onClick={() => handleUpdate(booking.id)}>บันทึก</Button>
+                                                            <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>ยกเลิก</Button>
+                                                        </div>
+                                                    ) : booking.status === 'PENDING_APPROVAL' ? (
+                                                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', minWidth: '150px' }}>
+                                                            <Button size="sm" onClick={async () => {
+                                                                if (!confirm(`อนุมัติออเดอร์ #${booking.refCode}?`)) return;
+                                                                try {
+                                                                    const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'approve' }) });
+                                                                    if (res.ok) { alert('อนุมัติออเดอร์เรียบร้อย'); fetchBookings(); } else alert('เกิดข้อผิดพลาด');
+                                                                } catch (error) { alert('เกิดข้อผิดพลาด'); }
+                                                            }} style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1 }}>✅ อนุมัติ</Button>
+                                                            <Button size="sm" variant="outline" onClick={async () => {
+                                                                if (!confirm(`ปฏิเสธออเดอร์ #${booking.refCode}?`)) return;
+                                                                try {
+                                                                    const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'reject' }) });
+                                                                    if (res.ok) { alert('ปฏิเสธออเดอร์เรียบร้อย'); fetchBookings(); } else alert('เกิดข้อผิดพลาด');
+                                                                } catch (error) { alert('เกิดข้อผิดพลาด'); }
+                                                            }} style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1 }}>❌ ปฏิเสธ</Button>
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{ display: 'flex', gap: '0.5rem', minWidth: '100px' }}>
+                                                            <Button size="sm" variant="outline" onClick={() => handleEdit(booking)}>แก้ไข</Button>
+                                                            {booking.status !== 'COMPLETED' && (
+                                                                <Button size="sm" variant="outline" onClick={() => handleDelete(booking.id, booking.refCode)} style={{ borderColor: '#ef4444', color: '#ef4444' }}>ลบ</Button>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
 
             <SlipViewer
                 isOpen={!!viewingSlip}

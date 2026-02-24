@@ -10,7 +10,7 @@ import Link from 'next/link';
 export default function VerifyEmailPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, refreshUser } = useAuth();
     const token = searchParams.get('token');
     const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'no-token'>('loading');
     const [message, setMessage] = useState('');
@@ -34,6 +34,10 @@ export default function VerifyEmailPage() {
             if (res.ok) {
                 setStatus('success');
                 setMessage(data.message || 'ยืนยันอีเมลสำเร็จ!');
+                // Refresh the global auth state if the user is currently logged in
+                if (user) {
+                    refreshUser();
+                }
             } else {
                 setStatus('error');
                 setMessage(data.error || 'ไม่สามารถยืนยันอีเมลได้');

@@ -12,6 +12,8 @@ export interface Tree {
     images: string[];
     tags: string[];
     growthTime?: string | null;
+    stock?: number;
+    reserved?: number;
 }
 
 export interface CartItem extends Tree {

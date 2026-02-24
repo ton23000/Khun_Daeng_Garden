@@ -21,6 +21,12 @@ export function ParallaxSection({
     useEffect(() => {
         const handleScroll = () => {
             if (ref.current) {
+                // Disable parallax on mobile to prevent severe overlap
+                if (window.innerWidth < 768) {
+                    setOffsetY(0);
+                    return;
+                }
+
                 const rect = ref.current.getBoundingClientRect();
                 const scrolled = window.pageYOffset;
                 const elementTop = rect.top + scrolled;
@@ -30,10 +36,13 @@ export function ParallaxSection({
         };
 
         window.addEventListener('scroll', handleScroll);
+        // Add resize listener to handle orientation changes
+        window.addEventListener('resize', handleScroll);
         handleScroll(); // Initial call
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', handleScroll);
         };
     }, [speed]);
 

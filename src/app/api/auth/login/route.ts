@@ -81,7 +81,8 @@ export async function POST(request: Request) {
                 lastName: user.lastName,
                 phone: user.phone,
                 email: user.email,
-                role: user.role.toLowerCase()
+                role: user.role.toLowerCase(),
+                verified: user.verified
             }
         });
 

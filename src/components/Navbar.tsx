@@ -6,16 +6,19 @@ import { useAuth } from '@/lib/AuthContext';
 import { useNotification } from '@/lib/NotificationContext';
 import { Button } from './ui/Button';
 import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Menu, X, Home, Package, ShoppingCart, Bell, User, Heart, Search } from 'lucide-react';
 import styles from './navbar.module.css';
+import InlineEdit from './InlineEdit';
 
-export function Navbar() {
+export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท', topBarBgColor = '' }: { topBarText?: string, topBarBgColor?: string }) {
     const { items } = useCart();
     const { user, logout } = useAuth();
     const { notifications, unreadCount, markAllAsRead } = useNotification();
+    const pathname = usePathname();
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
     const [showNotifications, setShowNotifications] = useState(false);
+    const isAdminPage = pathname?.startsWith('/admin');
 
     // Dropdown States
     const [showServices, setShowServices] = useState(false);
@@ -62,7 +65,15 @@ export function Navbar() {
                 {/* 1. Top Bar */}
                 <div className={`${styles.topBar} hidden-mobile`}>
                     <div className={`container ${styles.topBarContainer}`}>
-                        <div className={styles.topBarText}>ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท</div>
+                        <InlineEdit
+                            settingKey="top_bar_text"
+                            initialValue={topBarText}
+                            initialBgColor={topBarBgColor}
+                            allowStyleEdit
+                            renderAs="div"
+                            className={styles.topBarText}
+                            style={{ background: topBarBgColor || 'transparent', padding: '0.25rem 0.5rem', borderRadius: '0.25rem' }}
+                        />
                         <div className={styles.topBarLinks}>
                             <span>สายด่วน : +66 81 234 5678</span>
                             <Link href="/faq" className={styles.topBarLink}>คำถามที่พบบ่อย</Link>

@@ -398,7 +398,7 @@ export default function AdminTreesPage() {
 
             <Card>
                 <CardContent style={{ padding: 0 }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
                         <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                             <tr>
                                 <th style={{ padding: '1rem' }}>รูปภาพ</th>
@@ -516,7 +516,36 @@ export default function AdminTreesPage() {
                                         </div>
                                     </div>
                                 </div>
-                                <Input label="ระยะเวลาเติบโต (เช่น 1-2 อาทิตย์)" value={formData.growthTime} onChange={e => setFormData({ ...formData, growthTime: e.target.value })} />
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">ระยะเวลาเติบโต</label>
+                                    <select
+                                        value={formData.growthTime}
+                                        onChange={e => setFormData({ ...formData, growthTime: e.target.value })}
+                                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    >
+                                        <option value="">-- ไม่ระบุ --</option>
+                                        <optgroup label="เป็นอาทิตย์">
+                                            <option value="1 อาทิตย์">1 อาทิตย์</option>
+                                            <option value="2 อาทิตย์">2 อาทิตย์</option>
+                                            <option value="3 อาทิตย์">3 อาทิตย์</option>
+                                            <option value="4 อาทิตย์">4 อาทิตย์</option>
+                                        </optgroup>
+                                        <optgroup label="เป็นเดือน">
+                                            <option value="1 เดือน">1 เดือน</option>
+                                            <option value="2 เดือน">2 เดือน</option>
+                                            <option value="3 เดือน">3 เดือน</option>
+                                            <option value="4 เดือน">4 เดือน</option>
+                                            <option value="5 เดือน">5 เดือน</option>
+                                            <option value="6 เดือน">6 เดือน</option>
+                                            <option value="7 เดือน">7 เดือน</option>
+                                            <option value="8 เดือน">8 เดือน</option>
+                                            <option value="9 เดือน">9 เดือน</option>
+                                            <option value="10 เดือน">10 เดือน</option>
+                                            <option value="11 เดือน">11 เดือน</option>
+                                            <option value="12 เดือน">12 เดือน</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium">รูปภาพ ({formData.images.length} รูป)</label>
                                     <label

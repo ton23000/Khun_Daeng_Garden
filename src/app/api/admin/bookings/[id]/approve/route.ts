@@ -39,11 +39,10 @@ export async function PATCH(
                 }, { status: 400 });
             }
 
+            // Warn but allow approval for pre-orders
             const availableStock = tree.stock - tree.reserved;
             if (availableStock < item.quantity) {
-                return NextResponse.json({
-                    error: `Insufficient stock for approval. Tree ID: ${item.treeId} (available: ${availableStock}, requested: ${item.quantity})`
-                }, { status: 400 });
+                console.warn(`[Admin Action] Warning: Approving booking with insufficient stock for ${item.treeId} (Available: ${availableStock}, Required: ${item.quantity})`);
             }
         }
 

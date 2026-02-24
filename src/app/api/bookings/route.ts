@@ -95,6 +95,7 @@ export async function POST(req: NextRequest) {
         // Check stock availability and determine if this is a pre-order
         console.log('[Booking API] Checking stock availability...');
         let isPreOrder = false;
+
         for (const item of validated.items) {
             const tree = await prisma.tree.findUnique({
                 where: { id: item.treeId }
@@ -108,7 +109,7 @@ export async function POST(req: NextRequest) {
 
             const availableStock = tree.stock - tree.reserved;
             if (availableStock < item.quantity) {
-                isPreOrder = true; // Mark as pre-order but don't reject
+                isPreOrder = true; // Mark order as pre-order
             }
         }
         console.log('[Booking API] Stock check complete. Is pre-order:', isPreOrder);
@@ -146,9 +147,10 @@ export async function POST(req: NextRequest) {
         });
         console.log('[Booking API] Booking created:', booking.id);
 
-        // Reserve stock only for regular bookings (not pre-orders)
+        // Reserve stock ONLY if the entire order is in stock
         if (!isPreOrder) {
-            console.log('[Booking API] Regular booking - Reserving stock...');
+            console.log('[Booking API] Reserving stock for all items...');
+            let reservedCount = 0;
             for (const item of validated.items) {
                 await prisma.tree.update({
                     where: { id: item.treeId },
@@ -158,10 +160,11 @@ export async function POST(req: NextRequest) {
                         }
                     }
                 });
+                reservedCount++;
             }
-            console.log('[Booking API] Stock reserved');
+            console.log(`[Booking API] Stock reserved for ${reservedCount} items`);
         } else {
-            console.log('[Booking API] Pre-order - stock NOT reserved (awaiting approval)');
+            console.log('[Booking API] This is a pre-order. Stock will be reserved upon Admin Approval.');
         }
 
         // Create admin notification

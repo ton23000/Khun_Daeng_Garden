@@ -8,26 +8,39 @@ import { useRouter } from 'next/navigation';
 interface InlineEditProps {
     settingKey: string;
     initialValue: string;
-    renderAs?: 'h1' | 'h2' | 'h3' | 'span' | 'p' | 'div';
-    style?: React.CSSProperties;
+    renderAs?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'div';
     className?: string;
+    style?: React.CSSProperties;
     multiline?: boolean;
+    allowStyleEdit?: boolean;
+    initialColor?: string;
+    initialBgColor?: string;
+    initialFontSize?: string;
     useSpecialTitleFormat?: boolean;
+    children?: React.ReactNode;
 }
 
 export default function InlineEdit({
     settingKey,
     initialValue,
-    renderAs = 'span',
-    style,
-    className,
+    renderAs = 'p',
+    className = '',
+    style = {},
     multiline = false,
-    useSpecialTitleFormat = false
+    useSpecialTitleFormat = false,
+    allowStyleEdit = false,
+    initialColor = '',
+    initialBgColor = '',
+    initialFontSize = '',
+    children
 }: InlineEditProps) {
     const { user, isLoading } = useAuth();
     const router = useRouter();
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState(initialValue);
+    const [color, setColor] = useState(initialColor);
+    const [bgColor, setBgColor] = useState(initialBgColor);
+    const [fontSize, setFontSize] = useState(initialFontSize);
     const [isSaving, setIsSaving] = useState(false);
     const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
@@ -48,7 +61,7 @@ export default function InlineEdit({
             e.stopPropagation();
         }
 
-        if (value === initialValue) {
+        if (value === initialValue && color === initialColor && bgColor === initialBgColor && fontSize === initialFontSize) {
             setIsEditing(false);
             return;
         }
@@ -59,13 +72,20 @@ export default function InlineEdit({
             const storedUser = localStorage.getItem('khun_daeng_user');
             const userId = storedUser ? JSON.parse(storedUser).id : null;
 
+            const payload: Record<string, string> = { [settingKey]: value };
+            if (allowStyleEdit) {
+                if (color) payload[`${settingKey}_color`] = color;
+                if (bgColor) payload[`${settingKey}_bgColor`] = bgColor;
+                if (fontSize) payload[`${settingKey}_fontSize`] = fontSize;
+            }
+
             const res = await fetch('/api/settings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     ...(userId ? { 'x-user-id': userId } : {})
                 },
-                body: JSON.stringify({ [settingKey]: value })
+                body: JSON.stringify(payload)
             });
 
             if (res.ok) {
@@ -86,12 +106,18 @@ export default function InlineEdit({
         e.preventDefault();
         e.stopPropagation();
         setValue(initialValue);
+        setColor(initialColor);
+        setBgColor(initialBgColor);
+        setFontSize(initialFontSize);
         setIsEditing(false);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Escape') {
             setValue(initialValue);
+            setColor(initialColor);
+            setBgColor(initialBgColor);
+            setFontSize(initialFontSize);
             setIsEditing(false);
         } else if (e.key === 'Enter' && !multiline) {
             e.preventDefault();
@@ -149,7 +175,24 @@ export default function InlineEdit({
                     />
                 )}
 
-                <div style={{ position: 'absolute', right: '0', top: '-30px', display: 'flex', gap: '0.25rem' }}>
+                {allowStyleEdit && (
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', flexWrap: 'wrap', backgroundColor: '#f9fafb', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #e5e7eb' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: '#374151' }}>
+                            สีข้อความ:
+                            <input type="color" value={color && /^#[0-9A-Fa-f]{6}$/i.test(color) ? color : '#000000'} onChange={e => setColor(e.target.value)} style={{ cursor: 'pointer', height: '28px', width: '36px', padding: 0, border: 'none' }} />
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: '#374151' }}>
+                            สีพื้นหลัง:
+                            <input type="color" value={bgColor && /^#[0-9A-Fa-f]{6}$/i.test(bgColor) ? bgColor : '#ffffff'} onChange={e => setBgColor(e.target.value)} style={{ cursor: 'pointer', height: '28px', width: '36px', padding: 0, border: 'none' }} />
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: '#374151' }}>
+                            ขนาด (เช่น 2rem, 32px):
+                            <input type="text" value={fontSize} onChange={e => setFontSize(e.target.value)} placeholder="เช่น 2rem หรือ 32px" style={{ padding: '0.25rem 0.5rem', border: '1px solid #d1d5db', borderRadius: '4px', width: '150px' }} />
+                        </label>
+                    </div>
+                )}
+
+                <div style={{ position: 'absolute', right: '0', bottom: '-30px', display: 'flex', gap: '0.25rem', zIndex: 100 }}>
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
@@ -204,22 +247,41 @@ export default function InlineEdit({
                 <span style={{
                     fontStyle: 'italic',
                     fontWeight: '400',
-                    color: 'var(--primary)',
+                    color: color || 'var(--primary)',
                     display: 'inline-block'
                 }}>{value.split('|')[1]}</span>
             </>
         );
     }
 
+    const appliedStyle = { ...style };
+    if (allowStyleEdit) {
+        if (color) appliedStyle.color = color;
+        if (bgColor) appliedStyle.background = bgColor;
+        if (fontSize) appliedStyle.fontSize = fontSize;
+    }
+
     if (!isAdmin) {
-        return <Tag style={style} className={className}>{content}</Tag>;
+        return (
+            <Tag style={appliedStyle} className={className}>
+                {content}
+                {children}
+            </Tag>
+        );
     }
 
     return (
-        <div style={{ position: 'relative', display: 'inline-block', width: '100%' }} className="group">
-            <Tag style={{ ...style, display: 'block' }} className={className}>
-                {content}
-            </Tag>
+        <Tag
+            onClick={(e: React.MouseEvent) => {
+                // If it's a link parent, prevent it from triggering when clicking inside InlineEdit
+                e.preventDefault();
+                e.stopPropagation();
+            }}
+            style={{ position: 'relative', cursor: 'default', ...appliedStyle }}
+            className={`group ${className || ''}`}
+        >
+            {content}
+            {children}
 
             <button
                 onClick={(e) => {
@@ -237,19 +299,19 @@ export default function InlineEdit({
                     color: '#166534',
                     border: '1px solid #dcfce7',
                     borderRadius: '50%',
-                    width: '32px',
-                    height: '32px',
+                    width: '28px',
+                    height: '28px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                    zIndex: 10
+                    zIndex: 50
                 }}
                 title="คลิกเพื่อแก้ไขข้อความนี้"
             >
-                <Pencil size={14} />
+                <Pencil size={12} />
             </button>
-        </div>
+        </Tag>
     );
 }

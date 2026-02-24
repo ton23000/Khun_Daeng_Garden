@@ -42,23 +42,25 @@ export async function PATCH(
             }
         });
 
-        // Release reserved stock only for regular bookings (not pre-orders)
-        if (!booking.isPreorder) {
-            console.log('[Booking Cancel] Regular booking - Releasing reserved stock...');
-            for (const item of updated.items) {
+        // Release reserved stock safely
+        for (const item of updated.items) {
+            const tree = await prisma.tree.findUnique({
+                where: { id: item.treeId }
+            });
+
+            if (tree && tree.reserved > 0) {
+                const reserveToRelease = Math.min(item.quantity, tree.reserved);
                 await prisma.tree.update({
                     where: { id: item.treeId },
                     data: {
                         reserved: {
-                            decrement: item.quantity
+                            decrement: reserveToRelease
                         }
                     }
                 });
             }
-            console.log('[Booking Cancel] Reserved stock released');
-        } else {
-            console.log('[Booking Cancel] Pre-order cancelled - No stock to release');
         }
+        console.log('[Booking Cancel] Reserved stock conditionally released');
 
         // Create notification for admin
         await prisma.adminNotification.create({

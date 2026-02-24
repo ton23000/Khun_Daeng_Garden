@@ -182,18 +182,50 @@ export default function CartPage() {
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }}>
                                     วันรับสินค้า (สำหรับรายการนี้)
                                 </label>
-                                <Input
-                                    type="date"
-                                    min={minDateString}
-                                    required
-                                    value={item.pickupDate}
-                                    onChange={(e) => updateDate(item.instanceId, e.target.value)}
-                                />
-                                {!item.pickupDate && (
-                                    <p style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '0.25rem' }}>
-                                        * กรุณาระบุวันรับ
-                                    </p>
-                                )}
+                                {(() => {
+                                    // Calculate min date based on stock and growth time
+                                    const availableStock: number = (item as any).stock - ((item as any).reserved || 0); // CartItem doesn't directly type stock/reserved, assuming it's passed from Tree
+
+                                    const minItemDate = new Date();
+                                    let daysToAdd = 0;
+
+                                    if (availableStock < item.quantity) {
+                                        // Not enough stock, use growth time (default 2 weeks if not specified or unparseable)
+                                        daysToAdd = 14;
+                                        if (item.growthTime) {
+                                            const match = item.growthTime.match(/(\d+)\s*(อาทิตย์|เดือน)/);
+                                            if (match) {
+                                                const value = parseInt(match[1]);
+                                                daysToAdd = match[2] === 'เดือน' ? value * 30 : value * 7;
+                                            }
+                                        }
+                                    }
+
+                                    minItemDate.setDate(new Date().getDate() + daysToAdd);
+                                    const minItemDateString = minItemDate.toISOString().split('T')[0];
+
+                                    return (
+                                        <>
+                                            {daysToAdd > 0 && (
+                                                <div style={{ fontSize: '0.75rem', color: '#ea580c', marginBottom: '0.5rem' }}>
+                                                    * สินค้าพรีออเดอร์ ต้องรอการเติบโตประมาณ {item.growthTime || '2 อาทิตย์'}
+                                                </div>
+                                            )}
+                                            <Input
+                                                type="date"
+                                                min={minItemDateString}
+                                                required
+                                                value={item.pickupDate}
+                                                onChange={(e) => updateDate(item.instanceId, e.target.value)}
+                                            />
+                                            {!item.pickupDate && (
+                                                <p style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '0.25rem' }}>
+                                                    * กรุณาระบุวันรับ
+                                                </p>
+                                            )}
+                                        </>
+                                    );
+                                })()}
                             </div>
                         </Card>
                     ))}
@@ -204,6 +236,7 @@ export default function CartPage() {
 
                 {/* Summary & Booking Form */}
                 <div>
+
                     <Card>
                         <CardHeader>
                             <CardTitle>สรุปรายการจอง</CardTitle>

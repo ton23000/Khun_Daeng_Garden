@@ -10,6 +10,7 @@ interface Tree {
     name: string;
     price: number;
     images: string; // JSON string
+    soldCount?: number;
 }
 
 export function ImageSlider({ trees, title, subtitle }: { trees: Tree[], title: string, subtitle: string }) {
@@ -30,7 +31,7 @@ export function ImageSlider({ trees, title, subtitle }: { trees: Tree[], title: 
     const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + trees.length) % trees.length);
 
     return (
-        <div style={{ position: 'relative', width: '100%', overflow: 'hidden', borderRadius: '1rem', backgroundColor: '#f9fafb', padding: '2rem' }}>
+        <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', borderRadius: '1rem', backgroundColor: '#f9fafb', padding: '2rem' }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                 <span style={{ color: '#4d7c0f', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{subtitle}</span>
                 <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>{title}</h2>
@@ -53,7 +54,14 @@ export function ImageSlider({ trees, title, subtitle }: { trees: Tree[], title: 
                                     </div>
                                     <CardContent style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: 'white' }}>
                                         <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', marginBottom: '0.5rem', color: '#1f2937' }}>{tree.name}</h3>
-                                        <p style={{ fontSize: '1.25rem', fontWeight: '600', color: '#f87171' }}>฿{tree.price.toLocaleString()}</p>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                                            <p style={{ fontSize: '1.25rem', fontWeight: '600', color: '#f87171' }}>฿{tree.price.toLocaleString()}</p>
+                                            {tree.soldCount !== undefined && tree.soldCount > 0 && (
+                                                <p style={{ fontSize: '0.875rem', color: '#6b7280', backgroundColor: '#f3f4f6', padding: '0.25rem 0.75rem', borderRadius: '9999px' }}>
+                                                    ขายแล้ว {tree.soldCount} ต้น
+                                                </p>
+                                            )}
+                                        </div>
                                     </CardContent>
                                 </Card>
                             </Link>

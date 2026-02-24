@@ -220,9 +220,9 @@ export default function MyBookingsPage() {
                         return (
                             <Card key={booking.id}>
                                 <CardHeader style={{ borderBottom: '1px solid #e5e7eb' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div className="booking-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
-                                            <CardTitle>รหัสการจอง: {booking.refCode}</CardTitle>
+                                            <CardTitle style={{ wordBreak: 'break-all' }}>รหัสการจอง: {booking.refCode}</CardTitle>
                                             <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
                                                 วันที่สั่ง: {new Date(booking.createdAt).toLocaleDateString('th-TH')}
                                             </p>
@@ -235,7 +235,7 @@ export default function MyBookingsPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent style={{ padding: '1.5rem' }}>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1.5rem' }}>
+                                    <div className="responsive-grid">
                                         {/* Image */}
                                         {firstImage && (
                                             <div style={{
@@ -268,12 +268,15 @@ export default function MyBookingsPage() {
                                                 return (
                                                     <div key={idx} style={{
                                                         display: 'flex',
+                                                        flexWrap: 'wrap',
+                                                        gap: '0.5rem',
                                                         justifyContent: 'space-between',
                                                         alignItems: 'center',
                                                         marginBottom: '0.75rem',
                                                         padding: '0.5rem',
                                                         backgroundColor: '#f9fafb',
-                                                        borderRadius: '0.375rem'
+                                                        borderRadius: '0.375rem',
+                                                        wordBreak: 'break-word'
                                                     }}>
                                                         <div>
                                                             • {item.tree.name} x{item.quantity} - ฿{item.price.toLocaleString()}

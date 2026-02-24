@@ -61,30 +61,25 @@ export async function PUT(
                 where: { bookingId: id }
             });
 
-            // Check if this is a pre-order
-            if (currentBooking.isPreorder) {
-                // Pre-order: Only increment sold count, don't touch stock or reserved
-                for (const item of bookingItems) {
+            // Decrement stock and reserved, increment sold unconditionally
+            for (const item of bookingItems) {
+                const tree = await prisma.tree.findUnique({
+                    where: { id: item.treeId }
+                });
+
+                if (tree) {
+                    const decrementAmount = Math.min(item.quantity, tree.stock);
+                    const reserveDecrement = Math.min(item.quantity, tree.reserved);
+
                     await prisma.tree.update({
                         where: { id: item.treeId },
                         data: {
-                            sold: { increment: item.quantity }
-                        }
-                    });
-                    console.log(`[Booking Update] Pre-order completed - Tree ${item.treeId}: +${item.quantity} sold (stock unchanged)`);
-                }
-            } else {
-                // Regular booking: Decrement stock and reserved, increment sold
-                for (const item of bookingItems) {
-                    await prisma.tree.update({
-                        where: { id: item.treeId },
-                        data: {
-                            stock: { decrement: item.quantity },
+                            stock: { decrement: decrementAmount },
                             sold: { increment: item.quantity },
-                            reserved: { decrement: item.quantity }
+                            reserved: { decrement: reserveDecrement }
                         }
                     });
-                    console.log(`[Booking Update] Regular booking completed - Tree ${item.treeId}: -${item.quantity} stock, +${item.quantity} sold, -${item.quantity} reserved`);
+                    console.log(`[Booking Update] Order completed - Tree ${item.treeId}: -${decrementAmount} stock, +${item.quantity} sold, -${reserveDecrement} reserved`);
                 }
             }
         }
@@ -249,30 +244,25 @@ export async function PATCH(
                 where: { bookingId: id }
             });
 
-            // Check if this is a pre-order
-            if (currentBooking.isPreorder) {
-                // Pre-order: Only increment sold count, don't touch stock or reserved
-                for (const item of bookingItems) {
+            // Decrement stock and reserved, increment sold unconditionally
+            for (const item of bookingItems) {
+                const tree = await prisma.tree.findUnique({
+                    where: { id: item.treeId }
+                });
+
+                if (tree) {
+                    const decrementAmount = Math.min(item.quantity, tree.stock);
+                    const reserveDecrement = Math.min(item.quantity, tree.reserved);
+
                     await prisma.tree.update({
                         where: { id: item.treeId },
                         data: {
-                            sold: { increment: item.quantity }
-                        }
-                    });
-                    console.log(`[Booking PATCH] Pre-order completed - Tree ${item.treeId}: +${item.quantity} sold (stock unchanged)`);
-                }
-            } else {
-                // Regular booking: Decrement stock and reserved, increment sold
-                for (const item of bookingItems) {
-                    await prisma.tree.update({
-                        where: { id: item.treeId },
-                        data: {
-                            stock: { decrement: item.quantity },
+                            stock: { decrement: decrementAmount },
                             sold: { increment: item.quantity },
-                            reserved: { decrement: item.quantity }
+                            reserved: { decrement: reserveDecrement }
                         }
                     });
-                    console.log(`[Booking PATCH] Regular booking completed - Tree ${item.treeId}: -${item.quantity} stock, +${item.quantity} sold, -${item.quantity} reserved`);
+                    console.log(`[Booking PATCH] Order completed - Tree ${item.treeId}: -${decrementAmount} stock, +${item.quantity} sold, -${reserveDecrement} reserved`);
                 }
             }
         }
@@ -357,6 +347,11 @@ export async function DELETE(
             return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
         }
 
+        // Prevent deletion of COMPLETED bookings
+        if (booking.status === 'COMPLETED') {
+            return NextResponse.json({ error: 'ไม่สามารถลบออเดอร์ที่เสร็จสิ้นแล้วได้' }, { status: 400 });
+        }
+
         // Delete booking items first (foreign key constraint)
         await prisma.bookingItem.deleteMany({
             where: { bookingId: id }
@@ -366,6 +361,25 @@ export async function DELETE(
         await prisma.notification.deleteMany({
             where: { bookingId: id }
         });
+
+        // Release reserved stock if booking was active
+        if (!['PENDING_APPROVAL', 'CANCELLED', 'COMPLETED'].includes(booking.status)) {
+            for (const item of booking.items) {
+                const tree = await prisma.tree.findUnique({
+                    where: { id: item.treeId }
+                });
+
+                if (tree && tree.reserved > 0) {
+                    const reserveToRelease = Math.min(item.quantity, tree.reserved);
+                    await prisma.tree.update({
+                        where: { id: item.treeId },
+                        data: {
+                            reserved: { decrement: reserveToRelease }
+                        }
+                    });
+                }
+            }
+        }
 
         // Delete the booking
         await prisma.booking.delete({

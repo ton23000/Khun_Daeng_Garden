@@ -70,18 +70,21 @@ export async function POST(
                 }
             });
 
-            // Reserve stock
-            /*
-            for (const item of booking.items) {
-                await prisma.tree.update({
-                    where: { id: item.treeId },
-                    data: {
-                        reserved: { increment: item.quantity }
-                    }
-                });
+            // Reserve stock ONLY if it's NOT a pre-order 
+            // (Pre-orders shouldn't deduct from "Ready to sell" since stock is 0)
+            if (!booking.isPreorder) {
+                for (const item of booking.items) {
+                    await prisma.tree.update({
+                        where: { id: item.treeId },
+                        data: {
+                            reserved: { increment: item.quantity }
+                        }
+                    });
+                }
+                console.log('[Admin Action] Booking approved - Stock reserved');
+            } else {
+                console.log('[Admin Action] Pre-order approved - NO stock reserved (to prevent negative ready-to-sell)');
             }
-            */
-            console.log('[Admin Action] Booking approved - Stock reservation DISABLED');
 
             // Notify customer
             await prisma.notification.create({
