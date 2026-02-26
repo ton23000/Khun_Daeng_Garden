@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import StarRating from './StarRating';
 import { Button } from './ui/Button';
+import ReviewModal from './ReviewModal';
 
 interface Review {
     id: string;
@@ -16,20 +17,24 @@ interface Review {
         firstName: string;
         lastName: string;
     };
+    bookingId?: string; // Add bookingId if it exists in response, otherwise it's optional
 }
 
 interface ReviewListProps {
     treeId: string;
     currentUserId?: string;
+    treeName?: string; // Optional for the modal
 }
 
-export default function ReviewList({ treeId, currentUserId }: ReviewListProps) {
+export default function ReviewList({ treeId, currentUserId, treeName = 'ต้นไม้' }: ReviewListProps) {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [sortBy, setSortBy] = useState<'newest' | 'highest' | 'helpful'>('newest');
+    const [editingReview, setEditingReview] = useState<Review | null>(null);
 
     useEffect(() => {
         fetchReviews();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [treeId]);
 
     const fetchReviews = async () => {
@@ -187,9 +192,14 @@ export default function ReviewList({ treeId, currentUserId }: ReviewListProps) {
                                     </p>
                                 </div>
                                 {currentUserId === review.user.id && (
-                                    <Button variant="outline" size="sm" onClick={() => handleDelete(review.id)}>
-                                        ลบ
-                                    </Button>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <Button variant="outline" size="sm" onClick={() => setEditingReview(review)}>
+                                            แก้ไข
+                                        </Button>
+                                        <Button variant="outline" size="sm" onClick={() => handleDelete(review.id)}>
+                                            ลบ
+                                        </Button>
+                                    </div>
                                 )}
                             </div>
 
@@ -247,6 +257,21 @@ export default function ReviewList({ treeId, currentUserId }: ReviewListProps) {
                     );
                 })}
             </div>
+            {editingReview && currentUserId && (
+                <ReviewModal
+                    treeId={treeId}
+                    treeName={treeName}
+                    userId={currentUserId}
+                    reviewId={editingReview.id}
+                    initialRating={editingReview.rating}
+                    initialComment={editingReview.comment}
+                    onClose={() => setEditingReview(null)}
+                    onSuccess={() => {
+                        fetchReviews();
+                        setEditingReview(null);
+                    }}
+                />
+            )}
         </div>
     );
 }

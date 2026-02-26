@@ -128,7 +128,7 @@ export default function BestSellersPage() {
                             if (images && images.length > 0) {
                                 imageUrl = images[0];
                             }
-                        } catch (e) {
+                        } catch {
                             // Use placeholder if parsing fails
                         }
 

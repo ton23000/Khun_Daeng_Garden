@@ -12,6 +12,7 @@ export default function AdminSettingsPage() {
         hero_title: 'สวนสวยเริ่มต้นที่ | สวนคุณแดง',
         hero_subtitle: 'ค้นพบความสุขในการปลูกต้นไม้กับเรา แหล่งรวมพันธุ์ไม้คัดพิเศษ พร้อมคำแนะนำจากผู้เชี่ยวชาญ เพื่อสวนสวยในบ้านคุณ',
         hero_tag: '#ต้นไม้คุณภาพ จากคุณแดง',
+        valentine_heading: '💖 Valentine\'s Special',
         valentine_title: 'มอบความรัก\nส่งต่อต้นไม้',
         valentine_subtitle: 'หลงรักต้นไม้มงคล ที่พร้อมเบ่งบานในฤดูกาลนี้'
     });
@@ -68,7 +69,7 @@ export default function AdminSettingsPage() {
             } else {
                 setMessage({ text: 'ไม่สามารถบันทึกได้', type: 'error' });
             }
-        } catch (error) {
+        } catch {
             setMessage({ text: 'เกิดข้อผิดพลาดในการเชื่อมต่อ', type: 'error' });
         } finally {
             setIsSaving(false);
@@ -149,6 +150,17 @@ export default function AdminSettingsPage() {
                     </h2>
 
                     <div style={{ display: 'grid', gap: '1rem' }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.875rem' }}>ป้ายหัวข้อเล็ก (เช่น 💖 Valentine's Special)</label>
+                            <input
+                                type="text"
+                                name="valentine_heading"
+                                value={settings.valentine_heading}
+                                onChange={handleChange}
+                                style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                            />
+                        </div>
+
                         <div>
                             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.875rem' }}>หัวเรื่องแบนเนอร์ (ใช้ \n เพื่อขึ้นบรรทัดใหม่)</label>
                             <textarea

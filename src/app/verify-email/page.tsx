@@ -22,8 +22,9 @@ export default function VerifyEmailPage() {
             setStatus('no-token');
             return;
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         verifyEmail(token);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token]);
 
     const verifyEmail = async (token: string) => {
@@ -42,7 +43,7 @@ export default function VerifyEmailPage() {
                 setStatus('error');
                 setMessage(data.error || 'ไม่สามารถยืนยันอีเมลได้');
             }
-        } catch (error) {
+        } catch {
             setStatus('error');
             setMessage('เกิดข้อผิดพลาด กรุณาลองใหม่');
         }

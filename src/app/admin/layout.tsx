@@ -11,14 +11,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const { user, isLoading } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+    // Run once on mount to set initial state based on window width
     useEffect(() => {
         if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsSidebarOpen(true);
         }
-    }, []);
+    }, [pathname]);
 
+    // Close sidebar on mobile when path changes
     useEffect(() => {
         if (typeof window !== 'undefined' && window.innerWidth < 768) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsSidebarOpen(false);
         }
     }, [pathname]);
@@ -158,7 +162,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
                     <div className="admin-sidebar-content-wrapper" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                            <Link href="/admin/dashboard" style={{ textDecoration: 'none', display: 'block' }}>
+                            <Link href="/admin/trees" style={{ textDecoration: 'none', display: 'block' }}>
                                 <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#166534', margin: 0, cursor: 'pointer', whiteSpace: 'nowrap' }}>Admin Panel</h2>
                             </Link>
                             <button
@@ -182,40 +186,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         </div>
 
                         <nav className="flex flex-col gap-2 flex-1" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <Link href="/admin/dashboard" style={{
-                                display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: '0.5rem',
-                                color: pathname === '/admin/dashboard' ? '#166534' : '#374151',
-                                backgroundColor: pathname === '/admin/dashboard' ? '#dcfce7' : 'transparent',
-                                fontWeight: pathname === '/admin/dashboard' ? 500 : 400, textDecoration: 'none',
-                                whiteSpace: 'nowrap'
-                            }}>
-                                <span style={{ fontSize: '1.25rem' }}>📊</span> Dashboard
-                            </Link>
 
-                            {user?.role === 'admin' && (
+                            {(user?.role === 'admin' || user?.role === 'staff') && (
                                 <>
-                                    <div style={{ marginTop: '1rem', marginBottom: '0.25rem', paddingLeft: '0.5rem', fontSize: '0.75rem', fontWeight: 'bold', color: '#9ca3af', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-                                        จัดการสินค้า
-                                    </div>
-                                    <Link href="/admin/trees" style={{
-                                        display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: '0.5rem',
-                                        color: pathname === '/admin/trees' ? '#166534' : '#374151',
-                                        backgroundColor: pathname === '/admin/trees' ? '#dcfce7' : 'transparent',
-                                        fontWeight: pathname === '/admin/trees' ? 500 : 400, textDecoration: 'none',
-                                        whiteSpace: 'nowrap'
-                                    }}>
-                                        <span style={{ fontSize: '1.25rem' }}>🌳</span> จัดการต้นไม้
-                                    </Link>
-                                    <Link href="/admin/inventory" style={{
-                                        display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: '0.5rem',
-                                        color: pathname === '/admin/inventory' ? '#166534' : '#374151',
-                                        backgroundColor: pathname === '/admin/inventory' ? '#dcfce7' : 'transparent',
-                                        fontWeight: pathname === '/admin/inventory' ? 500 : 400, textDecoration: 'none',
-                                        whiteSpace: 'nowrap'
-                                    }}>
-                                        <span style={{ fontSize: '1.25rem' }}>📦</span> จัดการสต็อก
-                                    </Link>
-
                                     <div style={{ marginTop: '1rem', marginBottom: '0.25rem', paddingLeft: '0.5rem', fontSize: '0.75rem', fontWeight: 'bold', color: '#9ca3af', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                                         จัดการออเดอร์
                                     </div>
@@ -236,6 +209,33 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                         whiteSpace: 'nowrap'
                                     }}>
                                         <span style={{ fontSize: '1.25rem' }}>⭐</span> จัดการรีวิว
+                                    </Link>
+                                </>
+                            )}
+
+                            {user?.role === 'admin' && (
+                                <>
+
+                                    <div style={{ marginTop: '1rem', marginBottom: '0.25rem', paddingLeft: '0.5rem', fontSize: '0.75rem', fontWeight: 'bold', color: '#9ca3af', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                                        จัดการสินค้า
+                                    </div>
+                                    <Link href="/admin/trees" style={{
+                                        display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: '0.5rem',
+                                        color: pathname === '/admin/trees' ? '#166534' : '#374151',
+                                        backgroundColor: pathname === '/admin/trees' ? '#dcfce7' : 'transparent',
+                                        fontWeight: pathname === '/admin/trees' ? 500 : 400, textDecoration: 'none',
+                                        whiteSpace: 'nowrap'
+                                    }}>
+                                        <span style={{ fontSize: '1.25rem' }}>🌳</span> จัดการต้นไม้
+                                    </Link>
+                                    <Link href="/admin/inventory" style={{
+                                        display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: '0.5rem',
+                                        color: pathname === '/admin/inventory' ? '#166534' : '#374151',
+                                        backgroundColor: pathname === '/admin/inventory' ? '#dcfce7' : 'transparent',
+                                        fontWeight: pathname === '/admin/inventory' ? 500 : 400, textDecoration: 'none',
+                                        whiteSpace: 'nowrap'
+                                    }}>
+                                        <span style={{ fontSize: '1.25rem' }}>📦</span> จัดการสต็อก
                                     </Link>
 
                                     <div style={{ marginTop: '1rem', marginBottom: '0.25rem', paddingLeft: '0.5rem', fontSize: '0.75rem', fontWeight: 'bold', color: '#9ca3af', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>

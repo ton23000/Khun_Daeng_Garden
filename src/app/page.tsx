@@ -132,6 +132,10 @@ export default async function Home() {
   const valSubtitleColor = settingsMap['valentine_subtitle_color'] || '#b91c1c';
   const valSubtitleSize = settingsMap['valentine_subtitle_fontSize'] || 'clamp(0.9rem, 2vw, 1.25rem)';
 
+  const valHeading = settingsMap['valentine_heading'] || '💖 Valentine\'s Special';
+  const valHeadingColor = settingsMap['valentine_heading_color'] || '#7f1d1d';
+  const valHeadingSize = settingsMap['valentine_heading_fontSize'] || 'clamp(0.875rem, 3vw, 1.25rem)';
+
   // Fetch real reviews for Testimonials section
   const topReviews = await prisma.review.findMany({
     where: {
@@ -367,7 +371,18 @@ export default async function Home() {
               }}
             >
               <div style={{ flex: '1 1 300px', zIndex: 10, position: 'relative' }}>
-                <span style={{ fontSize: 'clamp(0.875rem, 3vw, 1.25rem)', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase' }}>💖 Valentine&apos;s Special</span>
+                <div style={{ display: 'inline-block', position: 'relative', zIndex: 20 }}>
+                  <InlineEdit
+                    settingKey="valentine_heading"
+                    initialValue={valHeading}
+                    allowStyleEdit
+                    initialColor={valHeadingColor}
+                    initialBgColor={settingsMap['valentine_heading_bgColor']}
+                    initialFontSize={valHeadingSize}
+                    renderAs="span"
+                    style={{ fontSize: valHeadingSize, fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase', color: valHeadingColor, background: settingsMap['valentine_heading_bgColor'] || 'transparent', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', display: 'inline-block' }}
+                  />
+                </div>
                 <div style={{ display: 'inline-block', position: 'relative', zIndex: 20 }}>
                   <InlineEdit
                     settingKey="valentine_title"
@@ -631,6 +646,57 @@ export default async function Home() {
               </ScrollAnimation>
             );
           })}
+        </div>
+      </section>
+
+      {/* Shop Atmosphere Section */}
+      <section style={{ backgroundColor: '#f9fafb', padding: '6rem 0' }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <ScrollAnimation animation="fade-up">
+              <span style={{ color: '#047857', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Shop Atmosphere</span>
+              <h2 style={{ fontSize: 'clamp(1.75rem, 6vw, 3rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>บรรยากาศร้านของเรา</h2>
+              <p style={{ color: '#6b7280', marginTop: '0.5rem', fontSize: '1.125rem' }}>เพลิดเพลินกับการเลือกชมต้นไม้และกระถางหลากหลายสไตล์ในบรรยากาศร่มรื่น</p>
+            </ScrollAnimation>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridAutoRows: '250px',
+            gap: '1rem'
+          }}>
+            {[
+              "104203394_1703567143155216_281949232298706640_n.jpg",
+              "104309994_1703567473155183_2631985199741945479_n.jpg",
+              "124164147_1839269809584948_6344406617013108098_n.jpg",
+              "133283562_1878044269040835_5611542419744234699_n.jpg",
+              "134660006_1878044485707480_4778167200489726984_n.jpg",
+              "301706018_507878381341722_6701819733337717604_n.jpg",
+              "482243530_1214414290688124_541286515667478668_n.jpg"
+            ].map((img, index) => (
+              <ScrollAnimation key={index} animation="fade-up" delay={index * 100} style={{
+                gridColumn: index === 0 || index === 3 ? 'span 2' : 'span 1',
+                gridRow: index === 1 ? 'span 2' : 'span 1'
+              }}>
+                <div style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  position: 'relative',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                }}>
+                  <img
+                    src={`/images/shop/${img}`}
+                    alt="บรรยากาศร้านคุณแดง"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
+                    className="hover:scale-110"
+                  />
+                </div>
+              </ScrollAnimation>
+            ))}
+          </div>
         </div>
       </section>
 

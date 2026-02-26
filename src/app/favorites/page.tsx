@@ -41,8 +41,9 @@ export default function FavoritesPage() {
             router.push('/login');
             return;
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         fetchFavorites();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, isAuthLoading, router]);
 
     const fetchFavorites = async () => {
@@ -156,7 +157,7 @@ export default function FavoritesPage() {
                                                         try {
                                                             const images = JSON.parse(favorite.tree.images);
                                                             imageUrl = images[0] || '/placeholder-tree.jpg';
-                                                        } catch (e) {
+                                                        } catch {
                                                             imageUrl = '/placeholder-tree.jpg';
                                                         }
                                                     }
@@ -195,7 +196,7 @@ export default function FavoritesPage() {
                                             } else if (typeof favorite.tree.tags === 'string') {
                                                 try {
                                                     tags = JSON.parse(favorite.tree.tags);
-                                                } catch (e) {
+                                                } catch {
                                                     tags = [];
                                                 }
                                             }

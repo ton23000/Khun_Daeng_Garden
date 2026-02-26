@@ -6,10 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import StarRating from './StarRating';
 
 interface ReviewModalProps {
-    bookingId: string;
+    bookingId?: string; // Optional since it might not be needed for edits
     treeId: string;
     treeName: string;
     userId: string;
+    reviewId?: string;
+    initialRating?: number;
+    initialComment?: string | null;
     onClose: () => void;
     onSuccess: () => void;
 }
@@ -19,11 +22,14 @@ export default function ReviewModal({
     treeId,
     treeName,
     userId,
+    reviewId,
+    initialRating,
+    initialComment,
     onClose,
     onSuccess
 }: ReviewModalProps) {
-    const [rating, setRating] = useState(5);
-    const [comment, setComment] = useState('');
+    const [rating, setRating] = useState(initialRating || 5);
+    const [comment, setComment] = useState(initialComment || '');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -31,22 +37,23 @@ export default function ReviewModal({
         setIsSubmitting(true);
 
         try {
-            const res = await fetch('/api/reviews', {
-                method: 'POST',
+            const url = reviewId ? `/api/reviews/${reviewId}` : '/api/reviews';
+            const method = reviewId ? 'PATCH' : 'POST';
+            const bodyData = reviewId
+                ? { rating, comment: comment.trim() || null }
+                : { bookingId, treeId, rating, comment: comment.trim() || undefined };
+
+            const res = await fetch(url, {
+                method,
                 headers: {
                     'Content-Type': 'application/json',
                     'x-user-id': userId
                 },
-                body: JSON.stringify({
-                    bookingId,
-                    treeId,
-                    rating,
-                    comment: comment.trim() || undefined
-                })
+                body: JSON.stringify(bodyData)
             });
 
             if (res.ok) {
-                alert('ขอบคุณสำหรับรีวิว!');
+                alert(reviewId ? 'แก้ไขรีวิวสำเร็จ!' : 'ขอบคุณสำหรับรีวิว!');
                 onSuccess();
                 onClose();
             } else {

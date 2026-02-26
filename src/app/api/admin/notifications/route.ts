@@ -65,7 +65,7 @@ export async function PATCH(req: NextRequest) {
 }
 
 // DELETE - Clear old read notifications
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
     try {
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);

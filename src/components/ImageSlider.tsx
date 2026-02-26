@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from './ui/Card';
-import FavoriteButton from './FavoriteButton';
+
 
 interface Tree {
     id: string;
@@ -43,7 +43,7 @@ export function ImageSlider({ trees, title, subtitle }: { trees: Tree[], title: 
                     try {
                         const imgs = JSON.parse(tree.images);
                         if (imgs && imgs.length > 0) imageUrl = imgs[0];
-                    } catch (e) { }
+                    } catch { }
 
                     return (
                         <div key={tree.id} style={{ minWidth: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem' }}>

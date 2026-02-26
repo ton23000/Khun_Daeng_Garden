@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { useCart } from '@/lib/CartContext';
 import { useAuth } from '@/lib/AuthContext';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ImageGallery from './ImageGallery';
 import StarRating from './StarRating';
 import ReviewList from './ReviewList';
@@ -34,8 +34,6 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
     const { user } = useAuth();
     const [quantity, setQuantity] = useState(1);
     const [isAdded, setIsAdded] = useState(false);
-    const [isFavorite, setIsFavorite] = useState(false);
-    const [isCheckingFavorite, setIsCheckingFavorite] = useState(true);
 
     // Calculate available stock
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,66 +42,6 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
     const reserved = (tree as any).reserved || 0;
     const availableStock = Math.max(0, stock - reserved);
     const isOutOfStock = availableStock === 0;
-
-    useEffect(() => {
-        if (user) {
-            checkFavorite();
-        } else {
-            setIsCheckingFavorite(false);
-        }
-    }, [user, tree.id]);
-
-    const checkFavorite = async () => {
-        if (!user) return;
-        try {
-            const res = await fetch('/api/favorites', {
-                headers: { 'x-user-id': user.id }
-            });
-            if (res.ok) {
-                const favorites = await res.json();
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setIsFavorite(favorites.some((f: any) => f.treeId === tree.id));
-            }
-        } catch (error) {
-            console.error('Failed to check favorite:', error);
-        } finally {
-            setIsCheckingFavorite(false);
-        }
-    };
-
-    const toggleFavorite = async () => {
-        if (!user) {
-            alert('กรุณาเข้าสู่ระบบเพื่อบันทึกรายการโปรด');
-            return;
-        }
-
-        try {
-            if (isFavorite) {
-                const res = await fetch(`/api/favorites?treeId=${tree.id}`, {
-                    method: 'DELETE',
-                    headers: { 'x-user-id': user.id }
-                });
-                if (res.ok) {
-                    setIsFavorite(false);
-                }
-            } else {
-                const res = await fetch('/api/favorites', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-user-id': user.id
-                    },
-                    body: JSON.stringify({ treeId: tree.id })
-                });
-                if (res.ok) {
-                    setIsFavorite(true);
-                }
-            }
-        } catch (error) {
-            console.error('Failed to toggle favorite:', error);
-            alert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
-        }
-    };
 
     const handleAdd = () => {
         // ไม่ต้องเช็คสต๊อก - ให้สั่งซื้อได้แม้หมด (จะกลายเป็น PENDING_APPROVAL)
@@ -201,7 +139,7 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                                 } else if (typeof tree.tags === 'string') {
                                     try {
                                         tags = JSON.parse(tree.tags);
-                                    } catch (e) {
+                                    } catch {
                                         tags = [];
                                     }
                                 }
@@ -307,7 +245,7 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                     )}
                 </div>
 
-                <ReviewList treeId={tree.id} currentUserId={user?.id} />
+                <ReviewList treeId={tree.id} currentUserId={user?.id} treeName={tree.name} />
             </div>
         </div>
     );

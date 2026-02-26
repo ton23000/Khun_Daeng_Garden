@@ -44,8 +44,9 @@ export default function MyOrdersPage() {
             router.push('/login');
             return;
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         fetchBookings();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, isAuthLoading, router]);
 
     const fetchBookings = async () => {

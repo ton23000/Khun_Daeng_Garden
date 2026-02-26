@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
-import NotificationBell from '@/components/admin/NotificationBell'; // Keep for now if we want to use it elsewhere, or remove line if unused. User wanted it removed from here. 
 // Actually, better to remove the line.
 import SlipViewer from '@/components/SlipViewer';
 import { SearchBar } from '@/components/admin/SearchBar';
@@ -486,7 +485,7 @@ export default function DashboardPage() {
                                                     try {
                                                         const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'approve' }) });
                                                         if (res.ok) fetchBookings(); else alert('เกิดข้อผิดพลาด');
-                                                    } catch (e) { alert('เกิดข้อผิดพลาด'); }
+                                                    } catch { alert('เกิดข้อผิดพลาด'); }
                                                 }}
                                                 style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1 }}
                                             >✅ อนุมัติ</Button>
@@ -498,7 +497,7 @@ export default function DashboardPage() {
                                                     try {
                                                         const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'reject' }) });
                                                         if (res.ok) fetchBookings(); else alert('เกิดข้อผิดพลาด');
-                                                    } catch (e) { alert('เกิดข้อผิดพลาด'); }
+                                                    } catch { alert('เกิดข้อผิดพลาด'); }
                                                 }}
                                                 style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1 }}
                                             >❌ ปฏิเสธ</Button>
@@ -593,14 +592,14 @@ export default function DashboardPage() {
                                                                 try {
                                                                     const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'approve' }) });
                                                                     if (res.ok) { alert('อนุมัติออเดอร์เรียบร้อย'); fetchBookings(); } else alert('เกิดข้อผิดพลาด');
-                                                                } catch (error) { alert('เกิดข้อผิดพลาด'); }
+                                                                } catch { alert('เกิดข้อผิดพลาด'); }
                                                             }} style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1 }}>✅ อนุมัติ</Button>
                                                             <Button size="sm" variant="outline" onClick={async () => {
                                                                 if (!confirm(`ปฏิเสธออเดอร์ #${booking.refCode}?`)) return;
                                                                 try {
                                                                     const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'reject' }) });
                                                                     if (res.ok) { alert('ปฏิเสธออเดอร์เรียบร้อย'); fetchBookings(); } else alert('เกิดข้อผิดพลาด');
-                                                                } catch (error) { alert('เกิดข้อผิดพลาด'); }
+                                                                } catch { alert('เกิดข้อผิดพลาด'); }
                                                             }} style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1 }}>❌ ปฏิเสธ</Button>
                                                         </div>
                                                     ) : (

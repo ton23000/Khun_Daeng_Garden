@@ -6,7 +6,8 @@ const UpdateUserSchema = z.object({
     email: z.string().email().optional().or(z.literal('')),
     phone: z.string().regex(/^\d{10}$/, 'Phone must be 10 digits').optional(),
     firstName: z.string().min(1).optional(),
-    lastName: z.string().min(1).optional()
+    lastName: z.string().min(1).optional(),
+    role: z.enum(['USER', 'staff', 'admin']).optional()
 });
 
 // PATCH - Update user profile
@@ -72,6 +73,7 @@ export async function PATCH(
             updateData.email = validated.email === '' ? null : validated.email;
         }
         if (validated.phone !== undefined) updateData.phone = validated.phone;
+        if (validated.role !== undefined) updateData.role = validated.role;
 
         // Update user
         const updatedUser = await prisma.user.update({

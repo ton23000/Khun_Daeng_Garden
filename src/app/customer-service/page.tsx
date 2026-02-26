@@ -1,4 +1,4 @@
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
 import { Phone, Mail, MessageCircle, MapPin } from 'lucide-react';
 

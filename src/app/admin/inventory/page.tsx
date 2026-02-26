@@ -95,6 +95,12 @@ export default function InventoryPage() {
             if (sortConfig.key === 'available') {
                 aValue = Math.max(0, a.stock - a.reserved);
                 bValue = Math.max(0, b.stock - b.reserved);
+            } else if (sortConfig.key === 'reservedInStock') {
+                aValue = Math.min(a.reserved, a.stock);
+                bValue = Math.min(b.reserved, b.stock);
+            } else if (sortConfig.key === 'reservedOutStock') {
+                aValue = Math.max(0, a.reserved - a.stock);
+                bValue = Math.max(0, b.reserved - b.stock);
             } else if (sortConfig.key === 'status') {
                 // Approximate status sorting by available stock
                 const aAvail = Math.max(0, a.stock - a.reserved);
@@ -109,7 +115,8 @@ export default function InventoryPage() {
         });
 
     const totalAvailable = trees.reduce((sum, tree) => sum + Math.max(0, tree.stock - tree.reserved), 0);
-    const totalReserved = trees.reduce((sum, tree) => sum + tree.reserved, 0);
+    const totalReservedInStock = trees.reduce((sum, tree) => sum + Math.min(tree.reserved, tree.stock), 0);
+    const totalReservedOutStock = trees.reduce((sum, tree) => sum + Math.max(0, tree.reserved - tree.stock), 0);
     const totalSold = trees.reduce((sum, tree) => sum + tree.sold, 0);
     const lowStockCount = trees.filter(tree => {
         const available = Math.max(0, tree.stock - tree.reserved);
@@ -144,8 +151,14 @@ export default function InventoryPage() {
                 </Card>
                 <Card>
                     <CardContent style={{ padding: '1.5rem' }}>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>จองแล้ว</div>
-                        <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>{totalReserved}</div>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>จอง (มีของ)</div>
+                        <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>{totalReservedInStock}</div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent style={{ padding: '1.5rem' }}>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>ค้างส่ง / สั่งล่วงหน้า</div>
+                        <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ef4444' }}>{totalReservedOutStock}</div>
                     </CardContent>
                 </Card>
                 <Card>
@@ -236,7 +249,8 @@ export default function InventoryPage() {
                                         <SortableTableHeader label="ชื่อ" sortKey="name" currentSort={sortConfig} onSort={handleSort} />
                                         <SortableTableHeader label="ราคา" sortKey="price" currentSort={sortConfig} onSort={handleSort} />
                                         <SortableTableHeader label="สต็อกทั้งหมด" sortKey="stock" currentSort={sortConfig} onSort={handleSort} />
-                                        <SortableTableHeader label="จองแล้ว" sortKey="reserved" currentSort={sortConfig} onSort={handleSort} />
+                                        <SortableTableHeader label="จอง (มีของ)" sortKey="reservedInStock" currentSort={sortConfig} onSort={handleSort} />
+                                        <SortableTableHeader label="ค้างส่ง / สั่งล่วงหน้า" sortKey="reservedOutStock" currentSort={sortConfig} onSort={handleSort} />
                                         <SortableTableHeader label="พร้อมขาย" sortKey="available" currentSort={sortConfig} onSort={handleSort} />
                                         <SortableTableHeader label="ขายไปแล้ว" sortKey="sold" currentSort={sortConfig} onSort={handleSort} />
                                         <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} />
@@ -269,7 +283,8 @@ export default function InventoryPage() {
                                                         <span style={{ fontWeight: 600 }}>{tree.stock}</span>
                                                     )}
                                                 </td>
-                                                <td style={{ padding: '1rem', textAlign: 'center', color: '#f59e0b' }}>{tree.reserved}</td>
+                                                <td style={{ padding: '1rem', textAlign: 'center', color: '#f59e0b' }}>{Math.min(tree.reserved, tree.stock)}</td>
+                                                <td style={{ padding: '1rem', textAlign: 'center', color: '#ef4444' }}>{Math.max(0, tree.reserved - tree.stock)}</td>
                                                 <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 600, color: available === 0 ? '#ef4444' : '#22c55e' }}>
                                                     {available}
                                                 </td>

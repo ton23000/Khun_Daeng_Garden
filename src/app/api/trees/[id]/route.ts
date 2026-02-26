@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 
 const updateSchema = z.object({
     name: z.string().optional(),
@@ -41,6 +42,12 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
             where: { id },
             data: updateData
         });
+
+        // Clear cache so changes appear immediately
+        revalidatePath('/');
+        revalidatePath('/shop');
+        revalidatePath('/promotion');
+        revalidatePath(`/trees/${id}`);
 
         return NextResponse.json(tree);
     } catch (error) {

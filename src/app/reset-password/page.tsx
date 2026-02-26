@@ -41,7 +41,7 @@ function ResetPasswordForm() {
                 } else {
                     setError(data.error || 'ลิงก์ไม่ถูกต้องหรือหมดอายุ');
                 }
-            } catch (err) {
+            } catch {
                 setError('เกิดข้อผิดพลาดในการตรวจสอบลิงก์');
             } finally {
                 setValidating(false);
@@ -85,7 +85,7 @@ function ResetPasswordForm() {
             } else {
                 setError(data.error || 'เกิดข้อผิดพลาด');
             }
-        } catch (err) {
+        } catch {
             setError('เกิดข้อผิดพลาดในการเชื่อมต่อ');
         } finally {
             setLoading(false);

@@ -7,8 +7,7 @@ export default function OrdersPage() {
     const router = useRouter();
 
     useEffect(() => {
-        // Redirect to dashboard since it already has comprehensive order management
-        router.push('/admin/dashboard');
+        router.push('/admin/orders/pending-approval');
     }, [router]);
 
     return (

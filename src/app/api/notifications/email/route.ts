@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 
 // POST - Send email notification (placeholder for future implementation)
 export async function POST(req: NextRequest) {
@@ -30,7 +29,7 @@ export async function POST(req: NextRequest) {
 }
 
 // GET - Get notification settings (placeholder)
-export async function GET(req: NextRequest) {
+export async function GET() {
     return NextResponse.json({
         emailEnabled: false,
         smsEnabled: false,

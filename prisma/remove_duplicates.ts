@@ -9,7 +9,6 @@ async function main() {
         orderBy: { createdAt: 'desc' } // Keep the newest? Or oldest? Seed usually creates sequentially.
     });
 
-    const seenNames = new Set();
     const duplicates = [];
     const keepIds = new Set();
 

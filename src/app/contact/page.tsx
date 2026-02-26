@@ -32,7 +32,7 @@ export default function ContactPage() {
                 const data = await res.json();
                 setError(data.error || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
             }
-        } catch (err) {
+        } catch {
             setError('ไม่สามารถเชื่อมต่อได้ กรุณาลองใหม่');
         } finally {
             setIsSubmitting(false);

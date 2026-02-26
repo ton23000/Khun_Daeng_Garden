@@ -3,6 +3,8 @@ import Link from 'next/link';
 import CountdownTimer from '@/components/CountdownTimer';
 import InlineEdit from '@/components/InlineEdit';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PromotionPage() {
     // Fetch trees marked as promotions
     const promotionTrees = await prisma.tree.findMany({
@@ -110,7 +112,7 @@ export default async function PromotionPage() {
                 }}>
                     {promotionTrees.map(tree => {
                         let images: string[] = [];
-                        try { images = JSON.parse(tree.images); } catch (e) { }
+                        try { images = JSON.parse(tree.images); } catch { }
                         const mainImage = images[0] || '/placeholder-tree.jpg';
                         const discount = tree.originalPrice
                             ? Math.round(((tree.originalPrice - tree.price) / tree.originalPrice) * 100)

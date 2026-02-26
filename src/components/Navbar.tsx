@@ -4,21 +4,20 @@ import Link from 'next/link';
 import { useCart } from '@/lib/CartContext';
 import { useAuth } from '@/lib/AuthContext';
 import { useNotification } from '@/lib/NotificationContext';
-import { Button } from './ui/Button';
-import { useState, useRef, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Menu, X, Home, Package, ShoppingCart, Bell, User, Heart, Search } from 'lucide-react';
 import styles from './navbar.module.css';
 import InlineEdit from './InlineEdit';
 
 export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท', topBarBgColor = '' }: { topBarText?: string, topBarBgColor?: string }) {
     const { items } = useCart();
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
     const { notifications, unreadCount, markAllAsRead } = useNotification();
-    const pathname = usePathname();
+
+    const router = useRouter();
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
     const [showNotifications, setShowNotifications] = useState(false);
-    const isAdminPage = pathname?.startsWith('/admin');
 
     // Dropdown States
     const [showServices, setShowServices] = useState(false);
@@ -38,10 +37,21 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
             } else {
                 alert(data.error || 'ไม่สามารถส่งอีเมลได้');
             }
-        } catch (error) {
+        } catch {
             alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
         } finally {
             setResending(false);
+        }
+    };
+
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/shop?q=${encodeURIComponent(searchQuery.trim())}`);
+        } else {
+            router.push('/shop');
         }
     };
 
@@ -92,16 +102,18 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
                         </Link>
 
                         {/* Search Bar */}
-                        <div className={styles.searchWrapper}>
+                        <form className={styles.searchWrapper} onSubmit={handleSearch}>
                             <input
                                 type="text"
                                 placeholder="ค้นหาสินค้า..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 className={styles.searchInput}
                             />
-                            <button className={styles.searchButton}>
+                            <button type="submit" className={styles.searchButton}>
                                 <Search size={20} />
                             </button>
-                        </div>
+                        </form>
 
                         {/* Actions (User, Heart, Cart) */}
                         <div className={styles.actions}>
@@ -313,8 +325,8 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
 
                         {/* Social Icons & Admin */}
                         <div className={styles.socialAdmin}>
-                            {user?.role === 'admin' && (
-                                <Link href="/admin/dashboard" style={{ textDecoration: 'none' }}>
+                            {(user?.role === 'admin' || user?.role === 'staff') && (
+                                <Link href="/admin/orders" style={{ textDecoration: 'none' }}>
                                     <span style={{ backgroundColor: '#166534', color: 'white', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600 }}>Admin Panel</span>
                                 </Link>
                             )}

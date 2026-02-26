@@ -1,0 +1,6 @@
+D:\Khun_Daeng_Garden\src\app\api\admin\reviews\route.ts:1 @typescript-eslint/no-unused-vars 'NextRequest' is defined but never used.
+D:\Khun_Daeng_Garden\src\app\api\trees\best-sellers\route.ts:1 @typescript-eslint/no-unused-vars 'NextRequest' is defined but never used.
+D:\Khun_Daeng_Garden\src\app\api\trees\weekly-best-sellers\route.ts:1 @typescript-eslint/no-unused-vars 'NextRequest' is defined but never used.
+D:\Khun_Daeng_Garden\src\components\Navbar.tsx:17 @typescript-eslint/no-unused-vars 'pathname' is assigned a value but never used.
+D:\Khun_Daeng_Garden\src\components\ProductDetail.tsx:8 @typescript-eslint/no-unused-vars 'useEffect' is defined but never used.
+D:\Khun_Daeng_Garden\src\components\ShopControls.tsx:4 @typescript-eslint/no-unused-vars 'useState' is defined but never used.

@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
             } else {
                 setError(data.error || 'เกิดข้อผิดพลาด');
             }
-        } catch (err) {
+        } catch {
             setError('เกิดข้อผิดพลาดในการเชื่อมต่อ');
         } finally {
             setLoading(false);

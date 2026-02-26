@@ -236,6 +236,7 @@ export default function InlineEdit({
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const Tag = renderAs as any;
 
     let content: React.ReactNode = value;

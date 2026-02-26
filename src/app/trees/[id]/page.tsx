@@ -19,7 +19,7 @@ export default async function TreePage({ params }: { params: Promise<{ id: strin
     let images: string[] = [];
     try {
         images = JSON.parse(treeData.images);
-    } catch (e) {
+    } catch {
         images = ['/placeholder-tree.jpg'];
     }
 

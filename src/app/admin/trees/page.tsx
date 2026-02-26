@@ -135,37 +135,6 @@ export default function AdminTreesPage() {
 
     // ...
 
-    {/* Category Modal */ }
-    {
-        isCategoryModalOpen && (
-            <div style={{
-                position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60
-            }}>
-                <Card style={{ width: '90%', maxWidth: '400px', backgroundColor: 'white' }}>
-                    <CardHeader>
-                        <CardTitle>เพิ่มหมวดหมู่ใหม่</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleAddCategory} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <Input
-                                label="ชื่อหมวดหมู่"
-                                value={newCategoryName}
-                                onChange={e => setNewCategoryName(e.target.value)}
-                                placeholder="เช่น ไม้มงคล, ไม้ประดับ"
-                                required
-                            />
-                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                                <Button type="button" variant="outline" onClick={() => setIsCategoryModalOpen(false)}>ยกเลิก</Button>
-                                <Button type="submit" variant="primary">บันทึก</Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
-        )
-    }
-
     const [searchQuery, setSearchQuery] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
     const [filteredTrees, setFilteredTrees] = useState<Tree[]>([]);
@@ -173,6 +142,7 @@ export default function AdminTreesPage() {
 
     useEffect(() => {
         filterAndSortTrees();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [trees, searchQuery, sortConfig, priceFilter]);
 
     const filterAndSortTrees = () => {

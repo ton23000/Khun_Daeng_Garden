@@ -18,7 +18,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   let images: string[] = [];
   try {
     images = JSON.parse(tree.images);
-  } catch (e) {
+  } catch {
     images = ['/placeholder-tree.jpg'];
   }
 

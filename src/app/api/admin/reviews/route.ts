@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 // GET - Fetch all reviews for admin (including hidden)
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const reviews = await prisma.review.findMany({
             include: {

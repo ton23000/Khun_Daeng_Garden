@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
         });
 
         return NextResponse.json(notification);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to create notification' }, { status: 500 });
     }
 }
@@ -73,7 +73,7 @@ export async function PATCH(req: NextRequest) {
 
         return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
 
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to update notification' }, { status: 500 });
     }
 }

@@ -11,7 +11,7 @@ export interface User {
     phone?: string;
     email?: string;
     password?: string;
-    role?: 'user' | 'admin';
+    role?: 'user' | 'admin' | 'staff';
     image?: string;
     verified?: boolean;
 }
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         }
                     }
 
-                } catch (e) {
+                } catch {
                     localStorage.removeItem('khun_daeng_user');
                 }
             }
@@ -176,7 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Clear auth state
             setUser(null);
             localStorage.removeItem('khun_daeng_user');
-            try { await fetch('/api/logout', { method: 'POST' }); } catch (e) { }
+            try { await fetch('/api/logout', { method: 'POST' }); } catch { }
             router.push('/');
             return { success: true };
         } catch (error) {

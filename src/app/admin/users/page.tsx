@@ -46,8 +46,9 @@ export default function AdminUsersPage() {
     }, [currentUser, router]);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         filterAndSortUsers();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [users, searchQuery, sortConfig]);
 
     const fetchUsers = async () => {
@@ -146,6 +147,27 @@ export default function AdminUsersPage() {
             .reduce((sum, b) => sum + b.deposit, 0);
     };
 
+    const changeRole = async (userId: string, newRole: string) => {
+        if (!confirm(`เปลี่ยนสิทธิ์เป็น "${newRole}" ใช่หรือไม่?`)) return;
+        try {
+            const res = await fetch(`/api/users/${userId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role: newRole })
+            });
+            if (res.ok) {
+                setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
+                alert('เปลี่ยนสิทธิ์สำเร็จ');
+            } else {
+                const data = await res.json();
+                alert(data.error || 'เกิดข้อผิดพลาด');
+            }
+        } catch (error) {
+            console.error('Failed to change role', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        }
+    };
+
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
@@ -204,13 +226,24 @@ export default function AdminUsersPage() {
                                         <td style={{ padding: '1rem' }}>{user.email || '-'}</td>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{user.phone || '-'}</td>
                                         <td style={{ padding: '1rem' }}>
-                                            <span style={{
-                                                padding: '0.25rem 0.5rem', borderRadius: '9999px', fontSize: '0.75rem',
-                                                backgroundColor: user.role === 'admin' ? '#fee2e2' : '#dcfce7',
-                                                color: user.role === 'admin' ? '#991b1b' : '#166534'
-                                            }}>
-                                                {user.role}
-                                            </span>
+                                            <select
+                                                value={user.role}
+                                                onChange={(e) => changeRole(user.id, e.target.value)}
+                                                style={{
+                                                    padding: '0.25rem 0.5rem',
+                                                    borderRadius: '0.375rem',
+                                                    border: '1px solid #d1d5db',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: 500,
+                                                    backgroundColor: user.role === 'admin' ? '#fee2e2' : user.role === 'staff' ? '#dbeafe' : '#dcfce7',
+                                                    color: user.role === 'admin' ? '#991b1b' : user.role === 'staff' ? '#1e40af' : '#166534',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                <option value="USER">USER</option>
+                                                <option value="staff">staff</option>
+                                                <option value="admin">admin</option>
+                                            </select>
                                         </td>
                                         <td style={{ padding: '1rem' }}>{new Date(user.createdAt).toLocaleDateString('th-TH')}</td>
                                         <td style={{ padding: '1rem' }}>

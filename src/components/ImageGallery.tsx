@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from './ui/Button';
+
 
 interface ImageGalleryProps {
     images: string[] | string;
@@ -20,7 +20,7 @@ export default function ImageGallery({ images: imagesProp = [], alt = 'Product i
         } else if (typeof imagesProp === 'string') {
             try {
                 images = JSON.parse(imagesProp);
-            } catch (e) {
+            } catch {
                 // If parsing fails, treat as single image URL
                 images = [imagesProp];
             }

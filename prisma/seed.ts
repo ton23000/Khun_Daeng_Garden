@@ -174,7 +174,7 @@ async function main() {
         await prisma.bookingItem.deleteMany()
         await prisma.booking.deleteMany()
         await prisma.tree.deleteMany()
-    } catch (e) {
+    } catch {
         console.log('Tables may not exist yet, continuing...')
     }
 

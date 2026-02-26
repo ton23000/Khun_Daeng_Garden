@@ -29,9 +29,10 @@ export default function ProfilePage() {
             setPhone(user.phone || '');
 
             // Load recent booking
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+
             fetchRecentBooking();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     const fetchRecentBooking = async () => {

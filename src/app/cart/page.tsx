@@ -26,7 +26,7 @@ export default function CartPage() {
     const today = new Date();
     const minDate = new Date(today);
     minDate.setDate(today.getDate() + 14);
-    const minDateString = minDate.toISOString().split('T')[0];
+    minDate.setDate(today.getDate() + 14);
 
     const canSubmit = items.length > 0 && items.every(item => item.pickupDate);
 
@@ -79,7 +79,7 @@ export default function CartPage() {
                 try {
                     errorData = await res.json();
                     console.error('Booking failed data:', errorData);
-                } catch (e) {
+                } catch {
                     const text = await res.text();
                     console.error('Failed to parse error response as JSON. Raw text:', text);
                     throw new Error(`Failed to create booking (${res.status}): ${text}`);
@@ -184,6 +184,7 @@ export default function CartPage() {
                                 </label>
                                 {(() => {
                                     // Calculate min date based on stock and growth time
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     const availableStock: number = (item as any).stock - ((item as any).reserved || 0); // CartItem doesn't directly type stock/reserved, assuming it's passed from Tree
 
                                     const minItemDate = new Date();

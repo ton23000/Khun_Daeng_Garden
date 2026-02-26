@@ -64,7 +64,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                     setNotifications(newData);
                 }
             }
-        } catch (error) {
+        } catch {
             // Suppress network errors during polling to avoid console spam
         }
     }, [user]);

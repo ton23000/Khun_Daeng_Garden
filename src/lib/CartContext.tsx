@@ -38,6 +38,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMounted(true);
         const savedCart = localStorage.getItem('khun_daeng_cart');
         if (savedCart) {

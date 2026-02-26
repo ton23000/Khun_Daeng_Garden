@@ -140,10 +140,10 @@ export default function OrderStatusPage() {
 
     useEffect(() => {
         if (isLoading) return;
-        if (!user || user.role !== 'admin') {
+        if (!user || (user.role !== 'admin' && user.role !== 'staff')) {
             router.push('/admin/login');
         } else if (!statusConfig) {
-            router.push('/admin/dashboard');
+            router.push('/admin/orders');
         } else {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             fetchBookings();
@@ -261,7 +261,7 @@ export default function OrderStatusPage() {
         return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
     }
 
-    if (!user || user.role !== 'admin') {
+    if (!user || (user.role !== 'admin' && user.role !== 'staff')) {
         return null;
     }
 
@@ -275,10 +275,10 @@ export default function OrderStatusPage() {
                 <div>
                     <Button
                         variant="outline"
-                        onClick={() => router.push('/admin/dashboard')}
+                        onClick={() => router.push('/admin/orders')}
                         style={{ marginBottom: '1rem' }}
                     >
-                        ← กลับ Dashboard
+                        ← กลับ
                     </Button>
                     <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: statusConfig.color }}>
                         {statusConfig.emoji} {statusConfig.label}

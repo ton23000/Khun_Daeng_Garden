@@ -50,8 +50,9 @@ export default function MyBookingsPage() {
             router.push('/login');
             return;
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         fetchBookings();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, isAuthLoading, router]);
 
     const fetchBookings = async () => {
@@ -519,7 +520,7 @@ export default function MyBookingsPage() {
                                                                     const d = await res.json();
                                                                     alert(d.error || 'ไม่สามารถยกเลิกได้');
                                                                 }
-                                                            } catch (e) {
+                                                            } catch {
                                                                 alert('เกิดข้อผิดพลาด');
                                                             }
                                                         }}

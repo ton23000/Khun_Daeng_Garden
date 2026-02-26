@@ -1,9 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { useState, useEffect } from 'react';
+
 
 interface ShopControlsProps {
     categories: string[];
@@ -13,13 +11,8 @@ export function ShopControls({ categories }: ShopControlsProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const [search, setSearch] = useState(searchParams.get('q') || '');
     const currentCategory = searchParams.get('category') || '';
     const currentSort = searchParams.get('sort') || 'newest';
-
-    const handleSearch = () => {
-        updateParams({ q: search });
-    };
 
     const updateParams = (newParams: Record<string, string | null>) => {
         const params = new URLSearchParams(searchParams.toString());

@@ -1,16 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
-import { validatePassword, getPasswordStrength } from '@/lib/passwordValidation';
+import { validatePassword } from '@/lib/passwordValidation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import Link from 'next/link';
 
 export default function RegisterPage() {
-    const router = useRouter();
     const { register } = useAuth();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');

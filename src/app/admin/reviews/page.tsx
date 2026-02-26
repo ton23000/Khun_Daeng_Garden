@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 
 interface Review {
@@ -27,7 +27,7 @@ export default function AdminReviewsPage() {
 
     useEffect(() => {
         if (isAuthLoading) return;
-        if (!user || user.role !== 'admin') {
+        if (!user || (user.role !== 'admin' && user.role !== 'staff')) {
             router.push('/admin/login');
             return;
         }
@@ -139,7 +139,7 @@ export default function AdminReviewsPage() {
                         try {
                             const imgs = JSON.parse(review.tree.images);
                             if (imgs.length > 0) treeImage = imgs[0];
-                        } catch (e) { }
+                        } catch { }
 
                         return (
                             <Card key={review.id} style={{
@@ -187,7 +187,7 @@ export default function AdminReviewsPage() {
                                                             ))}
                                                         </div>
                                                     );
-                                                } catch (e) { return null; }
+                                                } catch { return null; }
                                             })()}
                                             <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.25rem' }}>
                                                 👍 {review.helpful} คนเห็นว่ามีประโยชน์
