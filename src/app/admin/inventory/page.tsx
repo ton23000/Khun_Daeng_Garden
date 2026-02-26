@@ -136,9 +136,7 @@ export default function InventoryPage() {
                         ติดตามและจัดการสต็อกต้นไม้ทั้งหมด
                     </p>
                 </div>
-                <Link href="/admin/dashboard">
-                    <Button variant="outline">← กลับ</Button>
-                </Link>
+
             </div>
 
             {/* Summary Cards */}

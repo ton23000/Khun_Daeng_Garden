@@ -136,12 +136,10 @@ export default async function Home() {
   const valHeadingColor = settingsMap['valentine_heading_color'] || '#7f1d1d';
   const valHeadingSize = settingsMap['valentine_heading_fontSize'] || 'clamp(0.875rem, 3vw, 1.25rem)';
 
-  // Fetch real reviews for Testimonials section
-  const topReviews = await prisma.review.findMany({
+  let topReviews: any[] = await prisma.review.findMany({
     where: {
-      rating: { gte: 4 }, // 4 or 5 stars
+      isFeatured: true,
       hidden: false,
-      comment: { not: null, notIn: [''] }
     },
     include: {
       user: {
@@ -149,8 +147,26 @@ export default async function Home() {
       }
     },
     orderBy: { createdAt: 'desc' },
-    take: 4 // Max 4 reviews displayed on the homepage
+    take: 4
   });
+
+  // Fallback if no featured reviews
+  if (topReviews.length === 0) {
+    topReviews = await prisma.review.findMany({
+      where: {
+        rating: { gte: 4 }, // 4 or 5 stars
+        hidden: false,
+        comment: { not: null, notIn: [''] }
+      },
+      include: {
+        user: {
+          select: { firstName: true, lastName: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 4 // Max 4 reviews displayed on the homepage
+    });
+  }
 
   return (
     <main>

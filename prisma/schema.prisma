@@ -152,6 +152,7 @@ model Review {
   images    String?  // JSON array of URLs
   helpful   Int      @default(0)  // helpful count
   hidden    Boolean  @default(false)  // Admin can hide reviews
+  isFeatured Boolean @default(false)  // Admin can feature on homepage
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   

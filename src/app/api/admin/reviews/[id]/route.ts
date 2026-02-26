@@ -9,11 +9,20 @@ export async function PATCH(
     try {
         const { id } = await params;
         const body = await req.json();
-        const { hidden } = body;
+
+        // Define update data type
+        const updateData: any = {};
+
+        if (body.hidden !== undefined) updateData.hidden = Boolean(body.hidden);
+        if (body.isFeatured !== undefined) updateData.isFeatured = Boolean(body.isFeatured);
+
+        if (Object.keys(updateData).length === 0) {
+            return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
+        }
 
         const review = await prisma.review.update({
             where: { id },
-            data: { hidden: Boolean(hidden) }
+            data: updateData
         });
 
         // Recalculate tree rating

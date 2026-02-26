@@ -46,6 +46,7 @@ export default function StarRating({ rating, onRatingChange, readonly = false, s
                 const isFilled = value <= displayRating;
                 return (
                     <button
+                        type="button"
                         key={value}
                         onClick={() => handleClick(value)}
                         onMouseEnter={() => handleMouseEnter(value)}

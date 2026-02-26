@@ -12,6 +12,7 @@ interface Review {
     comment: string | null;
     images: string | null;
     hidden: boolean;
+    isFeatured: boolean;
     helpful: number;
     createdAt: string;
     user: { id: string; firstName: string; lastName: string; email: string };
@@ -23,7 +24,7 @@ export default function AdminReviewsPage() {
     const { user, isLoading: isAuthLoading } = useAuth();
     const [reviews, setReviews] = useState<Review[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [filter, setFilter] = useState<'all' | 'visible' | 'hidden'>('all');
+    const [filter, setFilter] = useState<'all' | 'visible' | 'hidden' | 'featured'>('all');
 
     useEffect(() => {
         if (isAuthLoading) return;
@@ -65,6 +66,23 @@ export default function AdminReviewsPage() {
         }
     };
 
+    const toggleFeatured = async (reviewId: string, isFeatured: boolean) => {
+        try {
+            const res = await fetch(`/api/admin/reviews/${reviewId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isFeatured: !isFeatured })
+            });
+            if (res.ok) {
+                setReviews(prev =>
+                    prev.map(r => r.id === reviewId ? { ...r, isFeatured: !isFeatured } : r)
+                );
+            }
+        } catch (error) {
+            console.error('Failed to toggle review featured status', error);
+        }
+    };
+
     const deleteReview = async (reviewId: string) => {
         if (!confirm('คุณแน่ใจหรือไม่ที่จะลบรีวิวนี้? การลบจะไม่สามารถกู้คืนได้')) return;
         try {
@@ -80,6 +98,7 @@ export default function AdminReviewsPage() {
     const filteredReviews = reviews.filter(r => {
         if (filter === 'visible') return !r.hidden;
         if (filter === 'hidden') return r.hidden;
+        if (filter === 'featured') return r.isFeatured;
         return true;
     });
 
@@ -97,14 +116,14 @@ export default function AdminReviewsPage() {
                 <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>จัดการรีวิว (Reviews)</h1>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <span style={{ fontSize: '0.875rem', color: '#6b7280', alignSelf: 'center' }}>
-                        ทั้งหมด {reviews.length} รีวิว | ซ่อนอยู่ {reviews.filter(r => r.hidden).length}
+                        ทั้งหมด {reviews.length} รีวิว | โชว์หน้าแรก {reviews.filter(r => r.isFeatured).length} | ซ่อนอยู่ {reviews.filter(r => r.hidden).length}
                     </span>
                 </div>
             </div>
 
             {/* Filter tabs */}
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                {(['all', 'visible', 'hidden'] as const).map(f => (
+                {(['all', 'visible', 'hidden', 'featured'] as const).map(f => (
                     <button
                         key={f}
                         onClick={() => setFilter(f)}
@@ -119,7 +138,7 @@ export default function AdminReviewsPage() {
                             transition: 'all 0.2s'
                         }}
                     >
-                        {f === 'all' ? 'ทั้งหมด' : f === 'visible' ? '🟢 แสดงอยู่' : '🔴 ซ่อนอยู่'}
+                        {f === 'all' ? 'ทั้งหมด' : f === 'visible' ? '🟢 แสดงอยู่' : f === 'hidden' ? '🔴 ซ่อนอยู่' : '⭐ โชว์หน้าแรก'}
                     </button>
                 ))}
             </div>
@@ -170,6 +189,16 @@ export default function AdminReviewsPage() {
                                                         fontWeight: 'bold'
                                                     }}>ซ่อนอยู่</span>
                                                 )}
+                                                {review.isFeatured && (
+                                                    <span style={{
+                                                        backgroundColor: '#fef3c7',
+                                                        color: '#d97706',
+                                                        padding: '0.125rem 0.5rem',
+                                                        borderRadius: '9999px',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 'bold'
+                                                    }}>⭐ โชว์หน้าแรก</span>
+                                                )}
                                             </div>
                                             <p style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.5rem' }}>
                                                 ต้นไม้: {review.tree.name} | {new Date(review.createdAt).toLocaleDateString('th-TH')}
@@ -196,6 +225,18 @@ export default function AdminReviewsPage() {
 
                                         {/* Actions */}
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => toggleFeatured(review.id, review.isFeatured)}
+                                                style={{
+                                                    borderColor: review.isFeatured ? '#d97706' : '#d1d5db',
+                                                    color: review.isFeatured ? '#d97706' : '#6b7280',
+                                                    fontSize: '0.75rem'
+                                                }}
+                                            >
+                                                {review.isFeatured ? '⭐ เลิกโชว์' : '⭐ โชว์หน้าแรก'}
+                                            </Button>
                                             <Button
                                                 size="sm"
                                                 variant="outline"

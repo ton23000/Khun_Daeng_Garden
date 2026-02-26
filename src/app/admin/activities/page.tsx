@@ -120,9 +120,7 @@ export default function AdminActivitiesPage() {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#166534' }}>กิจกรรมทั้งหมด</h1>
-                <Link href="/admin/reports" style={{ color: '#166534', textDecoration: 'none', fontWeight: 600 }}>
-                    ← กลับ
-                </Link>
+
             </div>
 
             {/* Filters */}

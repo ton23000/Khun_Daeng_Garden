@@ -143,8 +143,8 @@ export default function AdminUsersPage() {
 
     const getTotalSpent = () => {
         return userBookings
-            .filter(b => b.status !== 'CANCELLED')
-            .reduce((sum, b) => sum + b.deposit, 0);
+            .filter(b => b.status === 'COMPLETED')
+            .reduce((sum, b) => sum + b.totalPrice, 0);
     };
 
     const changeRole = async (userId: string, newRole: string) => {

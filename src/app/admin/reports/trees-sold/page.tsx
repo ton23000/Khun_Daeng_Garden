@@ -110,13 +110,7 @@ export default function TreesSoldPage() {
     return (
         <div>
             <div style={{ marginBottom: '1.5rem' }}>
-                <Button
-                    variant="outline"
-                    onClick={() => router.push('/admin/reports')}
-                    style={{ marginBottom: '1rem' }}
-                >
-                    ← กลับ Reports
-                </Button>
+
                 <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#166534' }}>
                     🌳 ต้นไม้ที่ขายได้
                 </h1>
