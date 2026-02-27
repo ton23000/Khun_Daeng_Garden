@@ -100,10 +100,15 @@ export default async function Home() {
     take: 4
   });
 
-  // Get Kwak Phra Phrom for Hero Section
-  const heroTree = await prisma.tree.findFirst({
-    where: { name: 'กวักพระพรหม' }
-  });
+  // Hero Section Tree: Promotional > Best Seller > Fallback
+  let heroTree = null;
+  if (promotionalTrees && promotionalTrees.length > 0) {
+    heroTree = promotionalTrees[0];
+  } else if (displayBestSellers && displayBestSellers.length > 0) {
+    heroTree = displayBestSellers[0];
+  } else {
+    heroTree = await prisma.tree.findFirst();
+  }
 
   // Fetch Site Settings
   const settings = await prisma.siteSetting.findMany();
@@ -265,48 +270,92 @@ export default async function Home() {
 
           {/* Image Content with Parallax */}
           <ParallaxSection speed={0.3}>
-            <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
-              <div style={{
-                width: '100%',
-                maxWidth: '400px',
-                height: 'min(500px, 100vw)',
-                backgroundColor: '#e5e7eb',
-                borderRadius: '20px',
-                backgroundImage: 'url("/images/products/kwak-phra-phrom.jpg")',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-              }}></div>
+            {heroTree && (() => {
+              let displayImage = '/placeholder-tree.jpg';
+              try {
+                const parsedImages = JSON.parse(heroTree.images);
+                if (parsedImages.length > 0) {
+                  displayImage = parsedImages[0];
+                }
+              } catch (e) {
+                // Ignore parse errors
+              }
 
-              {/* Floating Cards simulating the template */}
-              <Link href={heroTree ? `/trees/${heroTree.id}` : "/shop?q=กวักพระพรหม"} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div style={{
-                  position: 'absolute',
-                  bottom: '10%',
-                  left: '0',
-                  transform: 'translateX(-10px)',
-                  backgroundColor: 'white',
-                  padding: '1rem',
-                  borderRadius: '12px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem',
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s',
-                }}
-                  className="hover:scale-105"
-                >
-                  <div style={{ width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden' }}>
-                    <img src="/images/products/kwak-phra-phrom.jpg" alt="กวักพระพรหม" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              return (
+                <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{
+                    position: 'relative',
+                    width: '100%',
+                    maxWidth: '400px',
+                    height: 'min(500px, 100vw)',
+                    backgroundColor: '#e5e7eb',
+                    borderRadius: '20px',
+                    backgroundImage: `url("${displayImage}")`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    overflow: 'hidden'
+                  }}>
+                    {/* Overlay Title inside the image */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      textAlign: 'center',
+                      width: '100%',
+                      padding: '1rem'
+                    }}>
+                      <div style={{
+                        color: 'white',
+                        fontSize: 'clamp(1.5rem, 5vw, 2.5rem)',
+                        fontWeight: 'bold',
+                        textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                        fontFamily: 'var(--font-playfair), serif'
+                      }}>
+                        {heroTree.name} {heroTree.isPromotion && heroTree.originalPrice ? heroTree.price : heroTree.price}.-
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>กวักพระพรหม</div>
-                    <div style={{ fontSize: '0.8rem', color: '#166534' }}>฿350.00</div>
-                  </div>
+
+                  {/* Floating Cards simulating the template */}
+                  <Link href={`/trees/${heroTree.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '10%',
+                      left: '0',
+                      transform: 'translateX(-10px)',
+                      backgroundColor: 'white',
+                      padding: '1rem',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1rem',
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s',
+                    }}
+                      className="hover:scale-105"
+                    >
+                      <div style={{ width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden' }}>
+                        <img src={displayImage} alt={heroTree.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>{heroTree.name}</div>
+                        <div style={{ fontSize: '0.8rem', color: '#166534', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                          {heroTree.isPromotion && heroTree.originalPrice && (
+                            <span style={{ textDecoration: 'line-through', color: '#9ca3af', fontSize: '0.75rem' }}>
+                              ฿{heroTree.originalPrice.toLocaleString()}
+                            </span>
+                          )}
+                          ฿{heroTree.price.toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
                 </div>
-              </Link>
-            </div>
+              );
+            })()}
           </ParallaxSection>
         </div>
       </section>
@@ -426,9 +475,13 @@ export default async function Home() {
                   />
                 </div>
                 <br />
-                <Button style={{ marginTop: '1.5rem', backgroundColor: '#7f1d1d', color: 'white', borderRadius: '9999px', padding: '0.75rem 2.5rem', fontSize: '1.25rem', fontWeight: 'bold', position: 'relative', zIndex: 10, cursor: 'pointer', pointerEvents: 'none', transition: 'transform 0.2s', boxShadow: '0 4px 6px rgba(127, 29, 29, 0.3)' }} className="hover:scale-105 hover:bg-[#991b1b]">
+                <span
+                  role="button"
+                  style={{ marginTop: '1.5rem', backgroundColor: '#7f1d1d', color: 'white', borderRadius: '9999px', padding: '0.75rem 2.5rem', fontSize: '1.25rem', fontWeight: 'bold', position: 'relative', zIndex: 40, display: 'inline-block', transition: 'transform 0.2s, background-color 0.2s', boxShadow: '0 4px 6px rgba(127, 29, 29, 0.3)' }}
+                  className="hover:scale-105 hover:bg-[#991b1b]"
+                >
                   ช้อปเลย →
-                </Button>
+                </span>
               </div>
               <div style={{ flex: '1 1 100px', display: 'flex', justifyContent: 'flex-end', fontSize: 'clamp(3rem, 15vw, 6rem)', opacity: 0.8, zIndex: 0 }}>
                 🌹🌿

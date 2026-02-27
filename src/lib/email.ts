@@ -154,11 +154,11 @@ export async function sendPasswordResetEmail({
 /**
  * Send a generic email using Resend
  */
-export async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+export async function sendEmail({ to, subject, html }: { to: string | string[]; subject: string; html: string }) {
     try {
         const { data, error } = await resend.emails.send({
             from: 'Khun Daeng Garden <onboarding@resend.dev>',
-            to: [to],
+            to: Array.isArray(to) ? to : [to],
             subject,
             html,
         });

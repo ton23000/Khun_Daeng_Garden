@@ -14,8 +14,25 @@ const prompt = Prompt({
 });
 
 export const metadata: Metadata = {
-  title: 'Khun Daeng Garden - Premium Tree Shop',
-  description: 'Find and book your perfect tree at Khun Daeng Garden.',
+  title: 'สวนคุณแดงการ์เด้น (Khun Daeng Garden) - รับจัดสวน ขายต้นไม้พรีเมียม',
+  description: 'ศูนย์จำหน่ายต้นไม้มงคล ไม้ประดับ ต้นไม้ตกแต่งบ้าน และบริการรับจัดสวนแบบครบวงจรโดยผู้เชี่ยวชาญจาก สวนคุณแดงการ์เด้น (Khun Daeng Garden)',
+  keywords: ['ขายต้นไม้', 'รับจัดสวน', 'ต้นไม้มงคล', 'ไม้ประดับ', 'คุณแดงการ์เด้น', 'Khun Daeng Garden', 'ต้นไม้ตกแต่งบ้าน', 'ร้านขายต้นไม้ ลำปาง'],
+  openGraph: {
+    title: 'สวนคุณแดงการ์เด้น - รับจัดสวน ขายต้นไม้พรีเมียม',
+    description: 'ศูนย์จำหน่ายต้นไม้มงคล ไม้ประดับ และบริการรับจัดสวนแบบครบวงจร',
+    url: 'https://www.khundaenggarden.com',
+    siteName: 'Khun Daeng Garden',
+    images: [
+      {
+        url: '/images/og-image.jpg', // Placeholder, ensure to add an actual image here later
+        width: 1200,
+        height: 630,
+        alt: 'สวนคุณแดงการ์เด้น',
+      }
+    ],
+    locale: 'th_TH',
+    type: 'website',
+  }
 };
 
 export default async function RootLayout({

@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { SignJWT } from 'jose';
+
+// Helper to get secret key
+const getJwtSecretKey = () => {
+    const secret = process.env.JWT_SECRET || 'fallback_secret_key_change_this_in_production';
+    return new TextEncoder().encode(secret);
+};
 
 const loginSchema = z.object({
     identifier: z.string(), // phone or email
@@ -14,17 +21,36 @@ export async function POST(request: Request) {
 
         // Admin hardcoded check (keep existing logic for safety)
         if (password === 'admin1234' && (identifier === 'admin' || identifier === '0000000000')) {
-            return NextResponse.json({
+            const adminUser = {
+                id: 'admin',
+                firstName: 'Admin',
+                lastName: '',
+                phone: '0000000000',
+                role: 'admin',
+                email: 'admin@khundaeng.com'
+            };
+
+            const token = await new SignJWT({ ...adminUser })
+                .setProtectedHeader({ alg: 'HS256' })
+                .setIssuedAt()
+                .setExpirationTime('24h')
+                .sign(getJwtSecretKey());
+
+            const response = NextResponse.json({
                 success: true,
-                user: {
-                    id: 'admin',
-                    firstName: 'Admin',
-                    lastName: '',
-                    phone: '0000000000',
-                    role: 'admin',
-                    email: 'admin@khundaeng.com'
-                }
+                user: adminUser
             });
+
+            response.cookies.set({
+                name: 'khun_daeng_token',
+                value: token,
+                httpOnly: true,
+                path: '/',
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 60 * 60 * 24 // 1 day
+            });
+
+            return response;
         }
 
         // Find user by identifier only
@@ -73,18 +99,37 @@ export async function POST(request: Request) {
             );
         }
 
-        return NextResponse.json({
+        const userData = {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            phone: user.phone,
+            email: user.email,
+            role: user.role.toLowerCase(),
+            verified: user.verified
+        };
+
+        const token = await new SignJWT({ ...userData })
+            .setProtectedHeader({ alg: 'HS256' })
+            .setIssuedAt()
+            .setExpirationTime('24h')
+            .sign(getJwtSecretKey());
+
+        const response = NextResponse.json({
             success: true,
-            user: {
-                id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                phone: user.phone,
-                email: user.email,
-                role: user.role.toLowerCase(),
-                verified: user.verified
-            }
+            user: userData
         });
+
+        response.cookies.set({
+            name: 'khun_daeng_token',
+            value: token,
+            httpOnly: true,
+            path: '/',
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 60 * 60 * 24 // 1 day
+        });
+
+        return response;
 
     } catch (error) {
         console.error('Login error:', error);

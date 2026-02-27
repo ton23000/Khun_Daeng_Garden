@@ -275,8 +275,13 @@ export default function InlineEdit({
         <Tag
             onClick={(e: React.MouseEvent) => {
                 // If it's a link parent, prevent it from triggering when clicking inside InlineEdit
-                e.preventDefault();
-                e.stopPropagation();
+                // ONLY if the click was not on an explicitly interactive child like a button or link
+                const target = e.target as HTMLElement;
+                const isInteractiveChild = target.closest('button, a, [role="button"]');
+                if (!isInteractiveChild) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
             }}
             style={{ position: 'relative', cursor: 'default', ...appliedStyle }}
             className={`group ${className || ''}`}

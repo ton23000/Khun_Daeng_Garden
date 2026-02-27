@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { sendEmail, orderConfirmationEmail } from '@/lib/email';
 
 const BookingItemSchema = z.object({
     treeId: z.string(),
@@ -179,6 +180,25 @@ export async function POST(req: NextRequest) {
             }
         });
         console.log('[Booking API] Admin notification created');
+
+        // Send order confirmation email to the customer (if they have an email)
+        if (userExists.email) {
+            console.log(`[Booking API] Sending confirmation email to ${userExists.email}...`);
+            const emailHtml = orderConfirmationEmail(
+                refCode,
+                validated.items.map(i => ({ name: i.treeName, quantity: i.quantity, price: i.price })),
+                validated.totalPrice,
+                validated.deposit,
+                new Date(validated.items[0].pickupDate).toLocaleDateString('th-TH', { dateStyle: 'long' })
+            );
+
+            // Send asynchronously so we don't slow down the response
+            sendEmail({
+                to: userExists.email,
+                subject: `ยืนยันการสั่งจองต้นไม้เรียบร้อยแล้ว - ออเดอร์ #${refCode}`,
+                html: emailHtml
+            }).catch(err => console.error('[Booking API] Failed to send receipt email:', err));
+        }
 
         console.log('[Booking API] Returning success response');
         return NextResponse.json(booking, { status: 201 });

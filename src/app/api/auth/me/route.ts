@@ -1,12 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { jwtVerify } from 'jose';
+
+const getJwtSecretKey = () => {
+    const secret = process.env.JWT_SECRET || 'fallback_secret_key_change_this_in_production';
+    return new TextEncoder().encode(secret);
+};
 
 // GET - Get current user info
 export async function GET(req: NextRequest) {
     try {
-        // Get user ID from cookie or URL parameter
+        let userId: string | null = null;
+
+        // Try getting token from cookies
+        const token = req.cookies.get('khun_daeng_token')?.value;
+        if (token) {
+            try {
+                const verified = await jwtVerify(token, getJwtSecretKey());
+                userId = verified.payload.id as string;
+            } catch (err) {
+                console.warn('JWT verification failed in auth/me:', err);
+            }
+        }
+
+        // Fallback for explicitly passed userId (e.g. from localStorage sync if token expired)
         const urlParams = new URL(req.url).searchParams;
-        const userId = req.cookies.get('userId')?.value || urlParams.get('userId');
+        if (!userId) {
+            userId = urlParams.get('userId');
+        }
 
         if (!userId) {
             return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });

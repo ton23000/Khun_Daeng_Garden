@@ -38,13 +38,17 @@ export async function POST(request: Request) {
         // Generate verification token
         const verificationToken = randomUUID();
 
+        // Hash the password before saving to the database
+        const bcrypt = await import('bcryptjs');
+        const hashedPassword = await bcrypt.hash(validated.password, 10);
+
         const user = await prisma.user.create({
             data: {
                 firstName: validated.firstName,
                 lastName: validated.lastName,
                 phone: validated.phone,
                 email: validated.email || null,
-                password: validated.password, // In prod, hash this!
+                password: hashedPassword,
                 role: 'USER',
                 verified: false,
                 verificationToken

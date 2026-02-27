@@ -15,8 +15,9 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const validated = ContactSchema.parse(body);
 
-        // Send email to admin
-        const adminEmail = process.env.ADMIN_EMAIL || 'admin@khundaenggarden.com';
+        // Send email to admins
+        // Temporarily, while on the free Resend tier, we can only send to the verified account email.
+        const adminEmail = ['fhjilyyjg@gmail.com'];
         const html = contactFormEmail(
             validated.name,
             validated.email,
