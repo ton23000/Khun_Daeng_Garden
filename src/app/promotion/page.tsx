@@ -187,7 +187,7 @@ export default async function PromotionPage() {
                                             {tree.name}
                                         </h3>
                                         <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.75rem' }}>
-                                            {tree.category}
+                                            {tree.category ? tree.category.split(',').filter(Boolean).join(', ') : '-'}
                                         </p>
 
                                         {/* Price */}

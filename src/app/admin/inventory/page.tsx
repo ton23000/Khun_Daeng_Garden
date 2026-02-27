@@ -265,7 +265,7 @@ export default function InventoryPage() {
                                             <tr key={tree.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
                                                 <td style={{ padding: '1rem' }}>
                                                     <div style={{ fontWeight: 500 }}>{tree.name}</div>
-                                                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{tree.category}</div>
+                                                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{tree.category ? tree.category.split(',').filter(Boolean).join(', ') : '-'}</div>
                                                 </td>
                                                 <td style={{ padding: '1rem' }}>฿{tree.price.toLocaleString()}</td>
                                                 <td style={{ padding: '1rem', textAlign: 'center' }}>

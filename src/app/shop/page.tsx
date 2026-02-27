@@ -74,7 +74,7 @@ function ShopContent() {
                 // Initial filter will be handled by the effect above
 
                 // Extract unique categories
-                const uniqueCategories = Array.from(new Set(data.map((t: Tree) => t.category))).filter(Boolean) as string[];
+                const uniqueCategories = Array.from(new Set(data.flatMap((t: Tree) => t.category ? t.category.split(',').filter(Boolean) : []))).sort() as string[];
                 setCategories(uniqueCategories);
 
                 // Extract all tags
@@ -119,7 +119,10 @@ function ShopContent() {
 
         // Filter by categories
         if (filters.selectedCategories.length > 0) {
-            filtered = filtered.filter(t => filters.selectedCategories.includes(t.category));
+            filtered = filtered.filter(t => {
+                const treeCategories = t.category ? t.category.split(',').filter(Boolean) : [];
+                return filters.selectedCategories.some(cat => treeCategories.includes(cat));
+            });
         }
 
         // Filter by tags

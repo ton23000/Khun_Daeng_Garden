@@ -59,12 +59,12 @@ export default function AdminPromotionsPage() {
     };
 
     // Extract unique categories
-    const categories = Array.from(new Set(trees.map(t => t.category))).sort();
+    const categories = Array.from(new Set(trees.flatMap(t => t.category ? t.category.split(',').filter(Boolean) : []))).sort();
 
     const filteredTrees = trees.filter(t => {
         const matchSearch = t.name.toLowerCase().includes(search.toLowerCase()) ||
-            t.category.toLowerCase().includes(search.toLowerCase());
-        const matchCategory = categoryFilter === 'all' || t.category === categoryFilter;
+            (t.category && t.category.toLowerCase().includes(search.toLowerCase()));
+        const matchCategory = categoryFilter === 'all' || (t.category && t.category.split(',').filter(Boolean).includes(categoryFilter));
         return matchSearch && matchCategory;
     });
 
@@ -268,7 +268,7 @@ export default function AdminPromotionsPage() {
                 >
                     <option value="all">📦 ทุกหมวดหมู่</option>
                     {categories.map(cat => (
-                        <option key={cat} value={cat}>{cat} ({trees.filter(t => t.category === cat).length})</option>
+                        <option key={cat} value={cat}>{cat} ({trees.filter(t => t.category && t.category.split(',').filter(Boolean).includes(cat)).length})</option>
                     ))}
                 </select>
                 {categoryFilter !== 'all' && (
@@ -350,7 +350,7 @@ export default function AdminPromotionsPage() {
                                 <div style={{ flex: 1 }}>
                                     <div style={{ fontWeight: 'bold' }}>{tree.name}</div>
                                     <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                        {tree.category} • <span style={{ color: tree.isPromotion ? '#166534' : '#9ca3af' }}>{tree.isPromotion ? 'เปิดโปร' : 'ปกติ'}</span>
+                                        {tree.category ? tree.category.split(',').filter(Boolean).join(', ') : '-'} • <span style={{ color: tree.isPromotion ? '#166534' : '#9ca3af' }}>{tree.isPromotion ? 'เปิดโปร' : 'ปกติ'}</span>
                                     </div>
                                     <div style={{ marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                                         <span style={{ fontWeight: 'bold', color: tree.isPromotion ? '#dc2626' : '#1f2937' }}>
@@ -438,7 +438,7 @@ export default function AdminPromotionsPage() {
                                                 </div>
                                             </td>
                                             <td style={{ padding: '0.75rem', fontWeight: '500' }}>{tree.name}</td>
-                                            <td style={{ padding: '0.75rem', color: '#6b7280' }}>{tree.category}</td>
+                                            <td style={{ padding: '0.75rem', color: '#6b7280' }}>{tree.category ? tree.category.split(',').filter(Boolean).join(', ') : '-'}</td>
                                             <td style={{ padding: '0.75rem', textAlign: 'right', color: '#6b7280', textDecoration: tree.isPromotion ? 'line-through' : 'none' }}>
                                                 ฿{(tree.isPromotion && tree.originalPrice ? tree.originalPrice : tree.price).toLocaleString()}
                                             </td>

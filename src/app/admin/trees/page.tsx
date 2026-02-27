@@ -97,7 +97,7 @@ export default function AdminTreesPage() {
             if (res.ok) {
                 const newCat = await res.json();
                 setCategories([...categories, newCat]);
-                setFormData({ ...formData, category: newCat.name });
+                setFormData({ ...formData, category: formData.category ? formData.category + ',' + newCat.name : newCat.name });
                 setIsCategoryModalOpen(false);
                 setNewCategoryName('');
             } else {
@@ -408,13 +408,20 @@ export default function AdminTreesPage() {
                                             {tree.images.length > 1 && <span className="text-xs text-gray-500 ml-1">+{tree.images.length - 1}</span>}
                                         </td>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{tree.name}</td>
-                                        <td style={{ padding: '1rem' }}>{tree.category}</td>
                                         <td style={{ padding: '1rem' }}>
                                             <div className="flex flex-wrap gap-1">
-                                                {tree.tags?.slice(0, 3).map(t => (
-                                                    <span key={t} className="text-xs bg-gray-100 px-1 rounded">{t}</span>
+                                                {tree.category?.split(',').map(c => c.trim()).filter(Boolean).map((c, i) => (
+                                                    <span key={i} style={{ fontSize: '0.75rem', backgroundColor: '#dcfce7', color: '#166534', padding: '0.25rem 0.5rem', borderRadius: '9999px', display: 'inline-block' }}>{c}</span>
                                                 ))}
-                                                {tree.tags?.length > 3 && <span className="text-xs text-gray-500">+{tree.tags.length - 3}</span>}
+                                                {!tree.category && <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>-</span>}
+                                            </div>
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                                                {tree.tags?.flatMap(t => t.split(',')).map(t => t.trim()).filter(Boolean).slice(0, 3).map((t, i) => (
+                                                    <span key={i} style={{ fontSize: '0.75rem', backgroundColor: '#f3f4f6', color: '#374151', padding: '0.125rem 0.375rem', borderRadius: '0.25rem' }}>{t}</span>
+                                                ))}
+                                                {tree.tags?.flatMap(t => t.split(',')).filter(Boolean).length > 3 && <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>+{tree.tags.flatMap(t => t.split(',')).filter(Boolean).length - 3}</span>}
                                             </div>
                                         </td>
                                         <td style={{ padding: '1rem' }}>{tree.growthTime || '-'}</td>
@@ -468,22 +475,35 @@ export default function AdminTreesPage() {
                                     <Input label="สต็อกสินค้า" type="number" value={formData.stock || 0} onChange={e => setFormData({ ...formData, stock: Number(e.target.value) })} required />
 
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">หมวดหมู่</label>
-                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                            <select
-                                                value={formData.category}
-                                                onChange={e => setFormData({ ...formData, category: e.target.value })}
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                                                required
-                                                style={{ flex: 1 }}
-                                            >
-                                                <option value="">-- เลือกหมวดหมู่ --</option>
-                                                {categories.map(cat => (
-                                                    <option key={cat.id} value={cat.name}>{cat.name}</option>
-                                                ))}
-                                            </select>
-                                            <Button type="button" variant="outline" onClick={() => setIsCategoryModalOpen(true)} title="เพิ่มหมวดหมู่ใหม่" style={{ fontSize: '1.25rem', padding: '0 1rem' }}>+</Button>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                                            <label className="block text-sm font-medium">หมวดหมู่</label>
+                                            <Button type="button" variant="outline" size="sm" onClick={() => setIsCategoryModalOpen(true)} title="เพิ่มหมวดหมู่ใหม่" style={{ fontSize: '1rem', padding: '0 0.5rem', height: 'auto' }}>+</Button>
                                         </div>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.5rem', maxHeight: '150px', overflowY: 'auto' }}>
+                                            {Array.from(new Set([...categories.map(c => c.name), ...(formData.category ? formData.category.split(',').map(c => c.trim()).filter(Boolean) : [])])).sort().map(catName => {
+                                                const currentCats = formData.category ? formData.category.split(',').map(c => c.trim()).filter(Boolean) : [];
+                                                const isSelected = currentCats.includes(catName);
+                                                return (
+                                                    <label key={catName} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.5rem', backgroundColor: isSelected ? '#dcfce7' : '#f3f4f6', borderRadius: '9999px', cursor: 'pointer', fontSize: '0.875rem' }} title={catName}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isSelected}
+                                                            onChange={() => {
+                                                                if (isSelected) {
+                                                                    setFormData({ ...formData, category: currentCats.filter(c => c !== catName).join(',') });
+                                                                } else {
+                                                                    setFormData({ ...formData, category: [...currentCats, catName].join(',') });
+                                                                }
+                                                            }}
+                                                            style={{ display: 'none' }}
+                                                        />
+                                                        <span style={{ color: isSelected ? '#166534' : '#374151', fontWeight: isSelected ? 'bold' : 'normal' }}>{catName}</span>
+                                                    </label>
+                                                );
+                                            })}
+                                            {categories.length === 0 && <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>ยังไม่มีหมวดหมู่</span>}
+                                        </div>
+
                                     </div>
                                 </div>
                                 <div>
@@ -642,36 +662,39 @@ export default function AdminTreesPage() {
                         </CardContent>
                     </Card>
                 </div>
-            )}
+            )
+            }
 
             {/* Category Modal */}
-            {isCategoryModalOpen && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60
-                }}>
-                    <Card style={{ width: '90%', maxWidth: '400px', backgroundColor: 'white' }}>
-                        <CardHeader>
-                            <CardTitle>เพิ่มหมวดหมู่ใหม่</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleAddCategory} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                <Input
-                                    label="ชื่อหมวดหมู่"
-                                    value={newCategoryName}
-                                    onChange={e => setNewCategoryName(e.target.value)}
-                                    placeholder="เช่น ไม้มงคล, ไม้ประดับ"
-                                    required
-                                />
-                                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                                    <Button type="button" variant="outline" onClick={() => setIsCategoryModalOpen(false)}>ยกเลิก</Button>
-                                    <Button type="submit" variant="primary">บันทึก</Button>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
-                </div>
-            )}
-        </div>
+            {
+                isCategoryModalOpen && (
+                    <div style={{
+                        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                        backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60
+                    }}>
+                        <Card style={{ width: '90%', maxWidth: '400px', backgroundColor: 'white' }}>
+                            <CardHeader>
+                                <CardTitle>เพิ่มหมวดหมู่ใหม่</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <form onSubmit={handleAddCategory} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    <Input
+                                        label="ชื่อหมวดหมู่"
+                                        value={newCategoryName}
+                                        onChange={e => setNewCategoryName(e.target.value)}
+                                        placeholder="เช่น ไม้มงคล, ไม้ประดับ"
+                                        required
+                                    />
+                                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                        <Button type="button" variant="outline" onClick={() => setIsCategoryModalOpen(false)}>ยกเลิก</Button>
+                                        <Button type="submit" variant="primary">บันทึก</Button>
+                                    </div>
+                                </form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                )
+            }
+        </div >
     );
 }
