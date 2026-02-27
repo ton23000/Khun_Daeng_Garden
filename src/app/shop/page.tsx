@@ -207,12 +207,29 @@ function ShopContent() {
                                         />
 
                                         {/* Low / Out of Stock Indicator */}
-                                        {((tree.stock - tree.reserved > 0 && tree.stock - tree.reserved < 10)) && (
+                                        {(tree.stock - tree.reserved <= 0) ? (
                                             <div style={{
                                                 position: 'absolute',
                                                 top: '10px',
                                                 left: 0,
-                                                backgroundColor: '#ef4444',
+                                                backgroundColor: '#4b5563', // gray-600
+                                                color: 'white',
+                                                padding: '4px 12px',
+                                                borderTopRightRadius: '12px',
+                                                borderBottomRightRadius: '12px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 'bold',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                zIndex: 5
+                                            }}>
+                                                สินค้าหมด
+                                            </div>
+                                        ) : ((tree.stock - tree.reserved > 0 && tree.stock - tree.reserved < 10)) && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '10px',
+                                                left: 0,
+                                                backgroundColor: '#ef4444', // red-500
                                                 color: 'white',
                                                 padding: '4px 12px',
                                                 borderTopRightRadius: '12px',
@@ -265,12 +282,13 @@ function ShopContent() {
                                         {tree.isPromotion && tree.originalPrice && tree.originalPrice > tree.price && (
                                             <div style={{
                                                 position: 'absolute',
-                                                top: '10px',
-                                                right: '10px',
+                                                top: '40px',
+                                                left: 0,
                                                 backgroundColor: '#dc2626',
                                                 color: 'white',
-                                                padding: '0.2rem 0.6rem',
-                                                borderRadius: '9999px',
+                                                padding: '4px 12px',
+                                                borderTopRightRadius: '12px',
+                                                borderBottomRightRadius: '12px',
                                                 fontSize: '0.75rem',
                                                 fontWeight: 'bold',
                                                 zIndex: 5,
