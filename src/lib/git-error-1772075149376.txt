@@ -1,0 +1,8 @@
+> git push origin master:master
+remote: error: Trace: b4e06ba7e779cbde490b3a790e11c2435c36dfa1ef4d429f4da16fc748ecc0d3        
+remote: error: See https://gh.io/lfs for more information.        
+remote: error: File image/Antigravity.exe is 166.84 MB; this exceeds GitHub's file size limit of 100.00 MB        
+remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To https://github.com/ton23000/Khun_Daeng_Garden.git
+ ! [remote rejected] master -> master (pre-receive hook declined)
+error: failed to push some refs to 'https://github.com/ton23000/Khun_Daeng_Garden.git'
