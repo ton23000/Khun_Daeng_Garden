@@ -9,113 +9,161 @@ import FavoriteButton from '@/components/FavoriteButton';
 import { ImageSlider } from '@/components/ImageSlider';
 import InlineEdit from '@/components/InlineEdit';
 import { User } from 'lucide-react';
+import { MOCK_TREES, MOCK_REVIEWS, MOCK_SITE_SETTINGS } from '@/lib/mock-data';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const featuredTrees = await prisma.tree.findMany({
-    take: 4,
-    orderBy: { createdAt: 'desc' }
-  });
+  let featuredTrees, bestSellingTreesWithCount, displayBestSellers, weeklyBestSellingTreesWithCount, promotionalTrees, seasonalTrees, heroTree, settingsMap, topReviews;
 
-  // Top 5 best sellers
-  const bestSellingData = await prisma.bookingItem.groupBy({
-    by: ['treeId'],
-    where: { booking: { status: 'COMPLETED' } },
-    _sum: { quantity: true },
-    orderBy: { _sum: { quantity: 'desc' } },
-    take: 5
-  });
+  try {
+    featuredTrees = await prisma.tree.findMany({
+      take: 4,
+      orderBy: { createdAt: 'desc' }
+    });
 
-  const bestSellingTreeIds = bestSellingData.map((d: { treeId: string }) => d.treeId);
-  const bestSellingTrees = await prisma.tree.findMany({
-    where: { id: { in: bestSellingTreeIds } }
-  });
+    // Top 5 best sellers
+    const bestSellingData = await prisma.bookingItem.groupBy({
+      by: ['treeId'],
+      where: { booking: { status: 'COMPLETED' } },
+      _sum: { quantity: true },
+      orderBy: { _sum: { quantity: 'desc' } },
+      take: 5
+    });
 
-  const bestSellingTreesWithCount = bestSellingTrees.map(tree => {
-    const saleData = bestSellingData.find((d: { treeId: string, _sum: { quantity: number | null } }) => d.treeId === tree.id);
-    return {
-      ...tree,
-      soldCount: saleData?._sum.quantity || 0
-    };
-  }).sort((a, b) => b.soldCount - a.soldCount);
+    const bestSellingTreeIds = bestSellingData.map((d: { treeId: string }) => d.treeId);
+    const bestSellingTrees = await prisma.tree.findMany({
+      where: { id: { in: bestSellingTreeIds } }
+    });
 
-  // Fallback if no sales
-  const displayBestSellers = bestSellingTreesWithCount.length > 0 ? bestSellingTreesWithCount : featuredTrees;
+    bestSellingTreesWithCount = bestSellingTrees.map(tree => {
+      const saleData = bestSellingData.find((d: { treeId: string, _sum: { quantity: number | null } }) => d.treeId === tree.id);
+      return {
+        ...tree,
+        soldCount: saleData?._sum.quantity || 0
+      };
+    }).sort((a, b) => b.soldCount - a.soldCount);
 
-  // Weekly Best Sellers
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    // Fallback if no sales
+    displayBestSellers = bestSellingTreesWithCount.length > 0 ? bestSellingTreesWithCount : featuredTrees;
 
-  const weeklyBestSellingData = await prisma.bookingItem.groupBy({
-    by: ['treeId'],
-    where: {
-      booking: {
-        status: 'COMPLETED',
-        createdAt: { gte: sevenDaysAgo }
-      }
-    },
-    _sum: { quantity: true },
-    orderBy: { _sum: { quantity: 'desc' } },
-    take: 5
-  });
+    // Weekly Best Sellers
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-  const weeklyBestSellingTreeIds = weeklyBestSellingData.map((d: { treeId: string }) => d.treeId);
-  const weeklyBestSellingTrees = await prisma.tree.findMany({
-    where: { id: { in: weeklyBestSellingTreeIds } }
-  });
+    const weeklyBestSellingData = await prisma.bookingItem.groupBy({
+      by: ['treeId'],
+      where: {
+        booking: {
+          status: 'COMPLETED',
+          createdAt: { gte: sevenDaysAgo }
+        }
+      },
+      _sum: { quantity: true },
+      orderBy: { _sum: { quantity: 'desc' } },
+      take: 5
+    });
 
-  const weeklyBestSellingTreesWithCount = weeklyBestSellingTrees.map(tree => {
-    const saleData = weeklyBestSellingData.find((d: { treeId: string, _sum: { quantity: number | null } }) => d.treeId === tree.id);
-    return {
-      ...tree,
-      soldCount: saleData?._sum.quantity || 0
-    };
-  }).sort((a, b) => b.soldCount - a.soldCount);
+    const weeklyBestSellingTreeIds = weeklyBestSellingData.map((d: { treeId: string }) => d.treeId);
+    const weeklyBestSellingTrees = await prisma.tree.findMany({
+      where: { id: { in: weeklyBestSellingTreeIds } }
+    });
+
+    weeklyBestSellingTreesWithCount = weeklyBestSellingTrees.map(tree => {
+      const saleData = weeklyBestSellingData.find((d: { treeId: string, _sum: { quantity: number | null } }) => d.treeId === tree.id);
+      return {
+        ...tree,
+        soldCount: saleData?._sum.quantity || 0
+      };
+    }).sort((a, b) => b.soldCount - a.soldCount);
 
 
-  // Promotional trees
-  const promotionalTrees = await prisma.tree.findMany({
-    where: {
-      isPromotion: true,
-      OR: [
-        { promotionEndDate: null },
-        { promotionEndDate: { gte: new Date() } }
-      ]
-    },
-    take: 4,
-    orderBy: { updatedAt: 'desc' }
-  });
+    // Promotional trees
+    promotionalTrees = await prisma.tree.findMany({
+      where: {
+        isPromotion: true,
+        OR: [
+          { promotionEndDate: null },
+          { promotionEndDate: { gte: new Date() } }
+        ]
+      },
+      take: 4,
+      orderBy: { updatedAt: 'desc' }
+    });
 
-  // Seasonal/Festival trees (e.g. Valentine's / Rose)
-  const seasonalTrees = await prisma.tree.findMany({
-    where: {
-      OR: [
-        { tags: { contains: 'วาเลนไทน์' } },
-        { name: { contains: 'กุหลาบ' } },
-        { tags: { contains: 'เทศกาล' } }
-      ],
-      stock: { gt: 0 }
-    },
-    take: 4
-  });
+    // Seasonal/Festival trees (e.g. Valentine's / Rose)
+    seasonalTrees = await prisma.tree.findMany({
+      where: {
+        OR: [
+          { tags: { contains: 'วาเลนไทน์' } },
+          { name: { contains: 'กุหลาบ' } },
+          { tags: { contains: 'เทศกาล' } }
+        ],
+        stock: { gt: 0 }
+      },
+      take: 4
+    });
 
-  // Hero Section Tree: Promotional > Best Seller > Fallback
-  let heroTree = null;
-  if (promotionalTrees && promotionalTrees.length > 0) {
-    heroTree = promotionalTrees[0];
-  } else if (displayBestSellers && displayBestSellers.length > 0) {
-    heroTree = displayBestSellers[0];
-  } else {
-    heroTree = await prisma.tree.findFirst();
+    // Hero Section Tree: Promotional > Best Seller > Fallback
+    if (promotionalTrees && promotionalTrees.length > 0) {
+      heroTree = promotionalTrees[0];
+    } else if (displayBestSellers && displayBestSellers.length > 0) {
+      heroTree = displayBestSellers[0];
+    } else {
+      heroTree = await prisma.tree.findFirst();
+    }
+
+    // Fetch Site Settings
+    const settings = await prisma.siteSetting.findMany();
+    settingsMap = settings.reduce((acc: Record<string, string>, curr: { key: string, value: string }) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {}) as Record<string, string>;
+
+    topReviews = await prisma.review.findMany({
+      where: {
+        isFeatured: true,
+        hidden: false,
+      },
+      include: {
+        user: {
+          select: { firstName: true, lastName: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 4
+    });
+
+    // Fallback if no featured reviews
+    if (topReviews.length === 0) {
+      topReviews = await prisma.review.findMany({
+        where: {
+          rating: { gte: 4 }, // 4 or 5 stars
+          hidden: false,
+          comment: { not: null, notIn: [''] }
+        },
+        include: {
+          user: {
+            select: { firstName: true, lastName: true }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 4 // Max 4 reviews displayed on the homepage
+      });
+    }
+
+  } catch (error) {
+    console.error('Database connection failed, using mock data:', error);
+    // Use Mock Data
+    featuredTrees = MOCK_TREES.slice(0, 4);
+    displayBestSellers = MOCK_TREES.slice(0, 4).map(t => ({ ...t, soldCount: 10 }));
+    weeklyBestSellingTreesWithCount = MOCK_TREES.slice(0, 4).map(t => ({ ...t, soldCount: 5 }));
+    promotionalTrees = MOCK_TREES.filter(t => t.isPromotion);
+    seasonalTrees = MOCK_TREES.slice(0, 2);
+    heroTree = MOCK_TREES[0];
+    settingsMap = MOCK_SITE_SETTINGS as unknown as Record<string, string>;
+    topReviews = MOCK_REVIEWS;
   }
-
-  // Fetch Site Settings
-  const settings = await prisma.siteSetting.findMany();
-  const settingsMap = settings.reduce((acc: Record<string, string>, curr: { key: string, value: string }) => {
-    acc[curr.key] = curr.value;
-    return acc;
-  }, {});
 
   const heroTitle = settingsMap['hero_title'] || 'สวนสวยเริ่มต้นที่ สวนคุณแดง';
   const heroTitleColor = settingsMap['hero_title_color'] || 'var(--foreground)';
@@ -140,38 +188,6 @@ export default async function Home() {
   const valHeading = settingsMap['valentine_heading'] || '💖 Valentine\'s Special';
   const valHeadingColor = settingsMap['valentine_heading_color'] || '#7f1d1d';
   const valHeadingSize = settingsMap['valentine_heading_fontSize'] || 'clamp(0.875rem, 3vw, 1.25rem)';
-
-  let topReviews: any[] = await prisma.review.findMany({
-    where: {
-      isFeatured: true,
-      hidden: false,
-    },
-    include: {
-      user: {
-        select: { firstName: true, lastName: true }
-      }
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 4
-  });
-
-  // Fallback if no featured reviews
-  if (topReviews.length === 0) {
-    topReviews = await prisma.review.findMany({
-      where: {
-        rating: { gte: 4 }, // 4 or 5 stars
-        hidden: false,
-        comment: { not: null, notIn: [''] }
-      },
-      include: {
-        user: {
-          select: { firstName: true, lastName: true }
-        }
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 4 // Max 4 reviews displayed on the homepage
-    });
-  }
 
   return (
     <main>
