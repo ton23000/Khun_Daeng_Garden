@@ -88,7 +88,7 @@ export default function OrdersPage() {
 
     useEffect(() => {
         if (isLoading) return;
-        if (!user || user.role !== 'admin') {
+        if (!user || (user.role !== 'admin' && user.role !== 'staff')) {
             router.push('/admin/login');
         } else {
             // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -287,7 +287,7 @@ export default function OrdersPage() {
         return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
     }
 
-    if (!user || user.role !== 'admin') {
+    if (!user || (user.role !== 'admin' && user.role !== 'staff')) {
         return null;
     }
 

@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
-    const { user, refreshUser, deleteAccount } = useAuth();
+    const { user, refreshUser, logout } = useAuth();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -17,8 +17,6 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [deleteLoading, setDeleteLoading] = useState(false);
     const [recentBooking, setRecentBooking] = useState<{ refCode: string, status: string, items: Record<string, unknown>[], totalPrice: number } | null>(null);
 
     useEffect(() => {
@@ -112,17 +110,6 @@ export default function ProfilePage() {
         setPhone(user.phone || '');
         setIsEditing(false);
         setError('');
-        setSuccess('');
-    };
-
-    const handleDeleteAccount = async () => {
-        setDeleteLoading(true);
-        const result = await deleteAccount();
-        if (!result.success) {
-            setError(result.error || 'ไม่สามารถลบบัญชีได้');
-            setShowDeleteConfirm(false);
-        }
-        setDeleteLoading(false);
     };
 
     return (
@@ -270,47 +257,21 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                {/* Delete Account Section */}
+                {/* Logout Section */}
                 <Card>
                     <CardContent style={{ padding: '2rem', textAlign: 'center' }}>
-                        {!showDeleteConfirm ? (
-                            <Button
-                                variant="outline"
-                                fullWidth
-                                onClick={() => setShowDeleteConfirm(true)}
-                                style={{
-                                    color: '#dc2626',
-                                    borderColor: '#dc2626',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                ลบบัญชี
-                            </Button>
-                        ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                <p style={{ color: '#dc2626', fontWeight: 'bold' }}>
-                                    ⚠️ คุณแน่ใจหรือไม่ที่จะลบบัญชี? การกระทำนี้ไม่สามารถเลิกทำได้
-                                </p>
-                                <div style={{ display: 'flex', gap: '1rem' }}>
-                                    <Button
-                                        variant="primary"
-                                        onClick={handleDeleteAccount}
-                                        disabled={deleteLoading}
-                                        style={{ flex: 1, backgroundColor: '#dc2626' }}
-                                    >
-                                        {deleteLoading ? 'กำลังลบ...' : 'ยืนยันลบบัญชี'}
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setShowDeleteConfirm(false)}
-                                        disabled={deleteLoading}
-                                        style={{ flex: 1 }}
-                                    >
-                                        ยกเลิก
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
+                        <Button
+                            variant="outline"
+                            fullWidth
+                            onClick={logout}
+                            style={{
+                                color: '#d97706',
+                                borderColor: '#d97706',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            ออกจากระบบ
+                        </Button>
                     </CardContent>
                 </Card>
             </div>

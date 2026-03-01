@@ -20,7 +20,8 @@ interface AuthContextType {
     user: User | null;
     isLoading: boolean;
     login: (identifier: string, password: string) => Promise<boolean>;
-    loginAdmin: (password: string) => Promise<boolean>;
+    loginAdmin: (email: string, password: string) => Promise<boolean>;
+    loginWithUser: (user: User) => void;
     register: (firstName: string, lastName: string, phone: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
     resetPassword: (identifier: string) => boolean;
     logout: () => void;
@@ -52,8 +53,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                             if (res.ok) {
                                 const data = await res.json();
                                 if (data.user) {
-                                    setUser(data.user);
-                                    localStorage.setItem('khun_daeng_user', JSON.stringify(data.user));
+                                    setUser(prev => {
+                                        // Only update if the user ID hasn't changed in the meantime (e.g., via magic link login)
+                                        if (prev?.id === parsedUser.id) {
+                                            localStorage.setItem('khun_daeng_user', JSON.stringify(data.user));
+                                            return data.user;
+                                        }
+                                        return prev;
+                                    });
                                 }
                             }
                         } catch (e) {
@@ -95,10 +102,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const loginAdmin = async (password: string) => {
-        // Re-use standard login for admin, relying on backend to check or keep special logic
-        // But for minimal friction, let's just use the same login function
-        return login('admin', password);
+    const loginWithUser = (userData: User) => {
+        setUser(userData);
+        localStorage.setItem('khun_daeng_user', JSON.stringify(userData));
     };
 
     const register = async (firstName: string, lastName: string, phone: string, email: string, password: string) => {
@@ -186,7 +192,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, login, loginAdmin, register, resetPassword, logout, refreshUser, deleteAccount }}>
+        <AuthContext.Provider value={{ user, isLoading, login, loginAdmin: login, loginWithUser, register, resetPassword, logout, refreshUser, deleteAccount }}>
             {children}
         </AuthContext.Provider>
     );

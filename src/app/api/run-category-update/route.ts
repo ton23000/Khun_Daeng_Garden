@@ -49,7 +49,7 @@ export async function GET() {
                 const finalTags = Array.from(new Set(newTags));
                 await prisma.tree.update({
                     where: { id: tree.id },
-                    data: { tags: finalTags }
+                    data: { tags: finalTags.join(',') }
                 });
                 results.push(`Fixed tags for ${tree.name}`);
             }

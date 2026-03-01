@@ -313,3 +313,62 @@ export async function sendVerificationEmail({ email, verifyLink, userName }: { e
     }
 }
 
+/**
+ * Generate admin magic link email HTML template
+ */
+export function adminMagicLinkTemplate(userName: string, magicLink: string): string {
+    return `
+    <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1)">
+        <div style="background:linear-gradient(135deg,#059669,#10b981);padding:32px;text-align:center;color:white">
+            <h1 style="margin:0;font-size:24px">🌿 คุณแดงการ์เด้น</h1>
+            <p style="margin:8px 0 0">การเข้าสู่ระบบสำหรับ Admin/Staff</p>
+        </div>
+        <div style="padding:24px">
+            <p style="color:#374151">สวัสดีค่ะ คุณ${userName} 🙏</p>
+            <p style="color:#374151">ได้มีการร้องขอให้เข้าสู่ระบบสำหรับบัญชีผู้ดูแลระบบด้วยอีเมลนี้</p>
+            <p style="color:#374151">กรุณากดปุ่มด้านล่างเพื่อเข้าสู่ระบบ:</p>
+            <div style="text-align:center;margin:24px 0">
+                <a href="${magicLink}" style="display:inline-block;padding:14px 32px;background-color:#d97706;color:white!important;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px">
+                    🔑 เข้าสู่ระบบ
+                </a>
+            </div>
+            <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px;margin-top:20px;font-size:14px;border-radius:0 8px 8px 0">
+                ⏰ ลิงก์นี้จะหมดอายุใน <strong>15 นาที</strong>
+            </div>
+            <p style="margin-top:20px;color:#6b7280;font-size:13px">หากปุ่มไม่ทำงาน คัดลอกลิงก์นี้ไปวางในเบราว์เซอร์:</p>
+            <div style="word-break:break-all;font-size:12px;color:#6b7280;background:#f3f4f6;padding:10px;border-radius:4px">${magicLink}</div>
+            <p style="margin-top:20px;color:#ef4444;font-size:14px;font-weight:bold">
+                ⚠️ คำเตือน: หากคุณไม่ได้ทำการเข้าสู่ระบบ กรุณาเพิกเฉยต่ออีเมลฉบับนี้และห้ามส่งต่อให้บุคคลอื่นเด็ดขาด
+            </p>
+        </div>
+        <div style="background:#f9fafb;padding:16px;text-align:center;color:#6b7280;font-size:12px">
+            © คุณแดงการ์เด้น | ต.บ้านเป้า อ.เมือง จ.ลำปาง
+        </div>
+    </div>`;
+}
+
+/**
+ * Send admin magic link email
+ */
+export async function sendAdminMagicLinkEmail({ email, magicLink, userName }: { email: string; magicLink: string; userName: string }) {
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'Khun Daeng Garden <onboarding@resend.dev>',
+            to: email,
+            subject: 'ลิงก์การเข้าสู่ระบบสำหรับแอดมิน - Khun Daeng Garden',
+            html: adminMagicLinkTemplate(userName, magicLink)
+        });
+
+        if (error) {
+            console.error('❌ Admin magic link email error:', error);
+            return { success: false, error: error.message };
+        }
+
+        console.log('✅ Admin magic link email sent to:', email);
+        return { success: true, data };
+    } catch (error) {
+        console.error('❌ Error sending admin magic link email:', error);
+        return { success: false, error: 'Email service unavailable' };
+    }
+}
+

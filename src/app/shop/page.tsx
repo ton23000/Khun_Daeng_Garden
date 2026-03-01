@@ -227,7 +227,7 @@ function ShopContent() {
                                             }}>
                                                 สินค้าหมด
                                             </div>
-                                        ) : ((tree.stock - tree.reserved > 0 && tree.stock - tree.reserved < 10)) && (
+                                        ) : ((tree.stock - tree.reserved > 0 && tree.stock - tree.reserved <= 3)) && (
                                             <div style={{
                                                 position: 'absolute',
                                                 top: '10px',

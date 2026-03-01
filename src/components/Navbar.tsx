@@ -308,7 +308,7 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
                                 </span>
                                 {showAbout && (
                                     <div className={styles.dropdownMenu}>
-                                        <Link href="/about" className={styles.dropdownLink}>เรื่องราวของเรา</Link>
+                                        <Link href="/about" className={styles.dropdownLink}>เกี่ยวกับเรา</Link>
                                         <Link href="/services" className={styles.dropdownLink}>บริการ</Link>
                                         <Link href="/articles" className={styles.dropdownLink}>บทความน่ารู้</Link>
                                         <Link href="/customer-service" className={styles.dropdownLink}>บริการลูกค้า</Link>
@@ -325,9 +325,14 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
 
                         {/* Social Icons & Admin */}
                         <div className={styles.socialAdmin}>
-                            {(user?.role === 'admin' || user?.role === 'staff') && (
-                                <Link href="/admin/orders" style={{ textDecoration: 'none' }}>
+                            {user?.role === 'admin' && (
+                                <Link href="/admin" style={{ textDecoration: 'none' }}>
                                     <span style={{ backgroundColor: '#166534', color: 'white', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600 }}>Admin Panel</span>
+                                </Link>
+                            )}
+                            {user?.role === 'staff' && (
+                                <Link href="/staff/orders" style={{ textDecoration: 'none' }}>
+                                    <span style={{ backgroundColor: '#1d4ed8', color: 'white', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600 }}>Staff Panel</span>
                                 </Link>
                             )}
                             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }} title="Facebook">
