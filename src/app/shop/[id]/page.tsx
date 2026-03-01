@@ -19,7 +19,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   try {
     images = JSON.parse(tree.images);
   } catch {
-    images = ['/placeholder-tree.jpg'];
+    images = ['/placeholder-tree.svg'];
   }
 
   const tags = tree.tags ? tree.tags.split(',').filter((t: string) => t) : [];

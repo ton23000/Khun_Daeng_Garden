@@ -10,12 +10,19 @@ export default async function TreePage({ params }: { params: Promise<{ id: strin
 
     // Fetch from DB instead of Mock
     let treeData;
-    try {
-        treeData = await prisma.tree.findUnique({
-            where: { id }
-        });
-    } catch (error) {
-        console.error('Database connection failed, checking mock data:', error);
+    
+    const dev = process.env.NODE_ENV !== 'production';
+    
+    if (dev) {
+        treeData = MOCK_TREES.find(t => t.id === id);
+    } else {
+        try {
+            treeData = await prisma.tree.findUnique({
+                where: { id }
+            });
+        } catch (error) {
+            console.error('Database connection failed, checking mock data:', error);
+        }
     }
 
     // Fallback to mock data if DB fails or returns null
@@ -36,7 +43,7 @@ export default async function TreePage({ params }: { params: Promise<{ id: strin
     try {
         images = JSON.parse(treeData.images);
     } catch {
-        images = ['/placeholder-tree.jpg'];
+        images = ['/placeholder-tree.svg'];
     }
 
     // Tags are stored as comma-separated string

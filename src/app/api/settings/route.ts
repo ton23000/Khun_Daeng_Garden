@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { MOCK_SITE_SETTINGS } from '@/lib/mock-data';
 
 export async function GET() {
+    const dev = process.env.NODE_ENV !== 'production';
+    if (dev) {
+        return NextResponse.json(MOCK_SITE_SETTINGS);
+    }
+
     try {
         const settings = await prisma.siteSetting.findMany();
 

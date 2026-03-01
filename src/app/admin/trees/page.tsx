@@ -404,7 +404,7 @@ export default function AdminTreesPage() {
                                 filteredTrees.map(tree => (
                                     <tr key={tree.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
                                         <td style={{ padding: '1rem' }}>
-                                            <img src={tree.images[0] || '/placeholder-tree.jpg'} alt={tree.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '0.25rem' }} />
+                                            <img src={tree.images[0] || '/placeholder-tree.svg'} alt={tree.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '0.25rem' }} />
                                             {tree.images.length > 1 && <span className="text-xs text-gray-500 ml-1">+{tree.images.length - 1}</span>}
                                         </td>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{tree.name}</td>

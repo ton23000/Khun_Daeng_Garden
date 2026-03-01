@@ -122,7 +122,7 @@ export default function BestSellersPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
                     {trees.map((tree, index) => {
                         // Parse images safely
-                        let imageUrl = '/placeholder-tree.jpg';
+                        let imageUrl = '/placeholder-tree.svg';
                         try {
                             const images = JSON.parse(tree.images);
                             if (images && images.length > 0) {

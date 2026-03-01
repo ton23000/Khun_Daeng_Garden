@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { MOCK_TREES } from '@/lib/mock-data';
 
 export async function GET() {
+    const dev = process.env.NODE_ENV !== 'production';
+    if (dev) {
+        return NextResponse.json(MOCK_TREES.slice(0, 4));
+    }
+
     try {
         // Get best-selling trees from last 7 days
         const sevenDaysAgo = new Date();

@@ -125,7 +125,7 @@ export default function StaffReviewsPage() {
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {filteredReviews.map(review => {
-                        let treeImage = '/placeholder-tree.jpg';
+                        let treeImage = '/placeholder-tree.svg';
                         try { const imgs = JSON.parse(review.tree.images); if (imgs.length > 0) treeImage = imgs[0]; } catch { }
 
                         return (

@@ -184,7 +184,7 @@ function ShopContent() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
                 {filteredTrees.map((tree, index) => {
                     // Get first image from array
-                    let imageUrl = '/placeholder-tree.jpg';
+                    let imageUrl = '/placeholder-tree.svg';
                     if (tree.images && Array.isArray(tree.images) && tree.images.length > 0) {
                         imageUrl = tree.images[0];
                     } else if (typeof tree.images === 'string') {

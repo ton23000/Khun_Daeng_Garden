@@ -149,16 +149,16 @@ export default function FavoritesPage() {
                                     }}>
                                         <img
                                             src={(() => {
-                                                let imageUrl = '/placeholder-tree.jpg';
+                                                let imageUrl = '/placeholder-tree.svg';
                                                 if (favorite.tree.images) {
                                                     if (Array.isArray(favorite.tree.images)) {
-                                                        imageUrl = favorite.tree.images[0] || '/placeholder-tree.jpg';
+                                                        imageUrl = favorite.tree.images[0] || '/placeholder-tree.svg';
                                                     } else if (typeof favorite.tree.images === 'string') {
                                                         try {
                                                             const images = JSON.parse(favorite.tree.images);
-                                                            imageUrl = images[0] || '/placeholder-tree.jpg';
+                                                            imageUrl = images[0] || '/placeholder-tree.svg';
                                                         } catch {
-                                                            imageUrl = '/placeholder-tree.jpg';
+                                                            imageUrl = '/placeholder-tree.svg';
                                                         }
                                                     }
                                                 }

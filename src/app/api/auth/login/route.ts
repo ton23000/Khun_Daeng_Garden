@@ -54,6 +54,44 @@ export async function POST(request: Request) {
             return response;
         }
 
+        const dev = process.env.NODE_ENV !== 'production';
+
+        if (dev) {
+            // Mock login for development without database
+            // Just accept anything as a mock user for now, or use a hardcoded dev user
+            const mockUser = {
+                id: 'mock-user-id',
+                firstName: 'Dev',
+                lastName: 'User',
+                phone: identifier,
+                email: identifier.includes('@') ? identifier : 'dev@example.com',
+                role: 'user',
+                verified: true
+            };
+
+            const token = await new SignJWT({ ...mockUser })
+                .setProtectedHeader({ alg: 'HS256' })
+                .setIssuedAt()
+                .setExpirationTime('24h')
+                .sign(getJwtSecretKey());
+
+            const response = NextResponse.json({
+                success: true,
+                user: mockUser
+            });
+
+            response.cookies.set({
+                name: 'khun_daeng_token',
+                value: token,
+                httpOnly: true,
+                path: '/',
+                secure: false,
+                maxAge: 60 * 60 * 24 // 1 day
+            });
+
+            return response;
+        }
+
         // Find user by identifier only
         const user = await prisma.user.findFirst({
             where: {
