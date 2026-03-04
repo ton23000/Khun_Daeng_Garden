@@ -1,0 +1,20 @@
+# Fix image access for public folder
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Serve images directly
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+    
+    # Redirect /images to current directory
+    RewriteRule ^images/(.*)$ images/$1 [L]
+    RewriteRule ^uploads/(.*)$ uploads/$1 [L]
+</IfModule>
+
+# Set proper content types
+<IfModule mod_mime.c>
+    AddType image/svg+xml .svg
+    AddType image/webp .webp
+</IfModule>
