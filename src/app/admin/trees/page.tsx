@@ -66,7 +66,7 @@ export default function AdminTreesPage() {
     useEffect(() => {
         if (isAuthLoading) return;
         if (!user || user.role !== 'admin') {
-            router.push('/admin/login');
+            router.push('/login');
             return;
         }
         fetchTrees();

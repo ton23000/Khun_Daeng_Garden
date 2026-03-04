@@ -12,7 +12,7 @@ export default async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Only protect /admin and /api/admin paths
-    const isAdminPath = pathname.startsWith('/admin') && pathname !== '/admin/login';
+    const isAdminPath = pathname.startsWith('/admin');
     const isAdminApi = pathname.startsWith('/api/admin');
 
     if (isAdminPath || isAdminApi) {
@@ -23,7 +23,7 @@ export default async function proxy(request: NextRequest) {
             if (isAdminApi) {
                 return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
             }
-            return NextResponse.redirect(new URL('/admin/login', request.url));
+            return NextResponse.redirect(new URL('/login', request.url));
         }
 
         try {
@@ -36,7 +36,7 @@ export default async function proxy(request: NextRequest) {
                 if (isAdminApi) {
                     return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
                 }
-                return NextResponse.redirect(new URL('/admin/login', request.url));
+                return NextResponse.redirect(new URL('/login', request.url));
             }
 
             // Valid admin token, allow request to proceed
@@ -48,7 +48,7 @@ export default async function proxy(request: NextRequest) {
             if (isAdminApi) {
                 return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
             }
-            return NextResponse.redirect(new URL('/admin/login', request.url));
+            return NextResponse.redirect(new URL('/login', request.url));
         }
     }
 

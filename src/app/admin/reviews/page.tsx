@@ -29,7 +29,7 @@ export default function AdminReviewsPage() {
     useEffect(() => {
         if (isAuthLoading) return;
         if (!user || (user.role !== 'admin' && user.role !== 'staff')) {
-            router.push('/admin/login');
+            router.push('/login');
             return;
         }
         fetchReviews();

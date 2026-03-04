@@ -81,7 +81,7 @@ export default function AdminVerifyPage() {
                             <h2 style={{ color: '#991b1b', fontSize: '1.25rem', fontWeight: 'bold' }}>เกิดข้อผิดพลาด</h2>
                             <p style={{ color: '#ef4444' }}>{message}</p>
                             <button
-                                onClick={() => router.push('/admin/login')}
+                                onClick={() => router.push('/login')}
                                 style={{ marginTop: '1rem', padding: '0.75rem 1.5rem', backgroundColor: '#d97706', color: 'white', border: 'none', borderRadius: '0.5rem', fontWeight: 'bold', cursor: 'pointer' }}
                             >
                                 กลับไปหน้าเข้าสู่ระบบ

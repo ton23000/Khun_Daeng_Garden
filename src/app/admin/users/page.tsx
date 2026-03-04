@@ -39,7 +39,7 @@ export default function AdminUsersPage() {
 
     useEffect(() => {
         if (!currentUser || currentUser.role !== 'admin') {
-            router.push('/admin/login');
+            router.push('/login');
             return;
         }
         fetchUsers();

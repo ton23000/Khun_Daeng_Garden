@@ -89,7 +89,7 @@ export default function DashboardPage() {
     useEffect(() => {
         if (isLoading) return;
         if (!user || user.role !== 'admin') {
-            router.push('/admin/login');
+            router.push('/login');
         } else {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             fetchBookings();
