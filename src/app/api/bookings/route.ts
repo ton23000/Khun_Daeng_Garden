@@ -209,10 +209,25 @@ export async function POST(req: NextRequest) {
         // Send confirmation email (only in production)
         if (process.env.NODE_ENV === 'production' && userExists.email) {
             try {
+                const emailItems = validated.items.map(item => ({
+                    name: item.treeName,
+                    quantity: item.quantity,
+                    price: item.price
+                }));
+                const formattedDate = new Date(booking.pickupDate).toLocaleDateString('th-TH', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+
                 await sendEmail({
                     to: userExists.email,
                     subject: 'ยืนยันการจองสินค้า - สวนคุณแดง',
-                    html: orderConfirmationEmail(booking)
+                    html: orderConfirmationEmail(
+                        booking.refCode,
+                        emailItems,
+                        booking.totalPrice,
+                        booking.deposit,
+                        formattedDate
+                    )
                 });
                 console.log('[Booking API] Confirmation email sent to:', userExists.email);
             } catch (emailError) {
