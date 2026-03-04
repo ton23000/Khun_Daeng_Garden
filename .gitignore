@@ -14,6 +14,7 @@ yarn-error.log*
 out/
 build/
 dist/
+public_html/
 
 # Environment variables
 .env
