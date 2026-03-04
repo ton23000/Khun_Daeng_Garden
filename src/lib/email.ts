@@ -1,7 +1,8 @@
 import { Resend } from 'resend';
 
 // Initialize Resend with API key from environment
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Provide a dummy key if missing during build time to prevent "Missing API key" error
+const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key_for_build');
 
 interface PasswordResetEmailParams {
     email: string;

@@ -148,6 +148,10 @@ export default function AdminUsersPage() {
     };
 
     const changeRole = async (userId: string, newRole: string) => {
+        if (newRole === 'admin' && userId !== currentUser?.id) {
+            alert('ไม่สามารถเพิ่มสิทธิ์ admin ให้ผู้ใช้อื่นได้');
+            return;
+        }
         if (!confirm(`เปลี่ยนสิทธิ์เป็น "${newRole}" ใช่หรือไม่?`)) return;
         try {
             const res = await fetch(`/api/users/${userId}`, {
@@ -229,6 +233,7 @@ export default function AdminUsersPage() {
                                             <select
                                                 value={user.role}
                                                 onChange={(e) => changeRole(user.id, e.target.value)}
+                                                disabled={user.role === 'admin' && user.id !== currentUser?.id}
                                                 style={{
                                                     padding: '0.25rem 0.5rem',
                                                     borderRadius: '0.375rem',
@@ -237,12 +242,13 @@ export default function AdminUsersPage() {
                                                     fontWeight: 500,
                                                     backgroundColor: user.role === 'admin' ? '#fee2e2' : user.role === 'staff' ? '#dbeafe' : '#dcfce7',
                                                     color: user.role === 'admin' ? '#991b1b' : user.role === 'staff' ? '#1e40af' : '#166534',
-                                                    cursor: 'pointer'
+                                                    cursor: user.role === 'admin' && user.id !== currentUser?.id ? 'not-allowed' : 'pointer',
+                                                    opacity: user.role === 'admin' && user.id !== currentUser?.id ? 0.7 : 1
                                                 }}
                                             >
                                                 <option value="USER">USER</option>
                                                 <option value="staff">staff</option>
-                                                <option value="admin">admin</option>
+                                                {user.role === 'admin' && <option value="admin">admin</option>}
                                             </select>
                                         </td>
                                         <td style={{ padding: '1rem' }}>{new Date(user.createdAt).toLocaleDateString('th-TH')}</td>

@@ -39,7 +39,7 @@ export function ImageSlider({ trees, title, subtitle }: { trees: Tree[], title: 
 
             <div style={{ display: 'flex', transition: 'transform 0.5s ease-in-out', transform: `translateX(-${currentIndex * 100}%)` }}>
                 {trees.map((tree) => {
-                    let imageUrl = '/placeholder-tree.jpg';
+                    let imageUrl = '/placeholder-tree.svg';
                     try {
                         const imgs = JSON.parse(tree.images);
                         if (imgs && imgs.length > 0) imageUrl = imgs[0];

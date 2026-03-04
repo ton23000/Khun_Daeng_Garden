@@ -1,14 +1,37 @@
 import { prisma } from '@/lib/prisma';
 import ProductDetail from '@/components/ProductDetail';
 import { notFound } from 'next/navigation';
+import { MOCK_TREES } from '@/lib/mock-data';
+
+export const dynamic = 'force-dynamic';
 
 export default async function TreePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
 
     // Fetch from DB instead of Mock
-    const treeData = await prisma.tree.findUnique({
-        where: { id }
-    });
+    let treeData;
+    
+    const dev = process.env.NODE_ENV !== 'production';
+    
+    if (dev) {
+        treeData = MOCK_TREES.find(t => t.id === id);
+    } else {
+        try {
+            treeData = await prisma.tree.findUnique({
+                where: { id }
+            });
+        } catch (error) {
+            console.error('Database connection failed, checking mock data:', error);
+        }
+    }
+
+    // Fallback to mock data if DB fails or returns null
+    if (!treeData) {
+        const mockTree = MOCK_TREES.find(t => t.id === id);
+        if (mockTree) {
+            treeData = mockTree;
+        }
+    }
 
     if (!treeData) {
         notFound();
@@ -20,7 +43,7 @@ export default async function TreePage({ params }: { params: Promise<{ id: strin
     try {
         images = JSON.parse(treeData.images);
     } catch {
-        images = ['/placeholder-tree.jpg'];
+        images = ['/placeholder-tree.svg'];
     }
 
     // Tags are stored as comma-separated string

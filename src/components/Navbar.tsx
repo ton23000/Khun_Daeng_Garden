@@ -279,7 +279,7 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
                                 </span>
                                 {showAbout && (
                                     <div className={styles.dropdownMenu}>
-                                        <Link href="/about" className={styles.dropdownLink}>เรื่องราวของเรา</Link>
+                                        <Link href="/about" className={styles.dropdownLink}>เกี่ยวกับเรา</Link>
                                         <Link href="/services" className={styles.dropdownLink}>บริการ</Link>
                                         <Link href="/articles" className={styles.dropdownLink}>บทความน่ารู้</Link>
                                         <Link href="/customer-service" className={styles.dropdownLink}>บริการลูกค้า</Link>

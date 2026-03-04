@@ -130,7 +130,7 @@ export default function CartPage() {
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                 <div style={{ width: '80px', height: '80px', backgroundColor: '#f9fafb', borderRadius: '0.375rem', flexShrink: 0, padding: '0.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e5e7eb' }}>
                                     <img
-                                        src={item.images?.[0] || '/placeholder-tree.jpg'}
+                                        src={item.images?.[0] || '/placeholder-tree.svg'}
                                         alt={item.name}
                                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                                     />

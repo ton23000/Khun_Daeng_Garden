@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { MOCK_TREES } from '@/lib/mock-data';
 
 const treeSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -18,6 +19,21 @@ const treeSchema = z.object({
 });
 
 export async function GET() {
+    const dev = process.env.NODE_ENV !== 'production';
+    
+    if (dev) {
+        // Parse mock data string images to arrays and match format
+        const formattedTrees = MOCK_TREES.map(tree => ({
+            ...tree,
+            images: JSON.parse(tree.images),
+            tags: tree.tags.split(',').filter(t => t),
+            stock: tree.stock || 0,
+            reserved: tree.reserved || 0,
+            sold: tree.sold || 0
+        }));
+        return NextResponse.json(formattedTrees);
+    }
+
     try {
         const trees = await prisma.tree.findMany({
             orderBy: { createdAt: 'desc' }
@@ -44,6 +60,20 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
         const validated = treeSchema.parse(body);
+        
+        const dev = process.env.NODE_ENV !== 'production';
+        if (dev) {
+            return NextResponse.json({ 
+                id: 'mock-' + Date.now(),
+                ...validated,
+                status: 'AVAILABLE',
+                images: JSON.stringify(validated.images),
+                tags: validated.tags.join(','),
+                growthTime: validated.growthTime || '1-2 อาทิตย์',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+        }
 
         const tree = await prisma.tree.create({
             data: {

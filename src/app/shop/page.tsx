@@ -7,6 +7,7 @@ import AdvancedFilters, { FilterState } from '@/components/AdvancedFilters';
 import FavoriteButton from '@/components/FavoriteButton';
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { MOCK_TREES } from '@/lib/mock-data';
 
 interface Tree {
     id: string;
@@ -71,31 +72,43 @@ function ShopContent() {
             if (res.ok) {
                 const data = await res.json();
                 setTrees(data);
-                // Initial filter will be handled by the effect above
-
-                // Extract unique categories
-                const uniqueCategories = Array.from(new Set(data.flatMap((t: Tree) => t.category ? t.category.split(',').filter(Boolean) : []))).sort() as string[];
-                setCategories(uniqueCategories);
-
-                // Extract all tags
-                const tagsSet = new Set<string>();
-                data.forEach((t: Tree) => {
-                    if (t.tags) {
-                        // Handle both string and array types
-                        const treeTags = Array.isArray(t.tags)
-                            ? t.tags
-                            : t.tags.split(',').map(tag => tag.trim()).filter(Boolean);
-                        treeTags.forEach(tag => tagsSet.add(tag));
-                    }
-                });
-                setAllTags(Array.from(tagsSet));
+                processTreeData(data);
+            } else {
+                throw new Error('API response not ok');
             }
         } catch (error) {
-            console.error('Failed to fetch trees:', error);
-            setIsLoading(false); // Stop loading on error
+            console.error('Failed to fetch trees, using mock data:', error);
+            // Fallback to mock data
+            const mockData = MOCK_TREES.map(t => ({
+                ...t,
+                // Ensure tags is string[] or string as per interface
+                tags: t.tags ? t.tags.split(',') : []
+            })) as unknown as Tree[];
+            
+            setTrees(mockData);
+            processTreeData(mockData);
         } finally {
             // Loading state will be managed after filtering
         }
+    };
+
+    const processTreeData = (data: Tree[]) => {
+         // Extract unique categories
+         const uniqueCategories = Array.from(new Set(data.flatMap((t: Tree) => t.category ? t.category.split(',').filter(Boolean) : []))).sort() as string[];
+         setCategories(uniqueCategories);
+
+         // Extract all tags
+         const tagsSet = new Set<string>();
+         data.forEach((t: Tree) => {
+             if (t.tags) {
+                 // Handle both string and array types
+                 const treeTags = Array.isArray(t.tags)
+                     ? t.tags
+                     : t.tags.split(',').map(tag => tag.trim()).filter(Boolean);
+                 treeTags.forEach(tag => tagsSet.add(tag));
+             }
+         });
+         setAllTags(Array.from(tagsSet));
     };
 
     const handleFilterChange = (filters: FilterState) => {
@@ -171,7 +184,7 @@ function ShopContent() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
                 {filteredTrees.map((tree, index) => {
                     // Get first image from array
-                    let imageUrl = '/placeholder-tree.jpg';
+                    let imageUrl = '/placeholder-tree.svg';
                     if (tree.images && Array.isArray(tree.images) && tree.images.length > 0) {
                         imageUrl = tree.images[0];
                     } else if (typeof tree.images === 'string') {
@@ -227,7 +240,7 @@ function ShopContent() {
                                             }}>
                                                 สินค้าหมด
                                             </div>
-                                        ) : ((tree.stock - tree.reserved > 0 && tree.stock - tree.reserved < 10)) && (
+                                        ) : ((tree.stock - tree.reserved > 0 && tree.stock - tree.reserved <= 3)) && (
                                             <div style={{
                                                 position: 'absolute',
                                                 top: '10px',

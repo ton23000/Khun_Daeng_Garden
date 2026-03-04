@@ -11,6 +11,8 @@ const getJwtSecretKey = () => {
 export async function GET(req: NextRequest) {
     try {
         let userId: string | null = null;
+        let userRole: string | null = null;
+        let mockPayload: any = null;
 
         // Try getting token from cookies
         const token = req.cookies.get('khun_daeng_token')?.value;
@@ -18,6 +20,8 @@ export async function GET(req: NextRequest) {
             try {
                 const verified = await jwtVerify(token, getJwtSecretKey());
                 userId = verified.payload.id as string;
+                userRole = verified.payload.role as string;
+                mockPayload = verified.payload;
             } catch (err) {
                 console.warn('JWT verification failed in auth/me:', err);
             }
@@ -31,6 +35,23 @@ export async function GET(req: NextRequest) {
 
         if (!userId) {
             return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+        }
+
+        const dev = process.env.NODE_ENV !== 'production';
+
+        if (dev && (userId === 'mock-user-id' || userId === 'admin')) {
+            // Return mock user if in dev mode and it's our mock user or admin
+            return NextResponse.json({ 
+                user: {
+                    id: userId,
+                    firstName: mockPayload?.firstName || 'Dev',
+                    lastName: mockPayload?.lastName || 'User',
+                    phone: mockPayload?.phone || '0000000000',
+                    email: mockPayload?.email || 'dev@example.com',
+                    role: userRole || 'user',
+                    verified: true
+                } 
+            });
         }
 
         const user = await prisma.user.findUnique({

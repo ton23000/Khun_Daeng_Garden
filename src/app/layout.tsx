@@ -40,14 +40,25 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const topBarSetting = await prisma.siteSetting.findUnique({
-    where: { key: 'top_bar_text' }
-  });
-  const topBarBgSetting = await prisma.siteSetting.findUnique({
-    where: { key: 'top_bar_bgColor' }
-  });
-  const topBarText = topBarSetting?.value || 'ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท';
-  const topBarBgColor = topBarBgSetting?.value || '';
+  let topBarText = 'ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท';
+  let topBarBgColor = '';
+  
+  const dev = process.env.NODE_ENV !== 'production';
+
+  if (!dev) {
+    try {
+      const topBarSetting = await prisma.siteSetting.findUnique({
+        where: { key: 'top_bar_text' }
+      });
+      const topBarBgSetting = await prisma.siteSetting.findUnique({
+        where: { key: 'top_bar_bgColor' }
+      });
+      topBarText = topBarSetting?.value || topBarText;
+      topBarBgColor = topBarBgSetting?.value || '';
+    } catch {
+      // Fallback to defaults if DB is unavailable (e.g. during build)
+    }
+  }
 
   return (
     <html lang="en" suppressHydrationWarning>

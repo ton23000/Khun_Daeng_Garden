@@ -2,35 +2,53 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import CountdownTimer from '@/components/CountdownTimer';
 import InlineEdit from '@/components/InlineEdit';
+import { MOCK_TREES, MOCK_SITE_SETTINGS } from '@/lib/mock-data';
 
 export const dynamic = 'force-dynamic';
 
 export default async function PromotionPage() {
-    // Fetch trees marked as promotions
-    const promotionTrees = await prisma.tree.findMany({
-        where: {
-            isPromotion: true,
-            // Only show active promotions (not expired)
-            OR: [
-                { promotionEndDate: null },
-                { promotionEndDate: { gte: new Date() } },
-            ],
-        },
-        orderBy: { updatedAt: 'desc' },
-    });
+    let promotionTrees, settingsMap;
+
+    const dev = process.env.NODE_ENV !== 'production';
+
+    if (dev) {
+        promotionTrees = MOCK_TREES.filter(t => t.isPromotion);
+        settingsMap = MOCK_SITE_SETTINGS as unknown as Record<string, string>;
+    } else {
+        try {
+            // Fetch trees marked as promotions
+            promotionTrees = await prisma.tree.findMany({
+                where: {
+                    isPromotion: true,
+                    // Only show active promotions (not expired)
+                    OR: [
+                        { promotionEndDate: null },
+                        { promotionEndDate: { gte: new Date() } },
+                    ],
+                },
+                orderBy: { updatedAt: 'desc' },
+            });
+
+            // Fetch Site Settings
+            const settings = await prisma.siteSetting.findMany();
+            settingsMap = settings.reduce((acc: Record<string, string>, curr: { key: string, value: string }) => {
+                acc[curr.key] = curr.value;
+                return acc;
+            }, {}) as Record<string, string>;
+
+        } catch (error) {
+            console.error('Database connection failed, using mock data:', error);
+            // Use Mock Data
+            promotionTrees = MOCK_TREES.filter(t => t.isPromotion);
+            settingsMap = MOCK_SITE_SETTINGS as unknown as Record<string, string>;
+        }
+    }
 
     // Find the nearest end date for countdown
     const nearestEndDate = promotionTrees
         .filter(t => t.promotionEndDate)
         .sort((a, b) => new Date(a.promotionEndDate!).getTime() - new Date(b.promotionEndDate!).getTime())
     [0]?.promotionEndDate;
-
-    // Fetch Site Settings
-    const settings = await prisma.siteSetting.findMany();
-    const settingsMap = settings.reduce((acc: Record<string, string>, curr: { key: string, value: string }) => {
-        acc[curr.key] = curr.value;
-        return acc;
-    }, {});
 
     const promotionTitle = settingsMap['promotion_title'] || '🔥 โปรโมชั่นพิเศษ';
     const promotionSubtitle = settingsMap['promotion_subtitle'] || 'ส่วนลดพิเศษ! ราคาดีที่สุดสำหรับต้นไม้คุณภาพ';
@@ -113,7 +131,7 @@ export default async function PromotionPage() {
                     {promotionTrees.map(tree => {
                         let images: string[] = [];
                         try { images = JSON.parse(tree.images); } catch { }
-                        const mainImage = images[0] || '/placeholder-tree.jpg';
+                        const mainImage = images[0] || '/placeholder-tree.svg';
                         const discount = tree.originalPrice
                             ? Math.round(((tree.originalPrice - tree.price) / tree.originalPrice) * 100)
                             : 0;
