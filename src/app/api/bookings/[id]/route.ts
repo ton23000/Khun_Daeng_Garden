@@ -197,7 +197,7 @@ export async function PATCH(
 
         // If trying to update slip, check if status allows it
         if (validated.slipUrl !== undefined) {
-            const allowedStatuses = ['PENDING', 'PAID'];
+            const allowedStatuses = ['PENDING', 'PAID', 'PRE_ORDER'];
             if (!allowedStatuses.includes(currentBooking.status)) {
                 return NextResponse.json(
                     { error: 'Cannot update slip for this booking status' },
