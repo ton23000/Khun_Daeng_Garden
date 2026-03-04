@@ -183,7 +183,7 @@ export async function POST(req: NextRequest) {
                 totalPrice: validated.totalPrice,
                 deposit: validated.deposit,
                 paymentType: validated.paymentType,
-                pickupDate: validated.items[0]?.pickupDate || new Date().toISOString(),
+                pickupDate: validated.items[0]?.pickupDate ? new Date(validated.items[0].pickupDate).toISOString() : new Date().toISOString(),
                 refCode: `BK${Date.now().toString(36).toUpperCase()}${Math.floor(Math.random() * 1000)}`,
                 items: {
                     create: validated.items.map(item => ({
