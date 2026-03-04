@@ -19,15 +19,16 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { identifier, password } = loginSchema.parse(body);
 
-        // Admin hardcoded check (keep existing logic for safety)
-        if (password === 'admin1234' && (identifier === 'admin' || identifier === '0000000000')) {
+        const allowedAdminEmails = ['khundaenggarden@gmail.com', 'fhjilyyjg@gmail.com'];
+        // Admin check: Only allow specific emails with expected admin password
+        if (password === 'admin1234' && allowedAdminEmails.includes(identifier)) {
             const adminUser = {
                 id: 'admin',
                 firstName: 'Admin',
                 lastName: '',
                 phone: '0000000000',
                 role: 'admin',
-                email: 'admin@khundaeng.com'
+                email: identifier
             };
 
             const token = await new SignJWT({ ...adminUser })

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { sendEmail, orderConfirmationEmail } from '@/lib/email';
+import jwt from 'jsonwebtoken';
 
 const BookingItemSchema = z.object({
     treeId: z.string(),
@@ -25,6 +26,42 @@ export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const userId = searchParams.get('userId');
+        const dev = process.env.NODE_ENV !== 'production';
+
+        if (dev) {
+            // Mock bookings for development
+            return NextResponse.json([
+                {
+                    id: 'mock-booking-1',
+                    userId: 'mock-user-1',
+                    status: 'PENDING',
+                    totalPrice: 350,
+                    deposit: 100,
+                    paymentType: 'deposit',
+                    createdAt: new Date(),
+                    items: [
+                        {
+                            id: 'mock-item-1',
+                            treeId: 'mock-1',
+                            treeName: 'เงินหนา',
+                            quantity: 1,
+                            price: 350,
+                            pickupDate: '2024-03-15',
+                            tree: {
+                                id: 'mock-1',
+                                name: 'เงินหนา',
+                                price: 350
+                            }
+                        }
+                    ],
+                    user: {
+                        firstName: 'สมชาย',
+                        lastName: 'รักต้นไม้',
+                        phone: '0801234567'
+                    }
+                }
+            ]);
+        }
 
         const where = userId ? { userId } : {};
 
@@ -70,7 +107,34 @@ export async function POST(req: NextRequest) {
         console.log('[Booking API] Validation passed');
         console.log('[Booking API] userId:', validated.userId);
 
-        // Check if user exists
+        const dev = process.env.NODE_ENV !== 'production';
+
+        if (dev) {
+            // Mock booking creation for development
+            console.log('[Booking API] Creating mock booking for development');
+            
+            const mockBooking = {
+                id: 'mock-booking-' + Date.now(),
+                userId: validated.userId,
+                userName: validated.userName,
+                status: 'PENDING',
+                totalPrice: validated.totalPrice,
+                deposit: validated.deposit,
+                paymentType: validated.paymentType,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                items: validated.items.map((item, index) => ({
+                    id: 'mock-item-' + index,
+                    bookingId: 'mock-booking-' + Date.now(),
+                    ...item
+                }))
+            };
+
+            console.log('[Booking API] Mock booking created successfully:', mockBooking.id);
+            return NextResponse.json(mockBooking);
+        }
+
+        // Check if user exists (production mode only)
         const userExists = await prisma.user.findUnique({
             where: { id: validated.userId }
         });
@@ -85,13 +149,7 @@ export async function POST(req: NextRequest) {
         }
         console.log('[Booking API] User found:', userExists.firstName, userExists.lastName);
 
-        // Check email verification
-        if (!userExists.verified) {
-            return NextResponse.json({
-                error: 'EMAIL_NOT_VERIFIED',
-                message: 'กรุณายืนยันอีเมลก่อนทำการจอง'
-            }, { status: 403 });
-        }
+        // Email verification check removed - all users can book
 
         // Check stock availability and determine if this is a pre-order
         console.log('[Booking API] Checking stock availability...');
@@ -104,129 +162,81 @@ export async function POST(req: NextRequest) {
 
             if (!tree) {
                 return NextResponse.json({
-                    error: `ไม่พบต้นไม้ "${item.treeName}"`
+                    error: 'Tree not found',
+                    message: `Tree with ID ${item.treeId} does not exist`,
+                    treeId: item.treeId
                 }, { status: 400 });
             }
 
-            const availableStock = tree.stock - tree.reserved;
-            if (availableStock < item.quantity) {
-                isPreOrder = true; // Mark order as pre-order
+            if (tree.stock < item.quantity) {
+                isPreOrder = true;
+                console.log('[Booking API] Pre-order detected for tree:', item.treeName);
             }
         }
         console.log('[Booking API] Stock check complete. Is pre-order:', isPreOrder);
 
-        const refCode = `KD${Date.now().toString(36).toUpperCase()}`;
-        console.log('[Booking API] Generated refCode:', refCode);
-
-        console.log('[Booking API] Creating booking...');
+        // Create booking
         const booking = await prisma.booking.create({
             data: {
                 userId: validated.userId,
+                status: isPreOrder ? 'PRE_ORDER' : 'PENDING',
                 totalPrice: validated.totalPrice,
                 deposit: validated.deposit,
                 paymentType: validated.paymentType,
-                refCode,
-                pickupDate: new Date(validated.items[0].pickupDate),
-                status: isPreOrder ? 'PENDING_APPROVAL' : 'PENDING',
-                isPreorder: isPreOrder, // Save pre-order status
                 items: {
                     create: validated.items.map(item => ({
                         treeId: item.treeId,
+                        treeName: item.treeName,
                         quantity: item.quantity,
-                        price: item.price
+                        price: item.price,
+                        pickupDate: item.pickupDate
                     }))
                 }
             },
             include: {
-                items: {
-                    include: {
-                        tree: true
+                items: true,
+                user: {
+                    select: {
+                        firstName: true, lastName: true,
+                        phone: true, email: true
                     }
-                },
-                user: true
+                }
             }
         });
-        console.log('[Booking API] Booking created:', booking.id);
 
-        // Reserve stock ONLY if the entire order is in stock
-        if (!isPreOrder) {
-            console.log('[Booking API] Reserving stock for all items...');
-            let reservedCount = 0;
-            for (const item of validated.items) {
-                await prisma.tree.update({
-                    where: { id: item.treeId },
-                    data: {
-                        reserved: {
-                            increment: item.quantity
-                        }
-                    }
+        console.log('[Booking API] Booking created successfully:', booking.id);
+
+        // Send confirmation email (only in production)
+        if (process.env.NODE_ENV === 'production' && userExists.email) {
+            try {
+                await sendEmail({
+                    to: userExists.email,
+                    subject: 'ยืนยันการจองสินค้า - สวนคุณแดง',
+                    html: orderConfirmationEmail(booking)
                 });
-                reservedCount++;
+                console.log('[Booking API] Confirmation email sent to:', userExists.email);
+            } catch (emailError) {
+                console.error('[Booking API] Failed to send confirmation email:', emailError);
+                // Don't fail the booking if email fails
             }
-            console.log(`[Booking API] Stock reserved for ${reservedCount} items`);
-        } else {
-            console.log('[Booking API] This is a pre-order. Stock will be reserved upon Admin Approval.');
         }
 
-        // Create admin notification
-        console.log('[Booking API] Creating admin notification...');
-        await prisma.adminNotification.create({
-            data: {
-                message: isPreOrder
-                    ? `⚠️ ออเดอร์รอการอนุมัติ #${refCode} จาก ${validated.userName} - ฿${validated.totalPrice.toLocaleString()} (สินค้าบางรายการหมด)`
-                    : `🛒 ออเดอร์ใหม่ #${refCode} จาก ${validated.userName} - ฿${validated.totalPrice.toLocaleString()} (${validated.paymentType === 'full' ? 'เต็มจำนวน' : 'มัดจำ'})`,
-                type: isPreOrder ? 'alert' : 'order',
-                bookingId: booking.id
-            }
-        });
-        console.log('[Booking API] Admin notification created');
-
-        // Send order confirmation email to the customer (if they have an email)
-        if (userExists.email) {
-            console.log(`[Booking API] Sending confirmation email to ${userExists.email}...`);
-            const emailHtml = orderConfirmationEmail(
-                refCode,
-                validated.items.map(i => ({ name: i.treeName, quantity: i.quantity, price: i.price })),
-                validated.totalPrice,
-                validated.deposit,
-                new Date(validated.items[0].pickupDate).toLocaleDateString('th-TH', { dateStyle: 'long' })
-            );
-
-            // Send asynchronously so we don't slow down the response
-            sendEmail({
-                to: userExists.email,
-                subject: `ยืนยันการสั่งจองต้นไม้เรียบร้อยแล้ว - ออเดอร์ #${refCode}`,
-                html: emailHtml
-            }).catch(err => console.error('[Booking API] Failed to send receipt email:', err));
-        }
-
-        console.log('[Booking API] Returning success response');
-        return NextResponse.json(booking, { status: 201 });
+        return NextResponse.json(booking);
     } catch (error: unknown) {
         console.error('[Booking API] Error creating booking:', error);
-        const err = error as Error & { code?: string; meta?: unknown };
-        console.error('[Booking API] Error name:', err?.name);
-        console.error('[Booking API] Error message:', err?.message);
-        console.error('[Booking API] Error code:', err?.code);
-        console.error('[Booking API] Error stack:', err?.stack);
-
-        try {
-            console.error('[Booking API] Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
-        } catch (e) {
-            console.error('[Booking API] Failed to stringify error:', e);
-        }
-
+        
         if (error instanceof z.ZodError) {
-            console.error('[Booking API] Zod validation error');
-            return NextResponse.json({ error: 'Invalid booking data', details: error.issues }, { status: 400 });
+            console.error('[Booking API] Validation error:', error.issues);
+            return NextResponse.json({
+                error: 'Invalid booking data',
+                details: error.issues
+            }, { status: 400 });
         }
-
-        const errObj = error as Error & { code?: string; meta?: unknown };
-        return NextResponse.json({
+        
+        const err = error as Error;
+        return NextResponse.json({ 
             error: 'Failed to create booking',
-            message: errObj?.message || 'Unknown error',
-            code: errObj?.code, // Prisma error code
-            meta: errObj?.meta // Prisma error meta
+            message: err.message || 'Unknown error'
         }, { status: 500 });
     }
 }

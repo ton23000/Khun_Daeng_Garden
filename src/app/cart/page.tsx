@@ -44,12 +44,7 @@ export default function CartPage() {
             return;
         }
 
-        // Check email verification
-        if (!user.verified) {
-            alert('กรุณายืนยันอีเมลก่อนทำการจอง\nตรวจสอบกล่องจดหมายของคุณ หรือไปที่หน้ายืนยันอีเมล');
-            router.push('/verify-email');
-            return;
-        }
+
 
         console.log('[Cart] Creating booking for user:', user.id, user.firstName, user.lastName);
 
@@ -125,14 +120,7 @@ export default function CartPage() {
                 </div>
             )}
 
-            {user && !user.verified && (
-                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', padding: '1rem', borderRadius: '0.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <span>📧 กรุณายืนยันอีเมลก่อนทำการจอง</span>
-                    <Link href="/verify-email" style={{ backgroundColor: '#dc2626', color: 'white', padding: '0.375rem 1rem', borderRadius: '0.375rem', fontWeight: 'bold', textDecoration: 'none', fontSize: '0.875rem' }}>
-                        ยืนยันอีเมล
-                    </Link>
-                </div>
-            )}
+
 
             <div className="grid-cart">
                 {/* Item List */}

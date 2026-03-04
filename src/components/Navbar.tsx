@@ -25,24 +25,7 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-    const [resending, setResending] = useState(false);
 
-    const handleResendVerification = async () => {
-        setResending(true);
-        try {
-            const res = await fetch('/api/auth/verify', { method: 'POST' });
-            const data = await res.json();
-            if (res.ok) {
-                alert('ส่งอีเมลยืนยันใหม่แล้ว! กรุณาตรวจสอบอีเมลของคุณ');
-            } else {
-                alert(data.error || 'ไม่สามารถส่งอีเมลได้');
-            }
-        } catch {
-            alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
-        } finally {
-            setResending(false);
-        }
-    };
 
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -58,19 +41,7 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
     return (
         <>
             <header className={`${styles.header} glass`}>
-                {/* Verification Banner */}
-                {user && user.role !== 'admin' && user.verified === false && (
-                    <div className={styles.verificationBanner}>
-                        <span>📧 กรุณายืนยันอีเมลของคุณเพื่อใช้งานได้เต็มรูปแบบ</span>
-                        <button
-                            onClick={handleResendVerification}
-                            disabled={resending}
-                            className={styles.verifyButton}
-                        >
-                            {resending ? 'กำลังส่ง...' : 'ส่งอีเมลยืนยันอีกครั้ง'}
-                        </button>
-                    </div>
-                )}
+
 
                 {/* 1. Top Bar */}
                 <div className={`${styles.topBar} hidden-mobile`}>
@@ -325,9 +296,14 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
 
                         {/* Social Icons & Admin */}
                         <div className={styles.socialAdmin}>
-                            {(user?.role === 'admin' || user?.role === 'staff') && (
-                                <Link href="/admin/orders" style={{ textDecoration: 'none' }}>
+                            {user?.role === 'admin' && (
+                                <Link href="/admin" style={{ textDecoration: 'none' }}>
                                     <span style={{ backgroundColor: '#166534', color: 'white', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600 }}>Admin Panel</span>
+                                </Link>
+                            )}
+                            {user?.role === 'staff' && (
+                                <Link href="/staff/orders" style={{ textDecoration: 'none' }}>
+                                    <span style={{ backgroundColor: '#1d4ed8', color: 'white', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600 }}>Staff Panel</span>
                                 </Link>
                             )}
                             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }} title="Facebook">

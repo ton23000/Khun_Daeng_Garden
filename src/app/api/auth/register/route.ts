@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { randomUUID } from 'crypto';
-import { sendVerificationEmail } from '@/lib/email';
 
 const registerSchema = z.object({
     firstName: z.string().min(1, 'First name is required'),
@@ -35,9 +33,6 @@ export async function POST(request: Request) {
             );
         }
 
-        // Generate verification token
-        const verificationToken = randomUUID();
-
         // Hash the password before saving to the database
         const bcrypt = await import('bcryptjs');
         const hashedPassword = await bcrypt.hash(validated.password, 10);
@@ -50,23 +45,9 @@ export async function POST(request: Request) {
                 email: validated.email || null,
                 password: hashedPassword,
                 role: 'USER',
-                verified: false,
-                verificationToken
+                verified: true
             }
         });
-
-        // Send verification email if email is provided
-        if (validated.email) {
-            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-            const verifyLink = `${baseUrl}/verify-email?token=${verificationToken}`;
-
-            // Send asynchronously - don't block registration
-            sendVerificationEmail({
-                email: validated.email,
-                verifyLink,
-                userName: `${validated.firstName} ${validated.lastName}`
-            }).catch(err => console.error('Failed to send verification email:', err));
-        }
 
         return NextResponse.json({
             success: true,
@@ -79,9 +60,7 @@ export async function POST(request: Request) {
                 role: user.role,
                 verified: user.verified
             },
-            message: validated.email
-                ? 'สมัครสมาชิกสำเร็จ! กรุณาตรวจสอบอีเมลเพื่อยืนยันบัญชี'
-                : 'สมัครสมาชิกสำเร็จ!'
+            message: 'สมัครสมาชิกสำเร็จ!'
         });
 
     } catch (error) {

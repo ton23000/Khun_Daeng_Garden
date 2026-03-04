@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/Button';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
+    const router = useRouter();
     const { user, isLoading } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -33,6 +34,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     if (isLoading) {
         return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    }
+
+    // Redirect staff to their dedicated panel
+    if (user && user.role === 'staff' && pathname !== '/admin/login') {
+        router.push('/staff/orders');
+        return null;
     }
 
     return (
