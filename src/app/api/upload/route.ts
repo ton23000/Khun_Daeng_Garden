@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+export const maxDuration = 60; // Set timeout for API
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
     try {
         const data = await request.formData();
