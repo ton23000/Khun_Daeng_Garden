@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
         if (dev) {
             // Mock booking creation for development
             console.log('[Booking API] Creating mock booking for development');
-            
+
             const mockBooking = {
                 id: 'mock-booking-' + Date.now(),
                 userId: validated.userId,
@@ -183,13 +183,13 @@ export async function POST(req: NextRequest) {
                 totalPrice: validated.totalPrice,
                 deposit: validated.deposit,
                 paymentType: validated.paymentType,
+                pickupDate: validated.items[0]?.pickupDate || new Date().toISOString(),
+                refCode: `BK${Date.now().toString(36).toUpperCase()}${Math.floor(Math.random() * 1000)}`,
                 items: {
                     create: validated.items.map(item => ({
                         treeId: item.treeId,
-                        treeName: item.treeName,
                         quantity: item.quantity,
-                        price: item.price,
-                        pickupDate: item.pickupDate
+                        price: item.price
                     }))
                 }
             },
@@ -224,7 +224,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(booking);
     } catch (error: unknown) {
         console.error('[Booking API] Error creating booking:', error);
-        
+
         if (error instanceof z.ZodError) {
             console.error('[Booking API] Validation error:', error.issues);
             return NextResponse.json({
@@ -232,9 +232,9 @@ export async function POST(req: NextRequest) {
                 details: error.issues
             }, { status: 400 });
         }
-        
+
         const err = error as Error;
-        return NextResponse.json({ 
+        return NextResponse.json({
             error: 'Failed to create booking',
             message: err.message || 'Unknown error'
         }, { status: 500 });
