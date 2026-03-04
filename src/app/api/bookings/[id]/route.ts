@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
+export const maxDuration = 60; // Set timeout for API
+export const dynamic = 'force-dynamic';
+
 const UpdateBookingSchema = z.object({
     status: z.string().optional(),
     pickupDate: z.string().optional(),
