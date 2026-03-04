@@ -31,8 +31,8 @@ export default async function proxy(request: NextRequest) {
             const verified = await jwtVerify(token, getJwtSecretKey());
             const userRole = verified.payload.role as string;
 
-            if (userRole !== 'admin') {
-                // Token valid but not an admin
+            if (userRole !== 'admin' && userRole !== 'staff') {
+                // Token valid but not an admin or staff
                 if (isAdminApi) {
                     return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
                 }
