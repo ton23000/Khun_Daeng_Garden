@@ -36,10 +36,20 @@ export default function LoginPage() {
 
         const success = await login(identifier, password);
         if (success) {
-            router.push('/');
+            // Read role from localStorage to redirect appropriately
+            const stored = localStorage.getItem('khun_daeng_user');
+            const userData = stored ? JSON.parse(stored) : {};
+            if (userData.role === 'admin') {
+                router.push('/admin');
+            } else if (userData.role === 'staff') {
+                router.push('/staff/orders');
+            } else {
+                router.push('/');
+            }
         } else {
             setError('ข้อมูลเข้าสู่ระบบไม่ถูกต้อง');
         }
+
     };
 
     return (
