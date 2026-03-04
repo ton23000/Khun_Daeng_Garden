@@ -1,7 +1,4 @@
-
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 
 export async function POST(request: Request) {
     try {
@@ -14,32 +11,16 @@ export async function POST(request: Request) {
 
         const uploadedUrls: string[] = [];
 
-        // Ensure uploads directory exists
-        const uploadDir = join(process.cwd(), 'public', 'uploads');
-        try {
-            await mkdir(uploadDir, { recursive: true });
-        } catch {
-            // Ignore if exists
-        }
-
         for (const file of files) {
             const bytes = await file.arrayBuffer();
             const buffer = Buffer.from(bytes);
 
-            // Create unique filename
-            const timestamp = Date.now();
-            // Add a random suffix to avoid collisions with same-time uploads
-            const randomSuffix = Math.round(Math.random() * 1000);
-            const cleanName = file.name.replace(/\s+/g, '-').toLowerCase();
-            const filename = `${timestamp}-${randomSuffix}-${cleanName}`;
+            // Convert to base64 data URI
+            const base64Data = buffer.toString('base64');
+            const mimeType = file.type || 'image/jpeg';
+            const dataUri = `data:${mimeType};base64,${base64Data}`;
 
-            const path = join(uploadDir, filename);
-
-            await writeFile(path, buffer);
-            console.log(`Saved file to ${path}`);
-
-            // Return direct path to public folder
-            uploadedUrls.push(`/uploads/${filename}`);
+            uploadedUrls.push(dataUri);
         }
 
         return NextResponse.json({ urls: uploadedUrls });
