@@ -1,3 +1,0 @@
-module.exports=[59587,a=>{"use strict";var b=a.i(87924),c=a.i(50944),d=a.i(72131);function e(){let a=(0,c.useRouter)();return(0,d.useEffect)(()=>{a.push("/admin/orders")},[a]),(0,b.jsx)("div",{style:{display:"flex",justifyContent:"center",alignItems:"center",minHeight:"50vh"},children:(0,b.jsx)("p",{children:"กำลังโหลด..."})})}a.s(["default",()=>e])}];
-
-//# sourceMappingURL=src_app_admin_orders_%5Bstatus%5D_page_tsx_a582bed3._.js.map
