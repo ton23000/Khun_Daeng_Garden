@@ -353,16 +353,16 @@ export default function StaffOrdersPage() {
                     <Card style={{ minWidth: '800px', border: '1px solid #e5e7eb' }}>
                         <CardContent style={{ padding: 0 }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                                <thead style={{ backgroundColor: '#eff6ff', borderBottom: '2px solid #bfdbfe' }}>
+                                <thead style={{ backgroundColor: '#eff6ff', borderBottom: '2px solid #bfdbfe', whiteSpace: 'nowrap' }}>
                                     <tr>
-                                        <th style={{ padding: '1rem' }}>รหัส</th>
-                                        <SortableTableHeader label="ลูกค้า" sortKey="customer" currentSort={sortConfig} onSort={handleSort} />
-                                        <th style={{ padding: '1rem' }}>รายการ</th>
-                                        <SortableTableHeader label="ยอดรวม" sortKey="price" currentSort={sortConfig} onSort={handleSort} />
-                                        <th style={{ padding: '1rem' }}>สลิป</th>
-                                        <SortableTableHeader label="วันรับของ" sortKey="date" currentSort={sortConfig} onSort={handleSort} />
-                                        <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} />
-                                        <th style={{ padding: '1rem' }}>จัดการ</th>
+                                        <th style={{ padding: '1rem', width: '15%' }}>รหัส</th>
+                                        <SortableTableHeader label="ลูกค้า" sortKey="customer" currentSort={sortConfig} onSort={handleSort} style={{ width: '15%' }} />
+                                        <th style={{ padding: '1rem', width: '25%' }}>รายการ</th>
+                                        <SortableTableHeader label="ยอดรวม" sortKey="price" currentSort={sortConfig} onSort={handleSort} style={{ width: '10%' }} />
+                                        <th style={{ padding: '1rem', width: '10%' }}>สลิป</th>
+                                        <SortableTableHeader label="วันรับของ" sortKey="date" currentSort={sortConfig} onSort={handleSort} style={{ width: '10%' }} />
+                                        <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} style={{ width: '15%' }} />
+                                        <th style={{ padding: '1rem', width: '15%' }}>จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
