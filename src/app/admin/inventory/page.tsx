@@ -11,7 +11,9 @@ interface Tree {
     name: string;
     price: number;
     stock: number;
-    reserved: number;
+    reserved: number;        // total (activeReserved + preorderReserved)
+    activeReserved: number;  // จอง (มีของ)
+    preorderReserved: number; // ค้างส่ง / สั่งล่วงหน้า
     sold: number;
     category: string;
     status: string;
@@ -27,11 +29,11 @@ export default function InventoryPage() {
 
     const fetchTrees = async () => {
         try {
-            const res = await fetch('/api/trees');
+            const res = await fetch('/api/admin/inventory');
             const data = await res.json();
             setTrees(data);
         } catch (error) {
-            console.error('Failed to fetch trees:', error);
+            console.error('Failed to fetch inventory:', error);
         } finally {
             setLoading(false);
         }
@@ -79,7 +81,7 @@ export default function InventoryPage() {
 
     const filteredTrees = trees
         .filter(tree => {
-            const available = Math.max(0, tree.stock - tree.reserved);
+            const available = Math.max(0, tree.stock - tree.activeReserved);
             if (filter === 'low') return available > 0 && available < 5;
             if (filter === 'out') return available === 0;
             return true;
@@ -92,18 +94,18 @@ export default function InventoryPage() {
 
             // Special cases for calculated fields
             if (sortConfig.key === 'available') {
-                aValue = Math.max(0, a.stock - a.reserved);
-                bValue = Math.max(0, b.stock - b.reserved);
+                aValue = Math.max(0, a.stock - a.activeReserved);
+                bValue = Math.max(0, b.stock - b.activeReserved);
             } else if (sortConfig.key === 'reservedInStock') {
-                aValue = Math.min(a.reserved, a.stock);
-                bValue = Math.min(b.reserved, b.stock);
+                aValue = a.activeReserved || 0;
+                bValue = b.activeReserved || 0;
             } else if (sortConfig.key === 'reservedOutStock') {
-                aValue = Math.max(0, a.reserved - a.stock);
-                bValue = Math.max(0, b.reserved - b.stock);
+                aValue = a.preorderReserved || 0;
+                bValue = b.preorderReserved || 0;
             } else if (sortConfig.key === 'status') {
                 // Approximate status sorting by available stock
-                const aAvail = Math.max(0, a.stock - a.reserved);
-                const bAvail = Math.max(0, b.stock - b.reserved);
+                const aAvail = Math.max(0, a.stock - a.activeReserved);
+                const bAvail = Math.max(0, b.stock - b.activeReserved);
                 aValue = aAvail === 0 ? 0 : (aAvail < 5 ? 1 : 2);
                 bValue = bAvail === 0 ? 0 : (bAvail < 5 ? 1 : 2);
             }
@@ -113,15 +115,15 @@ export default function InventoryPage() {
             return 0;
         });
 
-    const totalAvailable = trees.reduce((sum, tree) => sum + Math.max(0, tree.stock - tree.reserved), 0);
-    const totalReservedInStock = trees.reduce((sum, tree) => sum + Math.min(tree.reserved, tree.stock), 0);
-    const totalReservedOutStock = trees.reduce((sum, tree) => sum + Math.max(0, tree.reserved - tree.stock), 0);
+    const totalAvailable = trees.reduce((sum, tree) => sum + Math.max(0, tree.stock - tree.activeReserved), 0);
+    const totalReservedInStock = trees.reduce((sum, tree) => sum + (tree.activeReserved || 0), 0);
+    const totalReservedOutStock = trees.reduce((sum, tree) => sum + (tree.preorderReserved || 0), 0);
     const totalSold = trees.reduce((sum, tree) => sum + tree.sold, 0);
     const lowStockCount = trees.filter(tree => {
-        const available = Math.max(0, tree.stock - tree.reserved);
+        const available = Math.max(0, tree.stock - tree.activeReserved);
         return available > 0 && available < 5;
     }).length;
-    const outOfStockCount = trees.filter(tree => Math.max(0, tree.stock - tree.reserved) === 0).length;
+    const outOfStockCount = trees.filter(tree => Math.max(0, tree.stock - tree.activeReserved) === 0).length;
 
     return (
         <div>
@@ -256,8 +258,8 @@ export default function InventoryPage() {
                                 </thead>
                                 <tbody>
                                     {filteredTrees.map((tree) => {
-                                        const available = Math.max(0, tree.stock - tree.reserved);
-                                        const status = getStockStatus(tree.stock, tree.reserved);
+                                        const available = Math.max(0, tree.stock - tree.activeReserved);
+                                        const status = getStockStatus(tree.stock, tree.activeReserved);
                                         const isEditing = editingId === tree.id;
 
                                         return (
@@ -280,8 +282,8 @@ export default function InventoryPage() {
                                                         <span style={{ fontWeight: 600 }}>{tree.stock}</span>
                                                     )}
                                                 </td>
-                                                <td style={{ padding: '1rem', textAlign: 'center', color: '#f59e0b' }}>{Math.min(tree.reserved, tree.stock)}</td>
-                                                <td style={{ padding: '1rem', textAlign: 'center', color: '#ef4444' }}>{Math.max(0, tree.reserved - tree.stock)}</td>
+                                                <td style={{ padding: '1rem', textAlign: 'center', color: '#f59e0b' }}>{tree.activeReserved || 0}</td>
+                                                <td style={{ padding: '1rem', textAlign: 'center', color: '#ef4444' }}>{tree.preorderReserved || 0}</td>
                                                 <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 600, color: available === 0 ? '#ef4444' : '#22c55e' }}>
                                                     {available}
                                                 </td>
