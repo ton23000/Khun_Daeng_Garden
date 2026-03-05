@@ -144,7 +144,8 @@ export default function MyBookingsPage() {
 
     const getStatusBadge = (status: string) => {
         const colors: Record<string, string> = {
-            PENDING_APPROVAL: '#f97316',
+            PENDING_APPROVAL: '#6b7280',
+            PRE_ORDER: '#6b7280',
             PENDING: '#f59e0b',
             PAID: '#3b82f6',
             PREPARING: '#8b5cf6',
@@ -165,7 +166,8 @@ export default function MyBookingsPage() {
 
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {
-            PENDING_APPROVAL: 'รอการอนุมัติ',
+            PENDING_APPROVAL: 'PRE_ORDER',
+            PRE_ORDER: 'PRE_ORDER',
             PENDING: 'รอชำระเงิน',
             PAID: 'รอตรวจสอบ',
             PREPARING: 'กำลังเตรียมต้นไม้',
@@ -178,6 +180,8 @@ export default function MyBookingsPage() {
 
     const getStatusIcon = (status: string) => {
         const icons: Record<string, string> = {
+            PENDING_APPROVAL: '📦',
+            PRE_ORDER: '📦',
             PENDING: '⏳',
             PAID: '💰',
             PREPARING: '🌱',
@@ -502,7 +506,7 @@ export default function MyBookingsPage() {
                                             )}
 
                                             {/* Cancel Button */}
-                                            {(booking.status === 'PENDING' || booking.status === 'VERIFYING_PAYMENT' || booking.status === 'PAID' || booking.status === 'PAYMENT_ISSUE') && (
+                                            {['PENDING', 'VERIFYING_PAYMENT', 'PAID', 'PAYMENT_ISSUE', 'PENDING_APPROVAL', 'PRE_ORDER'].includes(booking.status) && (
                                                 <div style={{ marginTop: '1rem', textAlign: 'right' }}>
                                                     <Button
                                                         variant="ghost"
