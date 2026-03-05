@@ -1,7 +1,6 @@
 {
-    "python.testing.pytestArgs": [
-        "prisma"
-    ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+  "python.testing.pytestArgs": ["prisma"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "prisma.pinToPrisma6": true
 }
