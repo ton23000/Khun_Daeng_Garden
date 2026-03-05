@@ -59,7 +59,7 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
                             <span>สายด่วน : +66 81 234 5678</span>
                             <Link href="/faq" className={styles.topBarLink}>คำถามที่พบบ่อย</Link>
                             <Link href="/about" className={styles.topBarLink}>เกี่ยวกับเรา</Link>
-                            <Link href="/contact" className={styles.topBarLink}>ติดต่อ</Link>
+                            <Link href="/contact" className={styles.topBarLink}>ติดต่อเรา</Link>
                         </div>
                     </div>
                 </div>
@@ -282,7 +282,6 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
                                         <Link href="/about" className={styles.dropdownLink}>เกี่ยวกับเรา</Link>
                                         <Link href="/services" className={styles.dropdownLink}>บริการ</Link>
                                         <Link href="/articles" className={styles.dropdownLink}>บทความน่ารู้</Link>
-                                        <Link href="/customer-service" className={styles.dropdownLink}>บริการลูกค้า</Link>
                                         <Link href="/faq" className={styles.dropdownLink}>FAQ คำถามที่พบบ่อย</Link>
                                         <Link href="/contact" className={styles.dropdownLink}>ติดต่อเรา</Link>
                                     </div>
