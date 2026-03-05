@@ -75,15 +75,17 @@ export default function BookingSuccessPage() {
 
             {booking.status === 'PENDING_APPROVAL' ? (
                 <div style={{ backgroundColor: '#fef3c7', color: '#92400e', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #fbbf24', textAlign: 'left', marginBottom: '2rem' }}>
-                    <h3 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>⏳ รอการอนุมัติจากแอดมิน</h3>
-                    <p style={{ marginBottom: '0.5rem' }}>
+                    <h3 style={{ fontWeight: 'bold', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span>⏳</span> รอการอนุมัติจากแอดมิน
+                    </h3>
+                    <p style={{ marginBottom: '0.5rem', fontSize: '0.875rem' }}>
                         คำสั่งซื้อของคุณอยู่ในคิวรอการอนุมัติจากทางร้าน เนื่องจากสินค้าบางรายการมีสต็อกไม่เพียงพอในขณะนี้
                     </p>
-                    <p style={{ marginBottom: '0.5rem' }}>
+                    <p style={{ marginBottom: '1rem', fontSize: '0.875rem' }}>
                         ทางร้านจะตรวจสอบและแจ้งกลับให้คุณทราบโดยเร็วที่สุด
                     </p>
-                    <p style={{ fontWeight: 'bold', marginTop: '1rem' }}>
-                        💡 คุณจะสามารถแนบสลิปการโอนเงินได้หลังจากทางร้านอนุมัติคำสั่งซื้อแล้ว
+                    <p style={{ fontWeight: 'bold', fontSize: '0.875rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                        <span>💡</span> คุณจะสามารถแนบสลิปการโอนเงินได้หลังจากทางร้านอนุมัติคำสั่งซื้อแล้ว
                     </p>
                 </div>
             ) : (

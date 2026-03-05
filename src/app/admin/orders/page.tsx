@@ -487,8 +487,10 @@ export default function OrdersPage() {
                                                         if (res.ok) fetchBookings(); else alert('เกิดข้อผิดพลาด');
                                                     } catch { alert('เกิดข้อผิดพลาด'); }
                                                 }}
-                                                style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1 }}
-                                            >✅ อนุมัติ</Button>
+                                                style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1, borderRadius: '4px' }}
+                                            >
+                                                <span style={{ marginRight: '0.25rem' }}>✓</span> อนุมัติ
+                                            </Button>
                                             <Button
                                                 size="sm"
                                                 variant="outline"
@@ -499,8 +501,10 @@ export default function OrdersPage() {
                                                         if (res.ok) fetchBookings(); else alert('เกิดข้อผิดพลาด');
                                                     } catch { alert('เกิดข้อผิดพลาด'); }
                                                 }}
-                                                style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1 }}
-                                            >❌ ปฏิเสธ</Button>
+                                                style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1, borderRadius: '4px' }}
+                                            >
+                                                <span style={{ marginRight: '0.25rem' }}>✕</span> ปฏิเสธ
+                                            </Button>
                                         </div>
                                     ) : (
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -593,14 +597,18 @@ export default function OrdersPage() {
                                                                     const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'approve' }) });
                                                                     if (res.ok) { alert('อนุมัติออเดอร์เรียบร้อย'); fetchBookings(); } else alert('เกิดข้อผิดพลาด');
                                                                 } catch { alert('เกิดข้อผิดพลาด'); }
-                                                            }} style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1 }}>✅ อนุมัติ</Button>
+                                                            }} style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1, borderRadius: '4px' }}>
+                                                                <span style={{ marginRight: '0.25rem' }}>✓</span> อนุมัติ
+                                                            </Button>
                                                             <Button size="sm" variant="outline" onClick={async () => {
                                                                 if (!confirm(`ปฏิเสธออเดอร์ #${booking.refCode}?`)) return;
                                                                 try {
                                                                     const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'reject' }) });
                                                                     if (res.ok) { alert('ปฏิเสธออเดอร์เรียบร้อย'); fetchBookings(); } else alert('เกิดข้อผิดพลาด');
                                                                 } catch { alert('เกิดข้อผิดพลาด'); }
-                                                            }} style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1 }}>❌ ปฏิเสธ</Button>
+                                                            }} style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1, borderRadius: '4px' }}>
+                                                                <span style={{ marginRight: '0.25rem' }}>✕</span> ปฏิเสธ
+                                                            </Button>
                                                         </div>
                                                     ) : (
                                                         <div style={{ display: 'flex', gap: '0.5rem', minWidth: '100px' }}>
