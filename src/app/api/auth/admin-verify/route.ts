@@ -20,7 +20,7 @@ export async function POST(request: Request) {
         try {
             const result = await jwtVerify(token, getJwtSecretKey());
             payload = result.payload;
-        } catch (_) {
+        } catch {
             return NextResponse.json({ error: 'ลิงก์หมดอายุหรือไม่ถูกต้อง' }, { status: 401 });
         }
 

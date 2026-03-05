@@ -314,7 +314,7 @@ export default async function Home() {
                 if (parsedImages.length > 0) {
                   displayImage = parsedImages[0];
                 }
-              } catch (_) {
+              } catch {
                 // Ignore parse errors
               }
 

@@ -47,7 +47,7 @@ export default function AdminVerifyPage() {
                     setStatus('error');
                     setMessage(data.error || 'ลิงก์การเข้าสู่ระบบไม่ถูกต้องหรือหมดอายุ');
                 }
-            } catch (_) {
+            } catch {
                 setStatus('error');
                 setMessage('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
             }
