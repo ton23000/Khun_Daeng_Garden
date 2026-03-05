@@ -235,7 +235,8 @@ export default function OrdersPage() {
 
     const getStatusBadge = (status: string) => {
         const statusConfig: Record<string, { color: string; label: string }> = {
-            PENDING_APPROVAL: { color: '#f97316', label: 'PENDING_APPROVAL' },
+            PENDING_APPROVAL: { color: '#6b7280', label: 'PRE_ORDER' },
+            PRE_ORDER: { color: '#6b7280', label: 'PRE_ORDER' },
             PENDING: { color: '#f59e0b', label: 'รอชำระเงิน' },
             VERIFYING_PAYMENT: { color: '#3b82f6', label: 'ตรวจสอบการชำระเงิน' },
             PAYMENT_ISSUE: { color: '#ef4444', label: 'ชำระเงินมีปัญหา' },
@@ -262,8 +263,11 @@ export default function OrdersPage() {
 
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {
+            PENDING_APPROVAL: 'PRE_ORDER',
+            PRE_ORDER: 'PRE_ORDER',
             PENDING: 'รอชำระเงิน',
             PAID: 'ตรวจสอบการชำระเงิน',
+            VERIFYING_PAYMENT: 'ตรวจสอบการชำระเงิน',
             PREPARING: 'กำลังเตรียม',
             READY: 'พร้อมรับ',
             COMPLETED: 'เสร็จสิ้น',
@@ -302,7 +306,7 @@ export default function OrdersPage() {
             {/* Stats */}
             <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
                 {[
-                    { id: 'PENDING_APPROVAL', label: 'รอการอนุมัติ', color: '#f97316' },
+                    { id: 'PENDING_APPROVAL', label: 'รอการอนุมัติ', color: '#f59e0b' },
                     { id: 'PENDING', label: 'รอชำระเงิน', color: '#f59e0b' },
                     { id: 'VERIFYING_PAYMENT', label: 'รอตรวจสอบ', color: '#3b82f6', count: bookings.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID').length },
                     { id: 'PAYMENT_ISSUE', label: 'ชำระมีปัญหา', color: '#ef4444' },
@@ -490,7 +494,7 @@ export default function OrdersPage() {
                                     </Button>
                                 )}
                                 <div style={{ paddingTop: '0.5rem', borderTop: '1px solid #e5e7eb' }}>
-                                    {booking.status === 'PENDING_APPROVAL' ? (
+                                    {['PENDING_APPROVAL', 'PRE_ORDER'].includes(booking.status) ? (
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                             <Button
                                                 size="sm"
@@ -603,7 +607,7 @@ export default function OrdersPage() {
                                                             <Button size="sm" onClick={() => handleUpdate(booking.id)}>บันทึก</Button>
                                                             <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>ยกเลิก</Button>
                                                         </div>
-                                                    ) : booking.status === 'PENDING_APPROVAL' ? (
+                                                    ) : ['PENDING_APPROVAL', 'PRE_ORDER'].includes(booking.status) ? (
                                                         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', minWidth: '150px' }}>
                                                             <Button size="sm" onClick={async () => {
                                                                 if (!confirm(`อนุมัติออเดอร์ #${booking.refCode}?`)) return;

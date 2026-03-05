@@ -197,7 +197,8 @@ export default function StaffOrdersPage() {
 
     const getStatusBadge = (status: string) => {
         const statusConfig: Record<string, { color: string; label: string }> = {
-            PENDING_APPROVAL: { color: '#f97316', label: 'รอการอนุมัติ' },
+            PENDING_APPROVAL: { color: '#6b7280', label: 'PRE_ORDER' },
+            PRE_ORDER: { color: '#6b7280', label: 'PRE_ORDER' },
             PENDING: { color: '#f59e0b', label: 'รอชำระเงิน' },
             VERIFYING_PAYMENT: { color: '#3b82f6', label: 'ตรวจสอบการชำระเงิน' },
             PAYMENT_ISSUE: { color: '#ef4444', label: 'ชำระเงินมีปัญหา' },
@@ -214,7 +215,8 @@ export default function StaffOrdersPage() {
 
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {
-            PENDING: 'รอชำระเงิน', PAID: 'ตรวจสอบการชำระเงิน',
+            PENDING_APPROVAL: 'PRE_ORDER', PRE_ORDER: 'PRE_ORDER',
+            PENDING: 'รอชำระเงิน', PAID: 'ตรวจสอบการชำระเงิน', VERIFYING_PAYMENT: 'ตรวจสอบการชำระเงิน',
             PREPARING: 'กำลังเตรียม', READY: 'พร้อมรับ',
             COMPLETED: 'เสร็จสิ้น', CANCELLED: 'ยกเลิก'
         };
@@ -240,7 +242,7 @@ export default function StaffOrdersPage() {
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
                 {[
-                    { id: 'PENDING_APPROVAL', label: 'รอการอนุมัติ', color: '#f97316' },
+                    { id: 'PENDING_APPROVAL', label: 'รอการอนุมัติ', color: '#f59e0b' },
                     { id: 'PENDING', label: 'รอชำระ', color: '#f59e0b' },
                     { id: 'VERIFYING_PAYMENT', label: 'รอตรวจสอบ', color: '#3b82f6', count: bookings.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID').length },
                     { id: 'PREPARING', label: 'เตรียมสินค้า', color: '#8b5cf6' },
@@ -329,7 +331,7 @@ export default function StaffOrdersPage() {
                                     <Button size="sm" variant="outline" style={{ borderColor: '#bfdbfe', color: '#1d4ed8', width: '100%' }} onClick={() => setViewingSlip(booking.slipUrl)}>📎 ดูสลิป</Button>
                                 )}
                                 <div style={{ paddingTop: '0.5rem', borderTop: '1px solid #e5e7eb' }}>
-                                    {booking.status === 'PENDING_APPROVAL' ? (
+                                    {['PENDING_APPROVAL', 'PRE_ORDER'].includes(booking.status) ? (
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                             <Button size="sm" onClick={async () => { if (!confirm(`อนุมัติออเดอร์ #${booking.refCode}?`)) return; try { const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'approve' }) }); if (res.ok) fetchBookings(); else alert('เกิดข้อผิดพลาด'); } catch { alert('เกิดข้อผิดพลาด'); } }} style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1 }}>✅ อนุมัติ</Button>
                                             <Button size="sm" variant="outline" onClick={async () => { if (!confirm(`ปฏิเสธออเดอร์ #${booking.refCode}?`)) return; try { const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'reject' }) }); if (res.ok) fetchBookings(); else alert('เกิดข้อผิดพลาด'); } catch { alert('เกิดข้อผิดพลาด'); } }} style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1 }}>❌ ปฏิเสธ</Button>
@@ -407,7 +409,7 @@ export default function StaffOrdersPage() {
                                                             <Button size="sm" onClick={() => handleUpdate(booking.id)} style={{ backgroundColor: '#1d4ed8', borderColor: '#1d4ed8', color: 'white' }}>บันทึก</Button>
                                                             <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>ยกเลิก</Button>
                                                         </div>
-                                                    ) : booking.status === 'PENDING_APPROVAL' ? (
+                                                    ) : ['PENDING_APPROVAL', 'PRE_ORDER'].includes(booking.status) ? (
                                                         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', minWidth: '150px' }}>
                                                             <Button size="sm" onClick={async () => { if (!confirm(`อนุมัติออเดอร์ #${booking.refCode}?`)) return; try { const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'approve' }) }); if (res.ok) { alert('อนุมัติออเดอร์เรียบร้อย'); fetchBookings(); } else alert('เกิดข้อผิดพลาด'); } catch { alert('เกิดข้อผิดพลาด'); } }} style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1 }}>✅ อนุมัติ</Button>
                                                             <Button size="sm" variant="outline" onClick={async () => { if (!confirm(`ปฏิเสธออเดอร์ #${booking.refCode}?`)) return; try { const res = await fetch(`/api/admin/bookings/${booking.id}/action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'reject' }) }); if (res.ok) { alert('ปฏิเสธออเดอร์เรียบร้อย'); fetchBookings(); } else alert('เกิดข้อผิดพลาด'); } catch { alert('เกิดข้อผิดพลาด'); } }} style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1 }}>❌ ปฏิเสธ</Button>

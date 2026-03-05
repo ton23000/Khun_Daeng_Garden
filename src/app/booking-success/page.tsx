@@ -73,7 +73,7 @@ export default function BookingSuccessPage() {
                 รหัสการจอง: <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{booking.refCode || booking.id}</span>
             </p>
 
-            {booking.status === 'PENDING_APPROVAL' ? (
+            {['PENDING_APPROVAL', 'PRE_ORDER'].includes(booking.status) ? (
                 <div style={{ backgroundColor: '#fef9c3', color: '#854d0e', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #fde047', textAlign: 'left', marginBottom: '2rem' }}>
                     <h3 style={{ fontWeight: 'bold', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#b91c1c' }}>
                         <span style={{ color: '#3b82f6' }}>⏳</span> รอการอนุมัติจากแอดมิน
@@ -178,7 +178,7 @@ export default function BookingSuccessPage() {
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href="/"><button style={{ padding: '0.5rem 1.5rem', borderRadius: '9999px', border: '1px solid #22c55e', color: '#22c55e', backgroundColor: 'transparent', fontWeight: 500, cursor: 'pointer' }}>หน้าหลัก</button></Link>
                 <Link href="/profile/bookings"><button style={{ padding: '0.5rem 1.5rem', borderRadius: '9999px', border: '1px solid #14b8a6', color: '#14b8a6', backgroundColor: 'transparent', fontWeight: 500, cursor: 'pointer' }}>รายละเอียดการจอง</button></Link>
-                {!uploadSuccess && booking.status !== 'PENDING_APPROVAL' && (
+                {!uploadSuccess && !['PENDING_APPROVAL', 'PRE_ORDER'].includes(booking.status) && (
                     <Button variant="primary" onClick={() => setIsModalOpen(true)}>แนบสลิปการโอนเงิน</Button>
                 )}
             </div>
