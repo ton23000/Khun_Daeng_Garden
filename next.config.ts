@@ -7,7 +7,12 @@ const nextConfig: NextConfig = {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'http://suankhundaeng.appviza.com'
   },
   images: {
-    domains: ['khundaenggarden.vercel.app'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'khundaenggarden.vercel.app',
+      },
+    ],
     unoptimized: true
   }
 };

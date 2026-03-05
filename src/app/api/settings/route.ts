@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
             return prisma.siteSetting.upsert({
                 where: { key },
                 update: { value: String(value) },
-                create: { key, value: String(value) }
+                create: { key, value: String(value), updatedAt: new Date() }
             });
         });
 

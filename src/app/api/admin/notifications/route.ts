@@ -12,9 +12,9 @@ export async function GET(req: NextRequest) {
         const notifications = await prisma.adminNotification.findMany({
             where,
             include: {
-                Booking: {
+                booking: {
                     include: {
-                        User: true
+                        user: true
                     }
                 }
             },
