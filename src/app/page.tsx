@@ -147,7 +147,7 @@ export default async function Home() {
           hidden: false,
         },
         include: {
-          User: {
+          user: {
             select: { firstName: true, lastName: true }
           }
         },
