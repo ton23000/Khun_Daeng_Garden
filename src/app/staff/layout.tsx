@@ -14,13 +14,13 @@ export default function StaffLayout({ children }: { children: React.ReactNode })
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-            setIsSidebarOpen(true);
+            setTimeout(() => setIsSidebarOpen(true), 0);
         }
     }, [pathname]);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.innerWidth < 768) {
-            setIsSidebarOpen(false);
+            setTimeout(() => setIsSidebarOpen(false), 0);
         }
     }, [pathname]);
 

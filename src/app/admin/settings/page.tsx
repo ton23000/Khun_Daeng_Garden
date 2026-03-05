@@ -151,7 +151,7 @@ export default function AdminSettingsPage() {
 
                     <div style={{ display: 'grid', gap: '1rem' }}>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.875rem' }}>ป้ายหัวข้อเล็ก (เช่น 💖 Valentine's Special)</label>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.875rem' }}>ป้ายหัวข้อเล็ก (เช่น 💖 Valentine&apos;s Special)</label>
                             <input
                                 type="text"
                                 name="valentine_heading"

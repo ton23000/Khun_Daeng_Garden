@@ -180,7 +180,20 @@ async function main() {
 
     for (const tree of MOCK_TREES) {
         await prisma.tree.create({
-            data: tree,
+            data: {
+                id: crypto.randomUUID(),
+                ...tree,
+                stock: tree.stock || 0,
+                reserved: 0,
+                sold: 0,
+                rating: 0,
+                reviewCount: 0,
+                isPromotion: false,
+                originalPrice: null,
+                promotionName: null,
+                promotionEndDate: null,
+                updatedAt: new Date()
+            },
         })
     }
     console.log(`Seeded ${MOCK_TREES.length} trees`)

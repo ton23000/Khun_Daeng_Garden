@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 
 // Load environment variables
 if (typeof window === 'undefined') {
-  require('dotenv').config();
+  import('dotenv').then(dotenv => dotenv.config());
 }
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }

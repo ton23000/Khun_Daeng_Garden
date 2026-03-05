@@ -35,9 +35,35 @@ function ShopContent() {
     const [allTags, setAllTags] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const fetchTrees = useCallback(async () => {
+        try {
+            const res = await fetch('/api/trees');
+            if (res.ok) {
+                const data = await res.json();
+                setTrees(data);
+                processTreeData(data);
+            } else {
+                throw new Error('API response not ok');
+            }
+        } catch (error) {
+            console.error('Failed to fetch trees, using mock data:', error);
+            // Fallback to mock data
+            const mockData = MOCK_TREES.map(t => ({
+                ...t,
+                // Ensure tags is string[] or string as per interface
+                tags: t.tags ? t.tags.split(',') : []
+            })) as unknown as Tree[];
+            
+            setTrees(mockData);
+            processTreeData(mockData);
+        } finally {
+            // Loading state will be managed after filtering
+        }
+    }, []);
+
     useEffect(() => {
         fetchTrees();
-    }, []);
+    }, [fetchTrees]);
 
     const handleSearch = useCallback((query: string) => {
         let filtered = [...trees];
@@ -66,32 +92,7 @@ function ShopContent() {
         }
     }, [trees, initialQuery, handleSearch]);
 
-    const fetchTrees = async () => {
-        try {
-            const res = await fetch('/api/trees');
-            if (res.ok) {
-                const data = await res.json();
-                setTrees(data);
-                processTreeData(data);
-            } else {
-                throw new Error('API response not ok');
-            }
-        } catch (error) {
-            console.error('Failed to fetch trees, using mock data:', error);
-            // Fallback to mock data
-            const mockData = MOCK_TREES.map(t => ({
-                ...t,
-                // Ensure tags is string[] or string as per interface
-                tags: t.tags ? t.tags.split(',') : []
-            })) as unknown as Tree[];
-            
-            setTrees(mockData);
-            processTreeData(mockData);
-        } finally {
-            // Loading state will be managed after filtering
-        }
-    };
-
+    
     const processTreeData = (data: Tree[]) => {
          // Extract unique categories
          const uniqueCategories = Array.from(new Set(data.flatMap((t: Tree) => t.category ? t.category.split(',').filter(Boolean) : []))).sort() as string[];

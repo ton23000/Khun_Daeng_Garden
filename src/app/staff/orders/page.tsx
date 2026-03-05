@@ -86,8 +86,10 @@ export default function StaffOrdersPage() {
         if (!user || (user.role !== 'admin' && user.role !== 'staff')) {
             router.push('/staff/login');
         } else {
-            fetchBookings();
-            fetchTrees();
+            setTimeout(() => {
+                fetchBookings();
+                fetchTrees();
+            }, 0);
         }
     }, [user, isLoading, router, fetchBookings, fetchTrees]);
 
@@ -137,7 +139,7 @@ export default function StaffOrdersPage() {
     }, [bookings, searchQuery, viewMode, selectedCustomer, sortConfig, statusFilter]);
 
     useEffect(() => {
-        filterAndSortBookings();
+        setTimeout(() => filterAndSortBookings(), 0);
     }, [filterAndSortBookings]);
 
     const handleSort = (key: string) => {

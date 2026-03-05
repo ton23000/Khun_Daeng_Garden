@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  // binaryTargets = ["native", "windows"]
 }
 
 datasource db {
@@ -9,163 +8,156 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id                String    @id @default(uuid())
-  firstName         String
-  lastName          String
-  phone             String   @unique
-  email             String?  @unique
-  password          String
-  role              String   @default("USER")
-  verified          Boolean  @default(false)
-  verificationToken String?  @unique
-  
-  bookings  Booking[]
-  favorites Favorite[]
-  reviews   Review[]
-  
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  
-  passwordResets PasswordReset[]
+model AdminNotification {
+  id        String   @id
+  message   String
+  type      String   @default("order")
+  read      Boolean  @default(false)
+  bookingId String?
+  createdAt DateTime @default(now())
+  Booking   Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 }
-
-model Category {
-  id        String    @id @default(uuid())
-  name      String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
-model Tree {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  price       Float
-  images      String   // JSON string of image URLs
-  category    String
-  status      String   @default("AVAILABLE") // AVAILABLE, BOOKED, SOLD
-  tags        String   // Comma separated tags
-  growthTime  String?  // e.g. "1-2 weeks"
-  stock       Int      @default(0)        // Available quantity
-  reserved    Int      @default(0)        // Reserved in pending bookings
-  sold        Int      @default(0)        // Total sold
-  rating      Float    @default(0)        // Average rating
-  reviewCount Int      @default(0)        // Total reviews
-  
-  // Promotion fields
-  isPromotion      Boolean   @default(false)
-  originalPrice    Float?
-  promotionName    String?
-  promotionEndDate DateTime?
-  
-  bookings    BookingItem[]
-  favorites   Favorite[]
-  reviews     Review[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
 
 model Booking {
-  id                 String              @id @default(uuid())
-  userId             String
-  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items              BookingItem[]
-  pickupDate         DateTime
-  totalPrice         Float
-  deposit            Float
-  paymentType        String              @default("deposit") // deposit, full
-  status             String              @default("PENDING") // PENDING_APPROVAL, PENDING, VERIFYING_PAYMENT, PAYMENT_ISSUE, CONFIRMED, PREPARING, READY, COMPLETED, CANCELLED
-  refCode            String              @unique
-  slipUrl            String?
-  note               String?             // Admin note or user note
-  reviewable         Boolean             @default(false)  // Set true when COMPLETED
-  reviews            Review[]
-  adminNotifications AdminNotification[]
-  isPreorder         Boolean             @default(false)
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  id                String              @id
+  userId            String
+  pickupDate        DateTime
+  totalPrice        Float
+  deposit           Float
+  paymentType       String              @default("deposit")
+  status            String              @default("PENDING")
+  refCode           String              @unique
+  slipUrl           String?
+  note              String?
+  reviewable        Boolean             @default(false)
+  isPreorder        Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  AdminNotification AdminNotification[]
+  User              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  BookingItem       BookingItem[]
+  Review            Review[]
 }
 
 model BookingItem {
-  id        String   @id @default(uuid())
+  id        String  @id
   bookingId String
-  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   treeId    String
-  tree      Tree     @relation(fields: [treeId], references: [id])
   quantity  Int
-  price     Float    // Snapshot price at time of booking
+  price     Float
+  Booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  Tree      Tree    @relation(fields: [treeId], references: [id])
 }
 
-model Notification {
-  id        String   @id @default(uuid())
-  userId    String
-  message   String
-  type      String   @default("info") // info, success, warning, error
-  read      Boolean  @default(false)
-  bookingId String?  // Optional link to booking
+model Category {
+  id        String   @id
+  name      String   @unique
   createdAt DateTime @default(now())
-}
-
-model AdminNotification {
-  id        String   @id @default(uuid())
-  message   String
-  type      String   @default("order") // order, system, alert
-  read      Boolean  @default(false)
-  bookingId String?
-  booking   Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  updatedAt DateTime
 }
 
 model Favorite {
-  id        String   @id @default(uuid())
+  id        String   @id
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   treeId    String
-  tree      Tree     @relation(fields: [treeId], references: [id])
   createdAt DateTime @default(now())
-  
+  Tree      Tree     @relation(fields: [treeId], references: [id])
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId, treeId])
 }
 
-model PasswordReset {
-  id        String   @id @default(uuid())
-  userId    String   // User ID reference
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  email     String   // Email where reset link was sent
-  token     String   @unique // Unique token for reset link
-  expiresAt DateTime // Expires in 1 hour
-  used      Boolean  @default(false)
+model Notification {
+  id        String   @id
+  userId    String
+  message   String
+  type      String   @default("info")
+  read      Boolean  @default(false)
+  bookingId String?
   createdAt DateTime @default(now())
 }
 
-model Review {
-  id        String   @id @default(uuid())
+model PasswordReset {
+  id        String   @id
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  treeId    String
-  tree      Tree     @relation(fields: [treeId], references: [id], onDelete: Cascade)
-  bookingId String
-  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  rating    Int      // 1-5 stars
-  comment   String?
-  images    String?  // JSON array of URLs
-  helpful   Int      @default(0)  // helpful count
-  hidden    Boolean  @default(false)  // Admin can hide reviews
-  isFeatured Boolean @default(false)  // Admin can feature on homepage
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id         String   @id
+  userId     String
+  treeId     String
+  bookingId  String
+  rating     Int
+  comment    String?
+  images     String?
+  helpful    Int      @default(0)
+  hidden     Boolean  @default(false)
+  isFeatured Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  Booking    Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  Tree       Tree     @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([bookingId, treeId])
   @@index([treeId])
   @@index([userId])
 }
 
 model SiteSetting {
-  id        String   @id @default(uuid())
+  id        String   @id
   key       String   @unique
   value     String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime
+}
+
+model Tree {
+  id               String        @id
+  name             String
+  description      String
+  price            Float
+  images           String
+  category         String
+  status           String        @default("AVAILABLE")
+  tags             String
+  growthTime       String?
+  stock            Int           @default(0)
+  reserved         Int           @default(0)
+  sold             Int           @default(0)
+  rating           Float         @default(0)
+  reviewCount      Int           @default(0)
+  isPromotion      Boolean       @default(false)
+  originalPrice    Float?
+  promotionName    String?
+  promotionEndDate DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime
+  BookingItem      BookingItem[]
+  Favorite         Favorite[]
+  Review           Review[]
+}
+
+model User {
+  id                String          @id
+  firstName         String
+  lastName          String
+  phone             String          @unique
+  email             String?         @unique
+  password          String
+  role              String          @default("USER")
+  verified          Boolean         @default(false)
+  verificationToken String?         @unique
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime
+  Booking           Booking[]
+  Favorite          Favorite[]
+  PasswordReset     PasswordReset[]
+  Review            Review[]
 }

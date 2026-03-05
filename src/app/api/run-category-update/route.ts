@@ -23,9 +23,9 @@ export async function GET() {
 
             // 2. Fix Tags spacing "มาใหม่ไม้มงคล" -> ["มาใหม่", "ไม้มงคล"]
             let needsTagUpdate = false;
-            let newTags: string[] = [];
+            const newTags: string[] = [];
             if (tree.tags && tree.tags.length > 0) {
-                for (let tag of tree.tags) {
+                for (const tag of tree.tags) {
                     if (tag === 'มาใหม่ไม้มงคล') {
                         newTags.push('มาใหม่');
                         newTags.push('ไม้มงคล');
@@ -67,7 +67,7 @@ export async function GET() {
         }
 
         return NextResponse.json({ success: true, message: "Synced categories and fixed tags successfully", logs: results, totalUnique: uniqueCategories.size });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('API: Database update error:', error);
         return NextResponse.json({ success: false, error: String(error) }, { status: 500 });
     } finally {

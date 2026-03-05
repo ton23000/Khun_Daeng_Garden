@@ -54,7 +54,7 @@ export default async function Home() {
         const saleData = bestSellingData.find((d: { treeId: string, _sum: { quantity: number | null } }) => d.treeId === tree.id);
         return {
           ...tree,
-          soldCount: saleData?._sum.quantity || 0
+          soldCount: saleData?._sum?.quantity || 0
         };
       }).sort((a, b) => b.soldCount - a.soldCount);
 
@@ -65,13 +65,21 @@ export default async function Home() {
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
+      // Get completed bookings in the last 7 days
+      const completedBookings = await prisma.booking.findMany({
+        where: {
+          status: 'COMPLETED',
+          createdAt: { gte: sevenDaysAgo }
+        },
+        select: { id: true }
+      });
+
+      const bookingIds = completedBookings.map(b => b.id);
+
       const weeklyBestSellingData = await prisma.bookingItem.groupBy({
         by: ['treeId'],
         where: {
-          booking: {
-            status: 'COMPLETED',
-            createdAt: { gte: sevenDaysAgo }
-          }
+          bookingId: { in: bookingIds }
         },
         _sum: { quantity: true },
         orderBy: { _sum: { quantity: 'desc' } },
@@ -84,10 +92,10 @@ export default async function Home() {
       });
 
       weeklyBestSellingTreesWithCount = weeklyBestSellingTrees.map(tree => {
-        const saleData = weeklyBestSellingData.find((d: { treeId: string, _sum: { quantity: number | null } }) => d.treeId === tree.id);
+        const saleData = weeklyBestSellingData.find((d) => d.treeId === tree.id);
         return {
           ...tree,
-          soldCount: saleData?._sum.quantity || 0
+          soldCount: saleData?._sum?.quantity || 0
         };
       }).sort((a, b) => b.soldCount - a.soldCount);
 
@@ -139,7 +147,7 @@ export default async function Home() {
           hidden: false,
         },
         include: {
-          user: {
+          User: {
             select: { firstName: true, lastName: true }
           }
         },
@@ -306,7 +314,7 @@ export default async function Home() {
                 if (parsedImages.length > 0) {
                   displayImage = parsedImages[0];
                 }
-              } catch (e) {
+              } catch (_) {
                 // Ignore parse errors
               }
 
@@ -824,7 +832,7 @@ export default async function Home() {
                         <div style={{ color: '#fbbf24', marginBottom: '0.5rem', letterSpacing: '2px', fontSize: '1.2rem' }}>
                           {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
                         </div>
-                        <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', paddingBottom: '0.5rem' }}>คุณ{review.user.firstName}</h4>
+                        <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', paddingBottom: '0.5rem' }}>คุณ{review.user?.firstName}</h4>
                         <p style={{ color: '#6b7280', fontStyle: 'italic', lineHeight: '1.6' }}>&quot;{review.comment}&quot;</p>
                       </div>
                     </div>

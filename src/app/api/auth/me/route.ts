@@ -12,7 +12,14 @@ export async function GET(req: NextRequest) {
     try {
         let userId: string | null = null;
         let userRole: string | null = null;
-        let mockPayload: any = null;
+        let mockPayload: { 
+            userId?: string; 
+            role?: string; 
+            firstName?: string; 
+            lastName?: string; 
+            phone?: string; 
+            email?: string; 
+        } | null = null;
 
         // Try getting token from cookies
         const token = req.cookies.get('khun_daeng_token')?.value;
@@ -21,7 +28,14 @@ export async function GET(req: NextRequest) {
                 const verified = await jwtVerify(token, getJwtSecretKey());
                 userId = verified.payload.id as string;
                 userRole = verified.payload.role as string;
-                mockPayload = verified.payload;
+                mockPayload = verified.payload as { 
+                    userId?: string; 
+                    role?: string; 
+                    firstName?: string; 
+                    lastName?: string; 
+                    phone?: string; 
+                    email?: string; 
+                };
             } catch (err) {
                 console.warn('JWT verification failed in auth/me:', err);
             }

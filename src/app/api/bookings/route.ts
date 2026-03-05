@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { sendEmail, orderConfirmationEmail } from '@/lib/email';
-import jwt from 'jsonwebtoken';
 
 const BookingItemSchema = z.object({
     treeId: z.string(),

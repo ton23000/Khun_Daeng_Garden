@@ -11,7 +11,7 @@ export async function PATCH(
         const body = await req.json();
 
         // Define update data type
-        const updateData: any = {};
+        const updateData: { hidden?: boolean; isFeatured?: boolean } = {};
 
         if (body.hidden !== undefined) updateData.hidden = Boolean(body.hidden);
         if (body.isFeatured !== undefined) updateData.isFeatured = Boolean(body.isFeatured);

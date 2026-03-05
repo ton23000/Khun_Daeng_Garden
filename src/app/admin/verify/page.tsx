@@ -16,8 +16,11 @@ export default function AdminVerifyPage() {
     useEffect(() => {
         const token = searchParams.get('token');
         if (!token) {
-            setStatus('error');
-            setMessage('ไม่พบลิงก์ยืนยันตัวตน กรุณาขอลิงก์ใหม่จากหน้าเข้าสู่ระบบ');
+            // Use setTimeout to avoid synchronous setState
+            setTimeout(() => {
+                setStatus('error');
+                setMessage('ไม่พบลิงก์ยืนยันตัวตน กรุณาขอลิงก์ใหม่จากหน้าเข้าสู่ระบบ');
+            }, 0);
             return;
         }
 
@@ -44,7 +47,7 @@ export default function AdminVerifyPage() {
                     setStatus('error');
                     setMessage(data.error || 'ลิงก์การเข้าสู่ระบบไม่ถูกต้องหรือหมดอายุ');
                 }
-            } catch (error) {
+            } catch (_) {
                 setStatus('error');
                 setMessage('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
             }
