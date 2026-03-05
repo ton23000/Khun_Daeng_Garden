@@ -8,7 +8,7 @@ const mock_trees = [
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/udom-chok/udom-chok.jpg']),
+        images: JSON.stringify(['/images/products/udom-chok.jpg']),
         tags: 'ไม้มงคล,โชคลาภ',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -19,7 +19,7 @@ const mock_trees = [
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/nueng-jakawan/nueng-jakawan.jpg']),
+        images: JSON.stringify(['/images/products/nueng-jakawan.jpg']),
         tags: 'ไม้มงคล,ยอดนิยม',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -30,7 +30,7 @@ const mock_trees = [
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/som-prattana/som-prattana.jpg']),
+        images: JSON.stringify(['/images/products/som-prattana.jpg']),
         tags: 'ไม้มงคล',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -41,7 +41,7 @@ const mock_trees = [
         price: 35,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/ruesi-phasom/ruesi-phasom.jpg']),
+        images: JSON.stringify(['/images/products/ruesi-phasom.jpg']),
         tags: 'ไม้ใบ,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -52,7 +52,7 @@ const mock_trees = [
         price: 350,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/ruay-sap/ruay-sap.jpg']),
+        images: JSON.stringify(['/images/products/ruay-sap.jpg']),
         tags: 'ไม้มงคล,โชคลาภ',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -63,7 +63,7 @@ const mock_trees = [
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/moradok-lok/moradok-lok.jpg']),
+        images: JSON.stringify(['/images/products/moradok-lok.jpg']),
         tags: 'ไม้มงคล,ไม้สะสม,หายาก',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -74,7 +74,7 @@ const mock_trees = [
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/phaya-kla-thong/phaya-kla-thong.jpg']),
+        images: JSON.stringify(['/images/products/phaya-kla-thong.jpg']),
         tags: 'ไม้มงคล,ไม้ใบ',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -85,7 +85,7 @@ const mock_trees = [
         price: 100,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/prihang-krajok/prihang-krajok.jpg']),
+        images: JSON.stringify(['/images/products/prihang-krajok.jpg']),
         tags: 'ไม้มงคล',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -96,7 +96,7 @@ const mock_trees = [
         price: 35,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/dao-rueang/dao-rueang.jpg']),
+        images: JSON.stringify(['/images/products/dao-rueang.jpg']),
         tags: 'ไม้ดอก,มงคล,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -107,7 +107,7 @@ const mock_trees = [
         price: 35,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/dok-get-thawa/dok-get-thawa.jpg']),
+        images: JSON.stringify(['/images/products/dok-get-thawa.jpg']),
         tags: 'ไม้ดอก,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -118,7 +118,7 @@ const mock_trees = [
         price: 150,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/chuan-chom/chuan-chom.jpg']),
+        images: JSON.stringify(['/images/products/chuan-chom.jpg']),
         tags: 'ไม้มงคล,ทนแล้ง',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -129,7 +129,7 @@ const mock_trees = [
         price: 50,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/khum-phai/khum-phai.jpg']),
+        images: JSON.stringify(['/images/products/khum-phai.jpg']),
         tags: 'ไม้ใบ,มงคล,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -140,7 +140,7 @@ const mock_trees = [
         price: 350,
         category: 'ไม้มงคล',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/kwak-phra-phrom/kwak-phra-phrom.jpg']),
+        images: JSON.stringify(['/images/products/kwak-phra-phrom.jpg']),
         tags: 'ไม้มงคล,หายาก',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -151,7 +151,7 @@ const mock_trees = [
         price: 35,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/kradum-thong/kradum-thong.jpg']),
+        images: JSON.stringify(['/images/products/kradum-thong.jpg']),
         tags: 'ไม้ดอก,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -162,7 +162,7 @@ const mock_trees = [
         price: 35,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/thai-huai-jai-dang/thai-huai-jai-dang.jpg']),
+        images: JSON.stringify(['/images/products/thai-huai-jai-dang.jpg']),
         tags: 'ไม้ใบ,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -173,7 +173,7 @@ const mock_trees = [
         price: 35,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/toei-thong/toei-thong.jpg']),
+        images: JSON.stringify(['/images/products/toei-thong.jpg']),
         tags: 'ไม้ใบ,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -184,7 +184,7 @@ const mock_trees = [
         price: 600,
         category: 'ไม้พรีเมียม',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/ngern-na/ngern-na.jpg']),
+        images: JSON.stringify(['/images/products/ngern-na.jpg']),
         tags: 'ไม้พรีเมียม,ไม้สะสม,โชคลาภ',
         growthTime: '1–2 อาทิตย์',
         stock: 50
@@ -195,7 +195,7 @@ const mock_trees = [
         price: 35,
         category: 'ไม้ราคาประหยัด',
         status: 'AVAILABLE',
-        images: JSON.stringify(['/images/products/pud-son/pud-son.jpg']),
+        images: JSON.stringify(['/images/products/pud-son.jpg']),
         tags: 'ไม้ดอก,ราคาประหยัด',
         growthTime: '1–2 อาทิตย์',
         stock: 50
