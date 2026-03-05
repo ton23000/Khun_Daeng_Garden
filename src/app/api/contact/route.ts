@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendEmail, contactFormEmail } from '@/lib/email';
 import { z } from 'zod';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 const ContactSchema = z.object({
     name: z.string().min(1, 'กรุณากรอกชื่อ'),
