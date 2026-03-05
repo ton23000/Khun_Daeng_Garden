@@ -64,28 +64,29 @@ export default function BookingSuccessPage() {
 
     return (
         <div className="container" style={{ padding: '4rem 1rem', maxWidth: '600px', textAlign: 'center' }}>
-            <div style={{ backgroundColor: '#dcfce7', color: '#166534', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+            <div style={{ backgroundColor: '#e1ffe1', color: '#16a34a', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
             </div>
 
-            <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>การจองสำเร็จ!</h1>
-            <p style={{ color: '#6b7280', marginBottom: '2rem' }}>
+            <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: '#e11d48', fontWeight: 'bold' }}>การจองสำเร็จ!</h1>
+            <p style={{ color: '#0369a1', marginBottom: '2rem', fontSize: '0.875rem' }}>
                 รหัสการจอง: <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{booking.refCode || booking.id}</span>
             </p>
 
             {booking.status === 'PENDING_APPROVAL' ? (
-                <div style={{ backgroundColor: '#fef3c7', color: '#92400e', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #fbbf24', textAlign: 'left', marginBottom: '2rem' }}>
-                    <h3 style={{ fontWeight: 'bold', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span>⏳</span> รอการอนุมัติจากแอดมิน
+                <div style={{ backgroundColor: '#fef9c3', color: '#854d0e', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #fde047', textAlign: 'left', marginBottom: '2rem' }}>
+                    <h3 style={{ fontWeight: 'bold', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#b91c1c' }}>
+                        <span style={{ color: '#3b82f6' }}>⏳</span> รอการอนุมัติจากแอดมิน
                     </h3>
-                    <p style={{ marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-                        คำสั่งซื้อของคุณอยู่ในคิวรอการอนุมัติจากทางร้าน เนื่องจากสินค้าบางรายการมีสต็อกไม่เพียงพอในขณะนี้
+                    <p style={{ marginBottom: '0.75rem', fontSize: '0.875rem' }}>
+                        คำสั่งซื้อของคุณอยู่ในคิวรอการอนุมัติจากทางร้าน เนื่องจากสินค้าบางรายการมี<br />
+                        สต็อกไม่เพียงพอในขณะนี้
                     </p>
-                    <p style={{ marginBottom: '1rem', fontSize: '0.875rem' }}>
+                    <p style={{ marginBottom: '1.5rem', fontSize: '0.875rem' }}>
                         ทางร้านจะตรวจสอบและแจ้งกลับให้คุณทราบโดยเร็วที่สุด
                     </p>
-                    <p style={{ fontWeight: 'bold', fontSize: '0.875rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
-                        <span>💡</span> คุณจะสามารถแนบสลิปการโอนเงินได้หลังจากทางร้านอนุมัติคำสั่งซื้อแล้ว
+                    <p style={{ fontWeight: 'bold', fontSize: '0.875rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#b45309' }}>
+                        <span style={{ color: '#eab308' }}>💡</span> คุณจะสามารถแนบสลิปการโอนเงินได้หลังจากทางร้านอนุมัติคำสั่งซื้อแล้ว
                     </p>
                 </div>
             ) : (
@@ -175,8 +176,8 @@ export default function BookingSuccessPage() {
             )}
 
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link href="/"><Button variant="outline">กลับหน้าหลัก</Button></Link>
-                <Link href="/profile/bookings"><Button variant="outline">การจองของฉัน</Button></Link>
+                <Link href="/"><button style={{ padding: '0.5rem 1.5rem', borderRadius: '9999px', border: '1px solid #22c55e', color: '#22c55e', backgroundColor: 'transparent', fontWeight: 500, cursor: 'pointer' }}>หน้าหลัก</button></Link>
+                <Link href="/profile/bookings"><button style={{ padding: '0.5rem 1.5rem', borderRadius: '9999px', border: '1px solid #14b8a6', color: '#14b8a6', backgroundColor: 'transparent', fontWeight: 500, cursor: 'pointer' }}>รายละเอียดการจอง</button></Link>
                 {!uploadSuccess && booking.status !== 'PENDING_APPROVAL' && (
                     <Button variant="primary" onClick={() => setIsModalOpen(true)}>แนบสลิปการโอนเงิน</Button>
                 )}

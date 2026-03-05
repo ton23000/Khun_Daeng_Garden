@@ -349,7 +349,7 @@ export default function OrdersPage() {
 
             {/* Order Management Section */}
             <div style={{ marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#dc2626' }}>จัดการออเดอร์</h2>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#e11d48' }}>จัดการออเดอร์</h2>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                     <div style={{ width: '250px' }}>
                         <SearchBar
@@ -361,9 +361,9 @@ export default function OrdersPage() {
                         variant={viewMode === 'all' && !statusFilter ? 'primary' : 'outline'}
                         onClick={() => handleStatusClick(null)}
                         style={{ 
-                            backgroundColor: viewMode === 'all' && !statusFilter ? '#dc2626' : 'transparent',
+                            backgroundColor: viewMode === 'all' && !statusFilter ? '#e11d48' : 'transparent',
                             color: viewMode === 'all' && !statusFilter ? 'white' : '#374151',
-                            borderColor: viewMode === 'all' && !statusFilter ? '#dc2626' : '#bbf7d0',
+                            borderColor: viewMode === 'all' && !statusFilter ? '#e11d48' : '#e5e7eb',
                             minWidth: '80px',
                             display: 'flex',
                             justifyContent: 'center'
@@ -376,7 +376,7 @@ export default function OrdersPage() {
                         onClick={() => handleStatusClick('PENDING_APPROVAL')}
                         style={{
                             backgroundColor: statusFilter === 'PENDING_APPROVAL' ? '#fef3c7' : 'transparent',
-                            borderColor: statusFilter === 'PENDING_APPROVAL' ? '#f59e0b' : '#bbf7d0',
+                            borderColor: statusFilter === 'PENDING_APPROVAL' ? '#f59e0b' : '#e5e7eb',
                             color: '#d97706',
                             minWidth: '130px',
                             display: 'flex',
@@ -392,7 +392,7 @@ export default function OrdersPage() {
                         onClick={() => setViewMode('by-customer')}
                         style={{ 
                             backgroundColor: viewMode === 'by-customer' ? '#22c55e' : 'transparent',
-                            borderColor: viewMode === 'by-customer' ? '#22c55e' : '#bbf7d0',
+                            borderColor: viewMode === 'by-customer' ? '#22c55e' : '#e5e7eb',
                             color: viewMode === 'by-customer' ? 'white' : '#374151',
                             minWidth: '120px',
                             display: 'flex',
@@ -503,7 +503,7 @@ export default function OrdersPage() {
                                                 }}
                                                 style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1, borderRadius: '4px' }}
                                             >
-                                                <span style={{ marginRight: '0.25rem' }}>☑</span> อนุมัติ
+                                                อนุมัติ
                                             </Button>
                                             <Button
                                                 size="sm"
@@ -517,7 +517,7 @@ export default function OrdersPage() {
                                                 }}
                                                 style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1, borderRadius: '4px' }}
                                             >
-                                                <span style={{ marginRight: '0.25rem' }}>✕</span> ปฏิเสธ
+                                                [ ✕ ปฏิเสธ ]
                                             </Button>
                                         </div>
                                     ) : (
@@ -538,19 +538,19 @@ export default function OrdersPage() {
             {/* Desktop View (Table) */}
             <div className="desktop-table-view">
                 <div style={{ maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '1rem' }}>
-                    <Card style={{ minWidth: '800px', border: '1px solid #e5e7eb' }}>
-                        <CardContent style={{ padding: 0 }}>
+                    <div style={{ minWidth: '800px', backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)' }}>
+                        <div style={{ padding: 0 }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                                <thead style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                                <thead style={{ borderBottom: '1px solid #e5e7eb' }}>
                                     <tr>
-                                        <th style={{ padding: '1rem' }}>รหัส</th>
-                                        <SortableTableHeader label="ลูกค้า" sortKey="customer" currentSort={sortConfig} onSort={handleSort} />
-                                        <th style={{ padding: '1rem' }}>รายการ</th>
-                                        <SortableTableHeader label="ยอดรวม" sortKey="price" currentSort={sortConfig} onSort={handleSort} />
-                                        <th style={{ padding: '1rem' }}>สลิป</th>
-                                        <SortableTableHeader label="วันรับของ" sortKey="date" currentSort={sortConfig} onSort={handleSort} />
-                                        <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} />
-                                        <th style={{ padding: '1rem' }}>จัดการ</th>
+                                        <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem' }}>รหัส</th>
+                                        <SortableTableHeader label="ลูกค้า" sortKey="customer" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem' }} />
+                                        <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem' }}>รายการ</th>
+                                        <SortableTableHeader label="ยอดรวม" sortKey="price" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem' }} />
+                                        <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem' }}>สลิป</th>
+                                        <SortableTableHeader label="วันรับของ" sortKey="date" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem' }} />
+                                        <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem' }} />
+                                        <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem' }}>จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -612,7 +612,7 @@ export default function OrdersPage() {
                                                                     if (res.ok) { alert('อนุมัติออเดอร์เรียบร้อย'); fetchBookings(); } else alert('เกิดข้อผิดพลาด');
                                                                 } catch { alert('เกิดข้อผิดพลาด'); }
                                                             }} style={{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: 'white', flex: 1, borderRadius: '4px' }}>
-                                                                <span style={{ marginRight: '0.25rem' }}>☑</span> อนุมัติ
+                                                                อนุมัติ
                                                             </Button>
                                                             <Button size="sm" variant="outline" onClick={async () => {
                                                                 if (!confirm(`ปฏิเสธออเดอร์ #${booking.refCode}?`)) return;
@@ -621,7 +621,7 @@ export default function OrdersPage() {
                                                                     if (res.ok) { alert('ปฏิเสธออเดอร์เรียบร้อย'); fetchBookings(); } else alert('เกิดข้อผิดพลาด');
                                                                 } catch { alert('เกิดข้อผิดพลาด'); }
                                                             }} style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1, borderRadius: '4px' }}>
-                                                                <span style={{ marginRight: '0.25rem' }}>✕</span> ปฏิเสธ
+                                                                [ ✕ ปฏิเสธ ]
                                                             </Button>
                                                         </div>
                                                     ) : (
@@ -638,8 +638,8 @@ export default function OrdersPage() {
                                     )}
                                 </tbody>
                             </table>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
             </div>
 
