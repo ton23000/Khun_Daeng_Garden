@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendEmail, contactFormEmail } from '@/lib/email';
 import { z } from 'zod';
+import prisma from '@/lib/prisma';
 
 const ContactSchema = z.object({
     name: z.string().min(1, 'กรุณากรอกชื่อ'),
@@ -25,6 +26,22 @@ export async function POST(req: NextRequest) {
             validated.subject,
             validated.message
         );
+
+        // Save to database
+        try {
+            await prisma.contactMessage.create({
+                data: {
+                    name: validated.name,
+                    email: validated.email,
+                    phone: validated.phone || null,
+                    subject: validated.subject,
+                    message: validated.message,
+                }
+            });
+        } catch (dbError) {
+            console.error('Failed to save contact message to database:', dbError);
+            // Continue even if DB fails, as we might still be able to send the email
+        }
 
         const result = await sendEmail({
             to: adminEmail,
