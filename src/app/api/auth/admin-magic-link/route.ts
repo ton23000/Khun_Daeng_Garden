@@ -5,7 +5,8 @@ import { SignJWT } from 'jose';
 import { sendAdminMagicLinkEmail } from '@/lib/email';
 
 const getJwtSecretKey = () => {
-    const secret = process.env.JWT_SECRET || 'fallback_secret_key_change_this_in_production';
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw new Error('JWT_SECRET environment variable is not set');
     return new TextEncoder().encode(secret);
 };
 
@@ -20,8 +21,8 @@ export async function POST(request: Request) {
 
         let userToLink = null;
 
-        // Special hardcoded admin check
-        const allowedAdminEmails = ['khundaenggarden@gmail.com', 'fhjilyyjg@gmail.com'];
+        // Admin emails from env var (comma-separated)
+        const allowedAdminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
         if (allowedAdminEmails.includes(email)) {
             userToLink = {
                 id: 'admin',

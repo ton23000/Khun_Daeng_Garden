@@ -3,9 +3,10 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { SignJWT } from 'jose';
 
-// Helper to get secret key
+// Helper to get secret key — must be set via JWT_SECRET env var
 const getJwtSecretKey = () => {
-    const secret = process.env.JWT_SECRET || 'fallback_secret_key_change_this_in_production';
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw new Error('JWT_SECRET environment variable is not set');
     return new TextEncoder().encode(secret);
 };
 
@@ -19,9 +20,11 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { identifier, password } = loginSchema.parse(body);
 
-        const allowedAdminEmails = ['khundaenggarden@gmail.com', 'fhjilyyjg@gmail.com'];
+        // Admin emails stored in env as comma-separated list e.g. "a@b.com,c@d.com"
+        const allowedAdminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
+        const adminPassword = process.env.ADMIN_PASSWORD || '';
         // Admin check: Only allow specific emails with expected admin password
-        if (password === 'admin1234' && allowedAdminEmails.includes(identifier)) {
+        if (adminPassword && password === adminPassword && allowedAdminEmails.includes(identifier)) {
             const adminUser = {
                 id: 'admin',
                 firstName: 'Admin',

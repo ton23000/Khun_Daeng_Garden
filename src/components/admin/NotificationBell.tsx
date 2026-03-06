@@ -198,7 +198,7 @@ export default function NotificationBell() {
                                                 </p>
                                                 {notif.bookingId && (
                                                     <Link
-                                                        href="/admin/dashboard"
+                                                        href="/admin/orders"
                                                         style={{
                                                             fontSize: '0.75rem',
                                                             color: 'var(--primary)',

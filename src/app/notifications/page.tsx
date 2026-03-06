@@ -50,7 +50,7 @@ export default function NotificationsPage() {
                         {user?.role === 'admin' ? 'การแจ้งเตือนสำหรับแอดมิน' : 'การแจ้งเตือนของคุณ'}
                     </p>
                 </div>
-                <Link href={user?.role === 'admin' ? '/admin/dashboard' : '/profile'}>
+                <Link href={user?.role === 'admin' ? '/admin/orders' : '/profile'}>
                     <Button variant="outline">← กลับ</Button>
                 </Link>
             </div>

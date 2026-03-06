@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { jwtVerify, SignJWT } from 'jose';
 
 const getJwtSecretKey = () => {
-    const secret = process.env.JWT_SECRET || 'fallback_secret_key_change_this_in_production';
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw new Error('JWT_SECRET environment variable is not set');
     return new TextEncoder().encode(secret);
 };
 
