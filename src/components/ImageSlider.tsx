@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from './ui/Card';
-
+import FavoriteButton from './FavoriteButton';
 
 interface Tree {
     id: string;
@@ -14,30 +13,16 @@ interface Tree {
 }
 
 export function ImageSlider({ trees, title, subtitle }: { trees: Tree[], title: string, subtitle: string }) {
-    const [currentIndex, setCurrentIndex] = useState(0);
-
-    // Auto-scroll
-    useEffect(() => {
-        if (trees.length <= 1) return;
-        const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % trees.length);
-        }, 3000);
-        return () => clearInterval(interval);
-    }, [trees.length]);
-
     if (!trees || trees.length === 0) return null;
 
-    const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % trees.length);
-    const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + trees.length) % trees.length);
-
     return (
-        <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', borderRadius: '1rem', backgroundColor: '#f9fafb', padding: '2rem' }}>
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: '1rem', backgroundColor: '#f9fafb', padding: '1.5rem 0' }}>
+            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                 <span style={{ color: '#4d7c0f', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{subtitle}</span>
                 <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>{title}</h2>
             </div>
 
-            <div style={{ display: 'flex', transition: 'transform 0.5s ease-in-out', transform: `translateX(-${currentIndex * 100}%)` }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem', padding: '0 1rem' }}>
                 {trees.map((tree) => {
                     let imageUrl = '/placeholder-tree.svg';
                     try {
@@ -46,21 +31,42 @@ export function ImageSlider({ trees, title, subtitle }: { trees: Tree[], title: 
                     } catch { }
 
                     return (
-                        <div key={tree.id} style={{ minWidth: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem' }}>
-                            <Link href={`/trees/${tree.id}`} style={{ textDecoration: 'none', width: '100%', maxWidth: '600px' }}>
-                                <Card style={{ overflow: 'hidden', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', cursor: 'pointer', display: 'flex', flexDirection: 'column' }} className="hover:scale-105 transition-transform">
-                                    <div style={{ position: 'relative', height: '300px', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <img src={imageUrl} alt={tree.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1rem' }} />
+                        <div key={tree.id} style={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch' }}>
+                            <Link href={`/trees/${tree.id}`} style={{ textDecoration: 'none', width: '100%' }}>
+                                <Card style={{
+                                    border: 'none',
+                                    boxShadow: 'none',
+                                    backgroundColor: 'white',
+                                    overflow: 'hidden',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    height: '100%'
+                                }} className="hover-card transition-transform hover:scale-105">
+                                    <div style={{ position: 'relative', aspectRatio: '4/5', backgroundColor: '#e5e5e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <img src={imageUrl} alt={tree.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 10 }}>
+                                            <FavoriteButton treeId={tree.id} size="sm" />
+                                        </div>
                                     </div>
-                                    <CardContent style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: 'white' }}>
-                                        <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', marginBottom: '0.5rem', color: '#1f2937' }}>{tree.name}</h3>
-                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                                            <p style={{ fontSize: '1.25rem', fontWeight: '600', color: '#f87171' }}>฿{tree.price.toLocaleString()}</p>
-                                            {tree.soldCount !== undefined && tree.soldCount > 0 && (
-                                                <p style={{ fontSize: '0.875rem', color: '#6b7280', backgroundColor: '#f3f4f6', padding: '0.25rem 0.75rem', borderRadius: '9999px' }}>
+                                    <CardContent style={{ padding: '0.75rem', textAlign: 'left', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                        <h3 style={{ fontSize: '1rem', fontWeight: 'bold', fontFamily: 'var(--font-prompt), sans-serif', color: '#115e59', marginBottom: '0.25rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{tree.name}</h3>
+                                        <p style={{ fontSize: '0.9rem', color: '#6b7280', fontWeight: 'normal', marginBottom: '0.5rem' }}>
+                                            ฿ {tree.price.toLocaleString()}
+                                        </p>
+                                        
+                                        {tree.soldCount !== undefined && tree.soldCount > 0 && (
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                <span style={{ fontSize: '0.75rem', color: '#4b5563', backgroundColor: '#f3f4f6', padding: '0.2rem 0.6rem', borderRadius: '9999px', display: 'inline-block' }}>
                                                     ขายแล้ว {tree.soldCount} ต้น
-                                                </p>
-                                            )}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        <div style={{ marginTop: 'auto' }}>
+                                            <div style={{ border: '1px solid #10b981', color: '#10b981', padding: '0.4rem', textAlign: 'center', fontSize: '0.85rem', fontWeight: 'bold', width: '100%' }}>
+                                                จองเลย
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -69,23 +75,6 @@ export function ImageSlider({ trees, title, subtitle }: { trees: Tree[], title: 
                     );
                 })}
             </div>
-
-            {trees.length > 1 && (
-                <>
-                    <button onClick={prevSlide} style={{ position: 'absolute', top: '50%', left: '10px', transform: 'translateY(-50%)', backgroundColor: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', cursor: 'pointer', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1f2937' }}>
-                        &#10094;
-                    </button>
-                    <button onClick={nextSlide} style={{ position: 'absolute', top: '50%', right: '10px', transform: 'translateY(-50%)', backgroundColor: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', cursor: 'pointer', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1f2937' }}>
-                        &#10095;
-                    </button>
-
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1rem' }}>
-                        {trees.map((_, i) => (
-                            <div key={i} style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: i === currentIndex ? '#4d7c0f' : '#d1d5db', transition: 'background-color 0.3s' }} />
-                        ))}
-                    </div>
-                </>
-            )}
         </div>
     );
 }
