@@ -25,42 +25,7 @@ export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const userId = searchParams.get('userId');
-        const dev = process.env.NODE_ENV !== 'production';
 
-        if (dev) {
-            // Mock bookings for development
-            return NextResponse.json([
-                {
-                    id: 'mock-booking-1',
-                    userId: 'mock-user-1',
-                    status: 'PENDING',
-                    totalPrice: 350,
-                    deposit: 100,
-                    paymentType: 'deposit',
-                    createdAt: new Date(),
-                    items: [
-                        {
-                            id: 'mock-item-1',
-                            treeId: 'mock-1',
-                            treeName: 'เงินหนา',
-                            quantity: 1,
-                            price: 350,
-                            pickupDate: '2024-03-15',
-                            tree: {
-                                id: 'mock-1',
-                                name: 'เงินหนา',
-                                price: 350
-                            }
-                        }
-                    ],
-                    user: {
-                        firstName: 'สมชาย',
-                        lastName: 'รักต้นไม้',
-                        phone: '0801234567'
-                    }
-                }
-            ]);
-        }
 
         const where = userId ? { userId } : {};
 
@@ -106,32 +71,7 @@ export async function POST(req: NextRequest) {
         console.log('[Booking API] Validation passed');
         console.log('[Booking API] userId:', validated.userId);
 
-        const dev = process.env.NODE_ENV !== 'production';
 
-        if (dev) {
-            // Mock booking creation for development
-            console.log('[Booking API] Creating mock booking for development');
-
-            const mockBooking = {
-                id: 'mock-booking-' + Date.now(),
-                userId: validated.userId,
-                userName: validated.userName,
-                status: 'PENDING',
-                totalPrice: validated.totalPrice,
-                deposit: validated.deposit,
-                paymentType: validated.paymentType,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                items: validated.items.map((item, index) => ({
-                    id: 'mock-item-' + index,
-                    bookingId: 'mock-booking-' + Date.now(),
-                    ...item
-                }))
-            };
-
-            console.log('[Booking API] Mock booking created successfully:', mockBooking.id);
-            return NextResponse.json(mockBooking);
-        }
 
         // Check if user exists (production mode only)
         const userExists = await prisma.user.findUnique({

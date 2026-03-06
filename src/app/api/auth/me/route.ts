@@ -45,18 +45,15 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
         }
 
-        const dev = process.env.NODE_ENV !== 'production';
-
-        if (dev && (userId === 'mock-user-id' || userId === 'admin')) {
-            // Return mock user if in dev mode and it's our mock user or admin
+        if (userId === 'admin') {
             return NextResponse.json({ 
                 user: {
                     id: userId,
-                    firstName: mockPayload?.firstName || 'Dev',
-                    lastName: mockPayload?.lastName || 'User',
+                    firstName: mockPayload?.firstName || 'Admin',
+                    lastName: mockPayload?.lastName || '',
                     phone: mockPayload?.phone || '0000000000',
-                    email: mockPayload?.email || 'dev@example.com',
-                    role: userRole || 'user',
+                    email: mockPayload?.email || 'admin@example.com',
+                    role: userRole || 'admin',
                     verified: true
                 } 
             });

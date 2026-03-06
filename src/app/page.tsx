@@ -16,20 +16,6 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   let featuredTrees, bestSellingTreesWithCount, displayBestSellers, weeklyBestSellingTreesWithCount, promotionalTrees, seasonalTrees, heroTree, settingsMap, topReviews;
 
-  const dev = process.env.NODE_ENV !== 'production';
-
-  // For development, use mock data directly to avoid DB connection issues
-  if (dev) {
-    console.log('🔄 Using mock data for development');
-    featuredTrees = MOCK_TREES.slice(0, 4);
-    displayBestSellers = MOCK_TREES.slice(0, 4).map(t => ({ ...t, soldCount: 10 }));
-    weeklyBestSellingTreesWithCount = MOCK_TREES.slice(0, 4).map(t => ({ ...t, soldCount: 5 }));
-    promotionalTrees = MOCK_TREES.filter(t => t.isPromotion);
-    seasonalTrees = MOCK_TREES.slice(0, 2);
-    heroTree = MOCK_TREES[0];
-    settingsMap = MOCK_SITE_SETTINGS as unknown as Record<string, string>;
-    topReviews = MOCK_REVIEWS;
-  } else {
     try {
       featuredTrees = await prisma.tree.findMany({
         take: 4,
@@ -184,7 +170,6 @@ export default async function Home() {
       settingsMap = MOCK_SITE_SETTINGS as unknown as Record<string, string>;
       topReviews = MOCK_REVIEWS;
     }
-  }
 
   const heroTitle = settingsMap['hero_title'] || 'สวนสวยเริ่มต้นที่ สวนคุณแดง';
   const heroTitleColor = settingsMap['hero_title_color'] || 'var(--foreground)';
