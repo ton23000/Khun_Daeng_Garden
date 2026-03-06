@@ -34,9 +34,9 @@ export async function POST(
             return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
         }
 
-        if (booking.status !== 'PENDING_APPROVAL') {
+        if (booking.status !== 'PENDING_APPROVAL' && booking.status !== 'PRE_ORDER') {
             return NextResponse.json({
-                error: 'Only PENDING_APPROVAL bookings can be approved/rejected'
+                error: 'Only PENDING_APPROVAL and PRE_ORDER bookings can be approved/rejected'
             }, { status: 400 });
         }
 
