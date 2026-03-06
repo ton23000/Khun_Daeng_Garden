@@ -246,9 +246,13 @@ export default function AdminTreesPage() {
             const res = await fetch(`/api/trees/${id}`, { method: 'DELETE' });
             if (res.ok) {
                 fetchTrees();
+            } else {
+                const errorData = await res.json();
+                alert(errorData.error || 'ไม่สามารถลบต้นไม้ได้');
             }
         } catch (error) {
             console.error('Failed to delete', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
         }
     };
 

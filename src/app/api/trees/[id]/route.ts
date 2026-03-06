@@ -60,9 +60,28 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
     try {
         const params = await props.params;
         const id = params.id;
+
+        // Check if tree is referenced in any bookings
+        const bookingItems = await prisma.bookingItem.findMany({
+            where: { treeId: id }
+        });
+
+        if (bookingItems.length > 0) {
+            return NextResponse.json({ 
+                error: 'ไม่สามารถลบต้นไม้นี้ได้เนื่องจากมีการสั่งจองแล้ว',
+                details: `ต้นไม้นี้มีในคำสั่งซื้อ ${bookingItems.length} รายการ`
+            }, { status: 400 });
+        }
+
         await prisma.tree.delete({
             where: { id }
         });
+
+        // Clear cache so changes appear immediately
+        revalidatePath('/');
+        revalidatePath('/shop');
+        revalidatePath('/promotion');
+        revalidatePath(`/trees/${id}`);
 
         return NextResponse.json({ success: true });
     } catch (error) {
