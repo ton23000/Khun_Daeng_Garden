@@ -3,7 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { jwtVerify } from 'jose';
 
 const getJwtSecretKey = () => {
-    const secret = process.env.JWT_SECRET || 'fallback_secret_key_change_this_in_production';
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw new Error('JWT_SECRET environment variable is not set');
     return new TextEncoder().encode(secret);
 };
 
@@ -23,32 +24,25 @@ export async function GET(req: NextRequest) {
 
         // Try getting token from cookies
         const token = req.cookies.get('khun_daeng_token')?.value;
-        if (token) {
-            try {
-                const verified = await jwtVerify(token, getJwtSecretKey());
-                userId = verified.payload.id as string;
-                userRole = verified.payload.role as string;
-                mockPayload = verified.payload as { 
-                    userId?: string; 
-                    role?: string; 
-                    firstName?: string; 
-                    lastName?: string; 
-                    phone?: string; 
-                    email?: string; 
-                };
-            } catch (err) {
-                console.warn('JWT verification failed in auth/me:', err);
-            }
-        }
-
-        // Fallback for explicitly passed userId (e.g. from localStorage sync if token expired)
-        const urlParams = new URL(req.url).searchParams;
-        if (!userId) {
-            userId = urlParams.get('userId');
-        }
-
-        if (!userId) {
+        if (!token) {
             return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+        }
+
+        try {
+            const verified = await jwtVerify(token, getJwtSecretKey());
+            userId = verified.payload.id as string;
+            userRole = verified.payload.role as string;
+            mockPayload = verified.payload as { 
+                userId?: string; 
+                role?: string; 
+                firstName?: string; 
+                lastName?: string; 
+                phone?: string; 
+                email?: string; 
+            };
+        } catch (err) {
+            console.warn('JWT verification failed in auth/me:', err);
+            return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
         }
 
         const dev = process.env.NODE_ENV !== 'production';

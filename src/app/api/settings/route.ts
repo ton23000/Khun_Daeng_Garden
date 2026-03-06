@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { jwtVerify } from 'jose';
 import { MOCK_SITE_SETTINGS } from '@/lib/mock-data';
+
+const getJwtSecretKey = () => {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) return new TextEncoder().encode('fallback_for_build');
+    return new TextEncoder().encode(secret);
+};
 
 export async function GET() {
     const dev = process.env.NODE_ENV !== 'production';
@@ -26,21 +33,19 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
     try {
-        // Auth: get userId from header (client sends it from localStorage)
-        const userId = request.headers.get('x-user-id');
+        const token = request.cookies.get('khun_daeng_token')?.value;
 
-        if (!userId) {
+        if (!token) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Special hardcoded admin check
-        if (userId === 'admin') {
-            // Allow hardcoded admin
-        } else {
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-            if (!user || user.role !== 'admin') {
+        try {
+            const verified = await jwtVerify(token, getJwtSecretKey());
+            if (verified.payload.role !== 'admin' && verified.payload.role !== 'staff') {
                 return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
             }
+        } catch {
+            return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
         }
 
         const body = await request.json();

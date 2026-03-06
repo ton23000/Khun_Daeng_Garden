@@ -317,12 +317,6 @@ export async function PATCH(
             } else {
                 console.log('🔔 No message generated for status:', validated.status);
             }
-        } else {
-            console.log('⚠️ Notification skipped. Missing data:', {
-                hasStatus: !!validated.status,
-                hasUser: !!currentBooking.user,
-                userId: booking.userId
-            });
         }
 
         return NextResponse.json(booking);

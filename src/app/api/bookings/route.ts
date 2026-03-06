@@ -174,36 +174,54 @@ export async function POST(req: NextRequest) {
         }
         console.log('[Booking API] Stock check complete. Is pre-order:', isPreOrder);
 
-        // Create booking
-        const booking = await prisma.booking.create({
-            data: {
-                userId: validated.userId,
-                status: isPreOrder ? 'PRE_ORDER' : 'PENDING',
-                totalPrice: validated.totalPrice,
-                deposit: validated.deposit,
-                paymentType: validated.paymentType,
-                pickupDate: validated.items[0]?.pickupDate ? new Date(validated.items[0].pickupDate).toISOString() : new Date().toISOString(),
-                refCode: `BK${Date.now().toString(36).toUpperCase()}${Math.floor(Math.random() * 1000)}`,
-                items: {
-                    create: validated.items.map(item => ({
-                        treeId: item.treeId,
-                        quantity: item.quantity,
-                        price: item.price
-                    }))
-                }
-            },
-            include: {
-                items: true,
-                user: {
-                    select: {
-                        firstName: true, lastName: true,
-                        phone: true, email: true
+        // Create booking and update tree reserved stock in a transaction
+        const result = await prisma.$transaction(async (tx) => {
+            // 1. Create booking
+            const newBooking = await tx.booking.create({
+                data: {
+                    userId: validated.userId,
+                    status: isPreOrder ? 'PRE_ORDER' : 'PENDING',
+                    totalPrice: validated.totalPrice,
+                    deposit: validated.deposit,
+                    paymentType: validated.paymentType,
+                    pickupDate: validated.items[0]?.pickupDate ? new Date(validated.items[0].pickupDate).toISOString() : new Date().toISOString(),
+                    refCode: `BK${Date.now().toString(36).toUpperCase()}${Math.floor(Math.random() * 1000)}`,
+                    items: {
+                        create: validated.items.map(item => ({
+                            treeId: item.treeId,
+                            quantity: item.quantity,
+                            price: item.price
+                        }))
+                    }
+                },
+                include: {
+                    items: true,
+                    user: {
+                        select: {
+                            firstName: true, lastName: true,
+                            phone: true, email: true
+                        }
                     }
                 }
+            });
+
+            // 2. Increment reserved stock for each tree
+            for (const item of validated.items) {
+                await tx.tree.update({
+                    where: { id: item.treeId },
+                    data: {
+                        reserved: {
+                            increment: item.quantity
+                        }
+                    }
+                });
             }
+
+            return newBooking;
         });
 
-        console.log('[Booking API] Booking created successfully:', booking.id);
+        const booking = result;
+        console.log('[Booking API] Booking created and stock reserved successfully:', booking.id);
 
         // Send confirmation email (only in production)
         if (process.env.NODE_ENV === 'production' && userExists.email) {

@@ -16,9 +16,10 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const validated = ContactSchema.parse(body);
 
-        // Send email to admins
-        // Temporarily, while on the free Resend tier, we can only send to the verified account email.
-        const adminEmail = ['fhjilyyjg@gmail.com'];
+        // Send email to admins from env var
+        const adminEmailStr = process.env.ADMIN_EMAILS || 'khundaenggarden@gmail.com';
+        const adminEmails = adminEmailStr.split(',').map(e => e.trim()).filter(Boolean);
+        
         const html = contactFormEmail(
             validated.name,
             validated.email,
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
         }
 
         const result = await sendEmail({
-            to: adminEmail,
+            to: adminEmails.length > 0 ? adminEmails : 'khundaenggarden@gmail.com',
             subject: `[ติดต่อจากเว็บ] ${validated.subject}`,
             html,
         });
