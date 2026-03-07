@@ -505,9 +505,6 @@ export default async function Home() {
                   ช้อปเลย →
                 </span>
               </div>
-              <div style={{ flex: '1 1 100px', display: 'flex', justifyContent: 'flex-end', fontSize: 'clamp(3rem, 15vw, 6rem)', opacity: 0.8, zIndex: 0 }}>
-                🌹🌿
-              </div>
             </InlineEdit>
           </Link>
         </ScrollAnimation>
