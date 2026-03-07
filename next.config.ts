@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || 'your-secret-key-change-in-production',
     NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'http://suankhundaeng.appviza.com',
     JWT_SECRET: process.env.JWT_SECRET || 'fallback-for-development-jwt-secret',
-    RESEND_API_KEY: process.env.RESEND_API_KEY
+    SENDGRID_API_KEY: process.env.SENDGRID_API_KEY
   },
   images: {
     remotePatterns: [

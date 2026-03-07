@@ -1,8 +1,9 @@
-import { Resend } from 'resend';
+import { SendGridMail } from '@sendgrid/mail';
 
-// Initialize Resend with API key from environment
-// Provide a dummy key if missing during build time to prevent "Missing API key" error
-const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key_for_build');
+// Initialize SendGrid with API key from environment
+// Provide a dummy key if missing during build time to prevent errors
+const sg = new SendGridMail();
+sg.setApiKey(process.env.SENDGRID_API_KEY || 'SG.dummy_key_for_build');
 
 interface PasswordResetEmailParams {
     email: string;
@@ -19,9 +20,9 @@ export async function sendPasswordResetEmail({
     userName
 }: PasswordResetEmailParams) {
     try {
-        const { data, error } = await resend.emails.send({
-            from: 'Khun Daeng Garden <onboarding@resend.dev>',
+        const msg = {
             to: email,
+            from: 'khundaenggarden@gmail.com', // ต้อง verified sender ใน SendGrid
             subject: 'รีเซ็ตรหัสผ่าน - Khun Daeng Garden',
             html: `
                 <!DOCTYPE html>
@@ -136,15 +137,11 @@ export async function sendPasswordResetEmail({
                 </body>
                 </html>
             `
-        });
+        };
 
-        if (error) {
-            console.error('❌ Resend error:', error);
-            throw new Error(error.message || 'Failed to send email');
-        }
-
-        console.log('✅ Password reset email sent:', data);
-        return { success: true, data };
+        await sg.send(msg);
+        console.log('✅ Password reset email sent via SendGrid');
+        return { success: true, data: msg };
 
     } catch (error) {
         console.error('❌ Error sending password reset email:', error);
@@ -153,24 +150,20 @@ export async function sendPasswordResetEmail({
 }
 
 /**
- * Send a generic email using Resend
+ * Send a generic email using SendGrid
  */
 export async function sendEmail({ to, subject, html }: { to: string | string[]; subject: string; html: string }) {
     try {
-        const { data, error } = await resend.emails.send({
-            from: 'Khun Daeng Garden <onboarding@resend.dev>',
+        const msg = {
             to: Array.isArray(to) ? to : [to],
+            from: 'khundaenggarden@gmail.com',
             subject,
             html,
-        });
+        };
 
-        if (error) {
-            console.error('❌ Resend error:', error);
-            return { success: false, error: error.message };
-        }
-
-        console.log('✅ Email sent:', data);
-        return { success: true, data };
+        await sg.send(msg);
+        console.log('✅ Email sent via SendGrid');
+        return { success: true, data: msg };
     } catch (error) {
         console.error('❌ Error sending email:', error);
         return { success: false, error: 'Email service unavailable' };
@@ -294,20 +287,16 @@ export function verificationEmailTemplate(userName: string, verifyLink: string):
  */
 export async function sendVerificationEmail({ email, verifyLink, userName }: { email: string; verifyLink: string; userName: string }) {
     try {
-        const { data, error } = await resend.emails.send({
-            from: 'Khun Daeng Garden <onboarding@resend.dev>',
+        const msg = {
             to: email,
+            from: 'khundaenggarden@gmail.com',
             subject: 'ยืนยันอีเมล - Khun Daeng Garden',
             html: verificationEmailTemplate(userName, verifyLink)
-        });
+        };
 
-        if (error) {
-            console.error('❌ Verification email error:', error);
-            return { success: false, error: error.message };
-        }
-
-        console.log('✅ Verification email sent to:', email);
-        return { success: true, data };
+        await sg.send(msg);
+        console.log('✅ Verification email sent via SendGrid');
+        return { success: true, data: msg };
     } catch (error) {
         console.error('❌ Error sending verification email:', error);
         return { success: false, error: 'Email service unavailable' };
@@ -353,20 +342,16 @@ export function adminMagicLinkTemplate(userName: string, magicLink: string): str
  */
 export async function sendAdminMagicLinkEmail({ email, magicLink, userName }: { email: string; magicLink: string; userName: string }) {
     try {
-        const { data, error } = await resend.emails.send({
-            from: 'Khun Daeng Garden <onboarding@resend.dev>',
+        const msg = {
             to: email,
+            from: 'khundaenggarden@gmail.com',
             subject: 'ลิงก์การเข้าสู่ระบบสำหรับแอดมิน - Khun Daeng Garden',
             html: adminMagicLinkTemplate(userName, magicLink)
-        });
+        };
 
-        if (error) {
-            console.error('❌ Admin magic link email error:', error);
-            return { success: false, error: error.message };
-        }
-
-        console.log('✅ Admin magic link email sent to:', email);
-        return { success: true, data };
+        await sg.send(msg);
+        console.log('✅ Admin magic link email sent via SendGrid');
+        return { success: true, data: msg };
     } catch (error) {
         console.error('❌ Error sending admin magic link email:', error);
         return { success: false, error: 'Email service unavailable' };
