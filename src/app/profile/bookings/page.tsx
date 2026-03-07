@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -36,6 +36,8 @@ interface Booking {
 
 export default function MyBookingsPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const bookingId = searchParams?.get('booking');
     const { user, isLoading: isAuthLoading } = useAuth();
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -54,6 +56,28 @@ export default function MyBookingsPage() {
         fetchBookings();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, isAuthLoading, router]);
+
+    // Highlight booking when URL parameter is present
+    useEffect(() => {
+        if (bookingId && bookings.length > 0) {
+            const targetBooking = bookings.find(b => b.id === bookingId || b.refCode === bookingId);
+            if (targetBooking) {
+                // Scroll to the booking
+                setTimeout(() => {
+                    const element = document.getElementById(`booking-${targetBooking.id}`);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Add highlight effect
+                        element.style.backgroundColor = '#fef3c7';
+                        setTimeout(() => {
+                            element.style.transition = 'background-color 2s';
+                            element.style.backgroundColor = '';
+                        }, 2000);
+                    }
+                }, 500);
+            }
+        }
+    }, [bookingId, bookings]);
 
     const fetchBookings = async () => {
         if (!user) return;
@@ -224,7 +248,7 @@ export default function MyBookingsPage() {
                             : null;
 
                         return (
-                            <Card key={booking.id}>
+                            <Card key={booking.id} id={`booking-${booking.id}`}>
                                 <CardHeader style={{ borderBottom: '1px solid #e5e7eb' }}>
                                     <div className="booking-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>

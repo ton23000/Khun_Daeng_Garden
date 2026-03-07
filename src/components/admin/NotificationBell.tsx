@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface AdminNotification {
     id: string;
@@ -16,6 +17,7 @@ export default function NotificationBell() {
     const [notifications, setNotifications] = useState<AdminNotification[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
+    const router = useRouter();
 
     const fetchNotifications = useCallback(async () => {
         try {
@@ -51,6 +53,39 @@ export default function NotificationBell() {
         }
     };
 
+    const getNotificationUrl = (notif: AdminNotification) => {
+        // If notification has a bookingId, navigate to the specific booking
+        if (notif.bookingId) {
+            return `/admin/orders?booking=${notif.bookingId}`;
+        }
+        
+        // Default navigation based on notification type
+        switch (notif.type) {
+            case 'order':
+                return '/admin/orders';
+            case 'booking':
+                return '/admin/orders';
+            case 'user':
+                return '/admin/customers';
+            case 'review':
+                return '/admin/reviews';
+            default:
+                return '/admin/orders';
+        }
+    };
+
+    const handleNotificationClick = async (notif: AdminNotification) => {
+        // Mark as read if unread
+        if (!notif.read) {
+            await markAsRead([notif.id]);
+        }
+        
+        // Navigate to appropriate page
+        const url = getNotificationUrl(notif);
+        router.push(url);
+        setIsOpen(false);
+    };
+
     const markAllAsRead = async () => {
         try {
             await fetch('/api/admin/notifications', {
@@ -62,6 +97,7 @@ export default function NotificationBell() {
         } catch (error) {
             console.error('Failed to mark all as read:', error);
         }
+    };
     };
 
     return (
@@ -167,15 +203,16 @@ export default function NotificationBell() {
                                 notifications.map(notif => (
                                     <div
                                         key={notif.id}
-                                        onClick={() => {
-                                            if (!notif.read) markAsRead([notif.id]);
-                                        }}
+                                        onClick={() => handleNotificationClick(notif)}
                                         style={{
                                             padding: '1rem',
                                             borderBottom: '1px solid #f3f4f6',
                                             backgroundColor: notif.read ? 'white' : '#eff6ff',
                                             cursor: 'pointer',
-                                            transition: 'background 0.2s'
+                                            transition: 'background 0.2s',
+                                            '&:hover': {
+                                                backgroundColor: notif.read ? '#f9fafb' : '#dbeafe'
+                                            }
                                         }}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
@@ -190,26 +227,21 @@ export default function NotificationBell() {
                                                 }} />
                                             )}
                                             <div style={{ flex: 1 }}>
-                                                <p style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+                                                <p style={{ fontSize: '0.875rem', marginBottom: '0.25rem', fontWeight: notif.read ? 'normal' : '600' }}>
                                                     {notif.message}
                                                 </p>
                                                 <p style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
                                                     {new Date(notif.createdAt).toLocaleString('th-TH')}
                                                 </p>
                                                 {notif.bookingId && (
-                                                    <Link
-                                                        href="/admin/orders"
-                                                        style={{
-                                                            fontSize: '0.75rem',
-                                                            color: 'var(--primary)',
-                                                            textDecoration: 'underline',
-                                                            marginTop: '0.25rem',
-                                                            display: 'inline-block'
-                                                        }}
-                                                        onClick={() => setIsOpen(false)}
-                                                    >
-                                                        ดูออเดอร์
-                                                    </Link>
+                                                    <div style={{
+                                                        fontSize: '0.75rem',
+                                                        color: 'var(--primary)',
+                                                        marginTop: '0.25rem',
+                                                        display: 'inline-block'
+                                                    }}>
+                                                        → ดูรายละเอียดออเดอร์
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>

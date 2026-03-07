@@ -29,6 +29,21 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
 
     const [searchQuery, setSearchQuery] = useState('');
 
+    const handleNotificationClick = (note: any) => {
+        // Mark as read
+        markAllAsRead();
+        setShowNotifications(false);
+        
+        // Extract booking ID from message if present
+        const bookingMatch = note.message.match(/#([A-Z0-9]+)/);
+        if (bookingMatch) {
+            router.push(`/profile/bookings?booking=${bookingMatch[1]}`);
+        } else {
+            // Default to bookings page
+            router.push('/profile/bookings');
+        }
+    };
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (searchQuery.trim()) {
@@ -189,14 +204,22 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
                                                 {notifications.map(note => (
                                                     <div
                                                         key={note.id}
+                                                        onClick={() => handleNotificationClick(note)}
                                                         style={{
                                                             padding: '0.75rem 1rem',
                                                             borderBottom: '1px solid #f3f4f6',
                                                             backgroundColor: note.read ? 'white' : '#f0fdf4',
-                                                            transition: 'background-color 0.2s'
+                                                            transition: 'background-color 0.2s',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.backgroundColor = note.read ? '#f9fafb' : '#dcfce7';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.backgroundColor = note.read ? 'white' : '#f0fdf4';
                                                         }}
                                                     >
-                                                        <div style={{ fontSize: '0.875rem', marginBottom: '0.25rem', color: '#1f2937' }}>
+                                                        <div style={{ fontSize: '0.875rem', marginBottom: '0.25rem', color: '#1f2937', fontWeight: note.read ? 'normal' : '600' }}>
                                                             {note.message}
                                                         </div>
                                                         <div style={{ fontSize: '0.75rem', color: '#9ca3af' }}>

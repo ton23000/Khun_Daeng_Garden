@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/lib/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 // Actually, better to remove the line.
 import SlipViewer from '@/components/SlipViewer';
 import { SearchBar } from '@/components/admin/SearchBar';
@@ -46,6 +46,8 @@ type SortConfig = { key: string; direction: 'asc' | 'desc' } | null;
 export default function OrdersPage() {
     const { user, isLoading } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const bookingId = searchParams?.get('booking');
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
     const [trees, setTrees] = useState<{ id: string; stock: number; reserved: number;[key: string]: unknown }[]>([]);
@@ -96,6 +98,28 @@ export default function OrdersPage() {
             fetchTrees();
         }
     }, [user, isLoading, router, fetchBookings, fetchTrees]);
+
+    // Highlight booking when URL parameter is present
+    useEffect(() => {
+        if (bookingId && bookings.length > 0) {
+            const targetBooking = bookings.find(b => b.id === bookingId || b.refCode === bookingId);
+            if (targetBooking) {
+                // Scroll to the booking
+                setTimeout(() => {
+                    const element = document.getElementById(`booking-${targetBooking.id}`);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Add highlight effect
+                        element.style.backgroundColor = '#fef3c7';
+                        setTimeout(() => {
+                            element.style.transition = 'background-color 2s';
+                            element.style.backgroundColor = '';
+                        }, 2000);
+                    }
+                }, 500);
+            }
+        }
+    }, [bookingId, bookings]);
 
     const handleStatusClick = (status: string | null) => {
         setStatusFilter(status);
@@ -458,7 +482,7 @@ export default function OrdersPage() {
                     <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>ไม่มีออเดอร์</div>
                 ) : (
                     filteredBookings.map(booking => (
-                        <Card key={booking.id} style={{ border: '1px solid #e5e7eb', marginBottom: '1rem' }}>
+                        <Card key={booking.id} id={`booking-${booking.id}`} style={{ border: '1px solid #e5e7eb', marginBottom: '1rem' }}>
                             <CardContent style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ fontWeight: 'bold' }}>{booking.refCode}</span>
@@ -562,7 +586,7 @@ export default function OrdersPage() {
                                         <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center' }}>ไม่มีออเดอร์</td></tr>
                                     ) : (
                                         filteredBookings.map(booking => (
-                                            <tr key={booking.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                                            <tr key={booking.id} id={`booking-${booking.id}`} style={{ borderBottom: '1px solid #e5e7eb' }}>
                                                 <td style={{ padding: '1rem', fontWeight: 500 }}>{booking.refCode}</td>
                                                 <td style={{ padding: '1rem' }}>
                                                     <div>{booking.user.firstName} {booking.user.lastName}</div>
