@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     JWT_SECRET: process.env.JWT_SECRET || 'fallback-for-development-jwt-secret',
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://khundaenggarden.vercel.app',
-    ADMIN_EMAILS: process.env.ADMIN_EMAILS || 'khundaenggarden@gmail.com'
+    ADMIN_EMAILS: process.env.ADMIN_EMAILS || 'fhjilyyjg@gmail.com'
   },
   images: {
     remotePatterns: [
