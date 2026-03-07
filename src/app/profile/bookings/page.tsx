@@ -218,6 +218,7 @@ export default function MyBookingsPage() {
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     {bookings.map(booking => {
+                        // Get the first item's image for this specific booking
                         const firstImage = booking.items[0]?.tree?.images
                             ? JSON.parse(booking.items[0].tree.images)[0]
                             : null;

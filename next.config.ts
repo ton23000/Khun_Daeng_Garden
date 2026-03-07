@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'http://suankhundaeng.appviza.com',
     JWT_SECRET: process.env.JWT_SECRET || 'fallback-for-development-jwt-secret',
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://khundaenggarden.vercel.app'
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://khundaenggarden.vercel.app',
+    ADMIN_EMAILS: process.env.ADMIN_EMAILS || 'khundaenggarden@gmail.com'
   },
   images: {
     remotePatterns: [
