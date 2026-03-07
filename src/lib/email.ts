@@ -1,9 +1,8 @@
-import { SendGridMail } from '@sendgrid/mail';
+import sgMail from '@sendgrid/mail';
 
 // Initialize SendGrid with API key from environment
 // Provide a dummy key if missing during build time to prevent errors
-const sg = new SendGridMail();
-sg.setApiKey(process.env.SENDGRID_API_KEY || 'SG.dummy_key_for_build');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || 'SG.dummy_key_for_build');
 
 interface PasswordResetEmailParams {
     email: string;
@@ -139,7 +138,7 @@ export async function sendPasswordResetEmail({
             `
         };
 
-        await sg.send(msg);
+        await sgMail.send(msg);
         console.log('✅ Password reset email sent via SendGrid');
         return { success: true, data: msg };
 
@@ -161,7 +160,7 @@ export async function sendEmail({ to, subject, html }: { to: string | string[]; 
             html,
         };
 
-        await sg.send(msg);
+        await sgMail.send(msg);
         console.log('✅ Email sent via SendGrid');
         return { success: true, data: msg };
     } catch (error) {
@@ -294,7 +293,7 @@ export async function sendVerificationEmail({ email, verifyLink, userName }: { e
             html: verificationEmailTemplate(userName, verifyLink)
         };
 
-        await sg.send(msg);
+        await sgMail.send(msg);
         console.log('✅ Verification email sent via SendGrid');
         return { success: true, data: msg };
     } catch (error) {
@@ -349,7 +348,7 @@ export async function sendAdminMagicLinkEmail({ email, magicLink, userName }: { 
             html: adminMagicLinkTemplate(userName, magicLink)
         };
 
-        await sg.send(msg);
+        await sgMail.send(msg);
         console.log('✅ Admin magic link email sent via SendGrid');
         return { success: true, data: msg };
     } catch (error) {
