@@ -10,11 +10,6 @@ const getJwtSecretKey = () => {
 };
 
 export async function GET() {
-    const dev = process.env.NODE_ENV !== 'production';
-    if (dev) {
-        return NextResponse.json(MOCK_SITE_SETTINGS);
-    }
-
     try {
         const settings = await prisma.siteSetting.findMany();
 
@@ -27,7 +22,8 @@ export async function GET() {
         return NextResponse.json(settingsMap);
     } catch (error) {
         console.error('Error fetching settings:', error);
-        return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+        // Fallback to mock data only if database fails
+        return NextResponse.json(MOCK_SITE_SETTINGS);
     }
 }
 

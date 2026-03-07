@@ -43,9 +43,9 @@ export default async function RootLayout({
   let topBarText = 'ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท';
   let topBarBgColor = '';
   
-  const dev = process.env.NODE_ENV !== 'production';
+  const dev = process.env.NODE_ENV === 'development';
 
-  if (!dev) {
+  if (dev) {
     try {
       const topBarSetting = await prisma.siteSetting.findUnique({
         where: { key: 'top_bar_text' }
