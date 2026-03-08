@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getFirstImageUrl } from '@/lib/imageUtils';
 
 export default function CartPage() {
     const { items, removeItem, updateQuantity, updateDate, clearCart } = useCart();
@@ -130,13 +131,7 @@ export default function CartPage() {
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                 <div style={{ width: '80px', height: '80px', backgroundColor: '#f9fafb', borderRadius: '0.375rem', flexShrink: 0, padding: '0.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e5e7eb' }}>
                                     <img
-                                        src={
-                                            item.images 
-                                                ? (typeof item.images === 'string' 
-                                                    ? JSON.parse(item.images)[0] 
-                                                    : item.images[0])
-                                                : '/placeholder-tree.svg'
-                                        }
+                                        src={getFirstImageUrl(item.images)}
                                         alt={item.name}
                                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                                     />

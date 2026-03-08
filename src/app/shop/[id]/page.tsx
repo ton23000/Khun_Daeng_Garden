@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import ProductDetail from '@/components/ProductDetail';
+import { getAllImageUrls } from '@/lib/imageUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,12 +16,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     notFound();
   }
 
-  let images: string[] = [];
-  try {
-    images = JSON.parse(tree.images);
-  } catch {
-    images = ['/placeholder-tree.svg'];
-  }
+  const images = getAllImageUrls(tree.images);
 
   const tags = tree.tags ? tree.tags.split(',').filter((t: string) => t) : [];
 

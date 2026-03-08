@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import { getFirstImageUrl } from '@/lib/imageUtils';
 
 interface BookingItem {
     id: string;
@@ -211,9 +212,7 @@ export default function MyOrdersPage() {
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     {bookings.map(booking => {
-                        const firstImage = booking.items[0]?.tree?.images
-                            ? JSON.parse(booking.items[0].tree.images)[0]
-                            : null;
+                        const firstImage = getFirstImageUrl(booking.items[0]?.tree?.images);
 
                         return (
                             <Card key={booking.id}>

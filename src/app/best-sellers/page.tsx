@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
 import FavoriteButton from '@/components/FavoriteButton';
+import { getFirstImageUrl } from '@/lib/imageUtils';
 import Link from 'next/link';
 
 interface Tree {
@@ -122,15 +123,7 @@ export default function BestSellersPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
                     {trees.map((tree, index) => {
                         // Parse images safely
-                        let imageUrl = '/placeholder-tree.svg';
-                        try {
-                            const images = JSON.parse(tree.images);
-                            if (images && images.length > 0) {
-                                imageUrl = images[0];
-                            }
-                        } catch {
-                            // Use placeholder if parsing fails
-                        }
+                        const imageUrl = getFirstImageUrl(tree.images);
 
                         return (
                             <ScrollAnimation key={tree.id} animation="fade-up" delay={index * 100}>

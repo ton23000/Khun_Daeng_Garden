@@ -8,6 +8,7 @@ import FavoriteButton from '@/components/FavoriteButton';
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MOCK_TREES } from '@/lib/mock-data';
+import { getFirstImageUrl } from '@/lib/imageUtils';
 
 interface Tree {
     id: string;
@@ -183,21 +184,8 @@ function ShopContent() {
             {/* Product Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem' }}>
                 {filteredTrees.map((tree, index) => {
-                    // Get first image from array
-                    let imageUrl = '/placeholder-tree.svg';
-                    if (tree.images && Array.isArray(tree.images) && tree.images.length > 0) {
-                        imageUrl = tree.images[0];
-                    } else if (typeof tree.images === 'string') {
-                        // Fallback: try to parse if it's a JSON string
-                        try {
-                            const images = JSON.parse(tree.images);
-                            if (images && images.length > 0) {
-                                imageUrl = images[0];
-                            }
-                        } catch {
-                            // Use placeholder if parsing fails
-                        }
-                    }
+                    // Get first image from array using utility
+                    const imageUrl = getFirstImageUrl(tree.images);
 
                     return (
                         <ScrollAnimation key={tree.id} animation="fade-up" delay={index * 100} style={{ height: '100%' }}>

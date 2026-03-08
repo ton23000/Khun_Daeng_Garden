@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import ProductDetail from '@/components/ProductDetail';
 import { notFound } from 'next/navigation';
 import { MOCK_TREES } from '@/lib/mock-data';
+import { getAllImageUrls } from '@/lib/imageUtils';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,12 +40,7 @@ export default async function TreePage({ params }: { params: Promise<{ id: strin
 
     // Adapt DB data to Component Props
     // Images are stored as JSON string in DB, need to parse
-    let images: string[] = [];
-    try {
-        images = JSON.parse(treeData.images);
-    } catch {
-        images = ['/placeholder-tree.svg'];
-    }
+    const images = getAllImageUrls(treeData.images);
 
     // Tags are stored as comma-separated string
     const tags = treeData.tags ? treeData.tags.split(',').filter((t: string) => t) : [];

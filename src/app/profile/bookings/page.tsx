@@ -242,10 +242,15 @@ export default function MyBookingsPage() {
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     {bookings.map(booking => {
-                        // Get the first item's image for this specific booking
-                        const firstImage = booking.items[0]?.tree?.images
-                            ? JSON.parse(booking.items[0].tree.images)[0]
-                            : null;
+                        let firstImage = null;
+                        if (booking.items[0]?.tree?.images) {
+                            try {
+                                const parsed = JSON.parse(booking.items[0].tree.images);
+                                firstImage = Array.isArray(parsed) ? parsed[0] : parsed;
+                            } catch {
+                                firstImage = booking.items[0].tree.images;
+                            }
+                        }
 
                         return (
                             <Card key={booking.id} id={`booking-${booking.id}`}>

@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
+
 
 export async function POST(req: NextRequest) {
     try {
@@ -13,12 +11,6 @@ export async function POST(req: NextRequest) {
         }
 
         const uploadedUrls: string[] = [];
-        const uploadDir = join(process.cwd(), 'public', 'uploads', 'trees');
-
-        // Create directory if it doesn't exist
-        if (!existsSync(uploadDir)) {
-            await mkdir(uploadDir, { recursive: true });
-        }
 
         for (const file of files) {
             // Validate file type
@@ -31,20 +23,15 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ error: 'ไฟล์รูปภาพต้องมีขนาดไม่เกิน 5MB' }, { status: 400 });
             }
 
-            // Generate unique filename
-            const timestamp = Date.now();
-            const randomStr = Math.random().toString(36).substring(2, 8);
-            const extension = file.name.split('.').pop();
-            const filename = `tree_${timestamp}_${randomStr}.${extension}`;
-
-            // Convert file to buffer and save
             const bytes = await file.arrayBuffer();
             const buffer = Buffer.from(bytes);
-            const filepath = join(uploadDir, filename);
-            await writeFile(filepath, buffer);
 
-            // Store the public URL
-            uploadedUrls.push(`/uploads/trees/${filename}`);
+            // Convert to base64 data URI
+            const base64Data = buffer.toString('base64');
+            const mimeType = file.type || 'image/jpeg';
+            const dataUri = `data:${mimeType};base64,${base64Data}`;
+
+            uploadedUrls.push(dataUri);
         }
 
         return NextResponse.json({
