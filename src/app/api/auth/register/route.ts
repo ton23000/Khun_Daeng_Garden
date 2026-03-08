@@ -65,6 +65,23 @@ export async function POST(request: Request) {
 
     } catch (error) {
         console.error('Registration error:', error);
+        
+        // Handle Zod validation errors
+        if (error instanceof Error && error.name === 'ZodError') {
+            return NextResponse.json(
+                { error: 'ข้อมูลไม่ถูกต้อง: ' + error.message },
+                { status: 400 }
+            );
+        }
+        
+        // Handle Prisma unique constraint errors
+        if (error instanceof Error && error.message.includes('Unique constraint')) {
+            return NextResponse.json(
+                { error: 'เบอร์โทรศัพท์หรืออีเมลนี้ถูกใช้งานแล้ว' },
+                { status: 400 }
+            );
+        }
+        
         return NextResponse.json(
             { error: 'Internal server error' },
             { status: 500 }

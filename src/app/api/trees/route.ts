@@ -19,24 +19,61 @@ const treeSchema = z.object({
 });
 
 export async function GET() {
-
-
     try {
+        // Add caching headers
+        const headers = {
+            'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+        };
+
         const trees = await prisma.tree.findMany({
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                price: true,
+                category: true,
+                images: true,
+                tags: true,
+                growthTime: true,
+                stock: true,
+                reserved: true,
+                sold: true,
+                isPromotion: true,
+                originalPrice: true,
+                promotionName: true,
+                promotionEndDate: true,
+                status: true,
+                createdAt: true,
+                updatedAt: true
+            }
         });
 
-        // Parse JSON strings back to arrays and include all fields
-        const formattedTrees = trees.map(tree => ({
-            ...tree,
-            images: JSON.parse(tree.images),
-            tags: tree.tags.split(',').filter(t => t),
-            stock: tree.stock || 0,
-            reserved: tree.reserved || 0,
-            sold: tree.sold || 0
-        }));
+        // Optimize JSON parsing - parse only once per tree
+        const formattedTrees = trees.map(tree => {
+            try {
+                return {
+                    ...tree,
+                    images: JSON.parse(tree.images || '[]'),
+                    tags: tree.tags ? tree.tags.split(',').filter(t => t.trim()) : [],
+                    stock: tree.stock || 0,
+                    reserved: tree.reserved || 0,
+                    sold: tree.sold || 0
+                };
+            } catch (parseError) {
+                console.error('Error parsing tree data:', tree.id, parseError);
+                return {
+                    ...tree,
+                    images: [],
+                    tags: tree.tags ? tree.tags.split(',').filter(t => t.trim()) : [],
+                    stock: tree.stock || 0,
+                    reserved: tree.reserved || 0,
+                    sold: tree.sold || 0
+                };
+            }
+        });
 
-        return NextResponse.json(formattedTrees);
+        return NextResponse.json(formattedTrees, { headers });
     } catch (error) {
         console.error('Error fetching trees:', error);
         return NextResponse.json({ error: 'Failed to fetch trees' }, { status: 500 });
