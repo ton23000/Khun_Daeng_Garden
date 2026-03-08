@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'khundaenggarden.vercel.app',
       },
+      {
+        protocol: 'https',
+        hostname: 'promptpay.io',
+      },
     ],
     unoptimized: true
   },

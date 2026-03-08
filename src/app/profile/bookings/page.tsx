@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/Button';
 import SlipViewer from '@/components/SlipViewer';
 import ReviewModal from '@/components/ReviewModal';
 import Link from 'next/link';
+import { QRCodeSVG } from 'qrcode.react';
+import { generatePromptPayPayload } from '@/lib/promptpay';
 
 interface BookingItem {
     id: string;
@@ -365,7 +367,7 @@ export default function MyBookingsPage() {
                                                         💰 ข้อมูลการชำระเงิน
                                                     </h4>
 
-                                                    {/* PromptPay QR Code */}
+                                                    {/* PromptPay QR Code - generated locally, no CORS issues */}
                                                     <div style={{
                                                         backgroundColor: '#f0f9ff',
                                                         padding: '1rem',
@@ -377,23 +379,21 @@ export default function MyBookingsPage() {
                                                         <p style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#0369a1', fontSize: '0.875rem' }}>
                                                             💳 สแกน QR Code เพื่อชำระเงิน
                                                         </p>
-                                                        <div style={{
-                                                            backgroundColor: 'white',
-                                                            padding: '0.75rem',
-                                                            borderRadius: '0.5rem',
-                                                            display: 'inline-block',
-                                                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                                                        }}>
-                                                            <img
-                                                                id={`qr-img-${booking.id}`}
-                                                                src={`https://promptpay.io/0616900908/${booking.deposit}.png`}
-                                                                alt="PromptPay QR Code"
-                                                                crossOrigin="anonymous"
-                                                                style={{
-                                                                    width: '200px',
-                                                                    height: '200px',
-                                                                    display: 'block'
-                                                                }}
+                                                        <div
+                                                            id={`qr-container-${booking.id}`}
+                                                            style={{
+                                                                backgroundColor: 'white',
+                                                                padding: '0.75rem',
+                                                                borderRadius: '0.5rem',
+                                                                display: 'inline-block',
+                                                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                                                            }}
+                                                        >
+                                                            <QRCodeSVG
+                                                                id={`qr-svg-${booking.id}`}
+                                                                value={generatePromptPayPayload('0616900908', booking.deposit)}
+                                                                size={200}
+                                                                level="M"
                                                             />
                                                         </div>
                                                         <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
@@ -402,25 +402,24 @@ export default function MyBookingsPage() {
                                                         {/* Download Button */}
                                                         <button
                                                             onClick={() => {
-                                                                const qrUrl = `https://promptpay.io/0616900908/${booking.deposit}.png`;
+                                                                const svgEl = document.getElementById(`qr-svg-${booking.id}`) as SVGSVGElement | null;
+                                                                if (!svgEl) return;
+                                                                const svgData = new XMLSerializer().serializeToString(svgEl);
                                                                 const canvas = document.createElement('canvas');
-                                                                canvas.width = 200;
-                                                                canvas.height = 200;
-                                                                const ctx = canvas.getContext('2d');
+                                                                canvas.width = 220;
+                                                                canvas.height = 220;
+                                                                const ctx = canvas.getContext('2d')!;
+                                                                ctx.fillStyle = 'white';
+                                                                ctx.fillRect(0, 0, 220, 220);
                                                                 const img = new Image();
-                                                                img.crossOrigin = 'anonymous';
                                                                 img.onload = () => {
-                                                                    ctx?.drawImage(img, 0, 0, 200, 200);
+                                                                    ctx.drawImage(img, 10, 10, 200, 200);
                                                                     const link = document.createElement('a');
                                                                     link.download = `QR-PromptPay-${booking.refCode}.png`;
                                                                     link.href = canvas.toDataURL('image/png');
                                                                     link.click();
                                                                 };
-                                                                img.onerror = () => {
-                                                                    // Fallback: open in new tab if CORS fails
-                                                                    window.open(qrUrl, '_blank');
-                                                                };
-                                                                img.src = qrUrl;
+                                                                img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
                                                             }}
                                                             style={{
                                                                 marginTop: '0.75rem',
