@@ -19,7 +19,10 @@ const nextConfig: NextConfig = {
     ],
     unoptimized: true
   },
-  webpack: (config) => {
+  // Add empty turbopack config to silence the warning
+  turbopack: {},
+  // Move webpack config to work with both webpack and turbopack
+  webpack: (config, { isServer }) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,

@@ -14,6 +14,7 @@ const prompt = Prompt({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://khundaenggarden.vercel.app'),
   title: 'สวนคุณแดงการ์เด้น (Khun Daeng Garden) - ขายต้นไม้พรีเมียม',
   description: 'ศูนย์จำหน่ายต้นไม้มงคล ไม้ประดับ ต้นไม้ตกแต่งบ้าน โดยผู้เชี่ยวชาญจาก สวนคุณแดงการ์เด้น (Khun Daeng Garden)',
   keywords: ['ขายต้นไม้', 'ต้นไม้มงคล', 'ไม้ประดับ', 'คุณแดงการ์เด้น', 'Khun Daeng Garden', 'ต้นไม้ตกแต่งบ้าน', 'ร้านขายต้นไม้ ลำปาง'],
