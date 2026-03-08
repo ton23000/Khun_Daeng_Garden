@@ -77,6 +77,7 @@ export async function POST(
             // Notify customer
             await prisma.notification.create({
                 data: {
+                    id: crypto.randomUUID(),
                     userId: booking.userId,
                     message: `✅ ออเดอร์ #${booking.refCode} ได้รับการอนุมัติแล้ว กรุณาชำระเงินมัดจำภายใน 24 ชม.`,
                     type: 'success',
@@ -104,6 +105,7 @@ export async function POST(
             // Notify customer
             await prisma.notification.create({
                 data: {
+                    id: crypto.randomUUID(),
                     userId: booking.userId,
                     message: `❌ ขออภัย ออเดอร์ #${booking.refCode} ถูกยกเลิก เนื่องจากสินค้าไม่เพียงพอ`,
                     type: 'error',

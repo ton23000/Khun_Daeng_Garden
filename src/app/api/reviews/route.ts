@@ -110,6 +110,7 @@ export async function POST(req: NextRequest) {
         // Create review
         const review = await prisma.review.create({
             data: {
+                id: crypto.randomUUID(),
                 userId,
                 bookingId,
                 treeId,

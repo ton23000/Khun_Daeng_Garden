@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,7 +58,10 @@ export async function GET() {
             const existing = await prisma.category.findUnique({ where: { name: catName } }).catch(() => null);
             if (!existing) {
                 await prisma.category.create({
-                    data: { name: catName }
+                    data: {
+                        id: crypto.randomUUID(),
+                        name: catName
+                    }
                 }).catch(() => { });
                 results.push(`Added category: ${catName}`);
             }

@@ -119,6 +119,7 @@ export async function POST(req: NextRequest) {
             // 1. Create booking
             const newBooking = await tx.booking.create({
                 data: {
+                    id: crypto.randomUUID(),
                     userId: validated.userId,
                     status: isPreOrder ? 'PRE_ORDER' : 'PENDING',
                     totalPrice: validated.totalPrice,
@@ -128,6 +129,7 @@ export async function POST(req: NextRequest) {
                     refCode: `BK${Date.now().toString(36).toUpperCase()}${Math.floor(Math.random() * 1000)}`,
                     items: {
                         create: validated.items.map(item => ({
+                            id: crypto.randomUUID(),
                             treeId: item.treeId,
                             quantity: item.quantity,
                             price: item.price

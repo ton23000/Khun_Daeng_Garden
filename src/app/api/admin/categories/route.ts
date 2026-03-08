@@ -23,7 +23,10 @@ export async function POST(req: NextRequest) {
         const validated = CategorySchema.parse(body);
 
         const category = await prisma.category.create({
-            data: { name: validated.name }
+            data: {
+                id: crypto.randomUUID(),
+                name: validated.name
+            }
         });
 
         return NextResponse.json(category, { status: 201 });

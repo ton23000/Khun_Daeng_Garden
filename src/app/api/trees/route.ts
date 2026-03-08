@@ -89,6 +89,7 @@ export async function POST(request: Request) {
 
         const tree = await prisma.tree.create({
             data: {
+                id: crypto.randomUUID(),
                 name: validated.name,
                 description: validated.description,
                 price: validated.price,

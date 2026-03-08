@@ -121,6 +121,7 @@ export async function PUT(
                 try {
                     await prisma.notification.create({
                         data: {
+                            id: crypto.randomUUID(),
                             userId: booking.userId,
                             message,
                             type,
@@ -304,6 +305,7 @@ export async function PATCH(
                 try {
                     await prisma.notification.create({
                         data: {
+                            id: crypto.randomUUID(),
                             userId: booking.userId,
                             message,
                             type,

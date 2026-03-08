@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
         try {
             await prisma.contactMessage.create({
                 data: {
+                    id: crypto.randomUUID(),
                     name: validated.name,
                     email: validated.email,
                     phone: validated.phone || null,
