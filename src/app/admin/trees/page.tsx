@@ -68,6 +68,20 @@ export default function AdminTreesPage() {
     const [discountValue, setDiscountValue] = useState<number>(0);
 
     useEffect(() => {
+        if (formData.isPromotion && formData.originalPrice > 0) {
+            let newPrice = formData.originalPrice;
+            if (discountType === 'percent') {
+                newPrice = Math.round(formData.originalPrice * (1 - (discountValue || 0) / 100));
+            } else {
+                newPrice = discountValue || 0;
+            }
+            if (formData.price !== newPrice) {
+                setFormData(prev => ({ ...prev, price: newPrice }));
+            }
+        }
+    }, [discountType, discountValue, formData.originalPrice, formData.isPromotion, formData.price]);
+
+    useEffect(() => {
         if (isAuthLoading) return;
         if (!user || user.role !== 'admin') {
             router.push('/login');
@@ -265,8 +279,8 @@ export default function AdminTreesPage() {
         
         // Validation for promotion
         if (formData.isPromotion) {
-            if (formData.price <= 0) {
-                alert('ราคาปัจจุบันต้องมากกว่า 0');
+            if (formData.price < 0) {
+                alert('ราคาโปรโมชันไม่สามารถต่ำกว่า 0 ได้');
                 return;
             }
             
@@ -275,8 +289,8 @@ export default function AdminTreesPage() {
                 return;
             }
             
-            if (formData.originalPrice <= formData.price) {
-                alert('ราคาเดิมต้องมากกว่าราคาปัจจุบันในโปรโมชั่น');
+            if (formData.price > formData.originalPrice) {
+                alert('ราคาโปรโมชันต้องน้อยกว่าหรือเท่ากับราคาเดิมของต้นไม้');
                 return;
             }
         }
@@ -334,7 +348,7 @@ export default function AdminTreesPage() {
             tags: tree.tags || [],
             growthTime: tree.growthTime || '',
             isPromotion: tree.isPromotion || false,
-            originalPrice: tree.originalPrice || 0,
+            originalPrice: tree.originalPrice || tree.price,
             promotionName: tree.promotionName || '',
             promotionEndDate: tree.promotionEndDate ? new Date(tree.promotionEndDate).toISOString().split('T')[0] : '',
             stock: tree.stock || 0
@@ -511,10 +525,17 @@ export default function AdminTreesPage() {
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                                     <Input 
-                                        label="ราคา (บาท)" 
+                                        label={formData.isPromotion ? "ราคาปกติ (บาท)" : "ราคา (บาท)"} 
                                         type="number" 
-                                        value={formData.price} 
-                                        onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} 
+                                        value={formData.isPromotion ? formData.originalPrice : formData.price} 
+                                        onChange={e => {
+                                            const val = Number(e.target.value);
+                                            if (formData.isPromotion) {
+                                                setFormData({ ...formData, originalPrice: val });
+                                            } else {
+                                                setFormData({ ...formData, price: val, originalPrice: val });
+                                            }
+                                        }} 
                                         min="0"
                                         required 
                                     />
@@ -681,7 +702,14 @@ export default function AdminTreesPage() {
                                             <input
                                                 type="checkbox"
                                                 checked={formData.isPromotion}
-                                                onChange={e => setFormData({ ...formData, isPromotion: e.target.checked })}
+                                                onChange={e => {
+                                                    const checked = e.target.checked;
+                                                    setFormData(prev => ({ 
+                                                        ...prev, 
+                                                        isPromotion: checked,
+                                                        originalPrice: checked ? (prev.originalPrice || prev.price) : prev.originalPrice 
+                                                    }));
+                                                }}
                                                 style={{ width: '18px', height: '18px', accentColor: '#dc2626' }}
                                             />
                                             <span style={{ fontWeight: 'bold', color: '#dc2626', fontSize: '1rem' }}>🔥 เปิดโปรโมชั่น</span>
@@ -774,25 +802,16 @@ export default function AdminTreesPage() {
                                                 </div>
                                             </div>
 
-                                            {/* Promotion Details */}
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                                <Input
-                                                    label="ราคาเดิม (บาท)"
-                                                    type="number"
-                                                    value={formData.originalPrice}
-                                                    onChange={e => setFormData({ ...formData, originalPrice: Number(e.target.value) })}
-                                                    min="0"
-                                                    required={formData.isPromotion}
-                                                    style={{ backgroundColor: 'white' }}
-                                                />
-                                                <Input
-                                                    label="ราคาขาย (บาท)"
-                                                    type="number"
-                                                    value={formData.price}
-                                                    readOnly
-                                                    style={{ backgroundColor: '#f9fafb' }}
-                                                />
-                                            </div>
+                                            {/* Preview */}
+                                            {discountValue > 0 && formData.originalPrice > 0 && (
+                                                <div style={{ marginTop: '0.5rem', padding: '0.75rem', backgroundColor: '#fef3c7', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
+                                                    {discountType === 'percent' ? (
+                                                        <>ราคาเดิม ฿{(formData.originalPrice).toLocaleString()} → <strong style={{ color: '#dc2626' }}>฿{Math.round(formData.originalPrice * (1 - discountValue / 100)).toLocaleString()}</strong></>
+                                                    ) : (
+                                                        <>ราคาเดิม ฿{(formData.originalPrice).toLocaleString()} → <strong style={{ color: '#dc2626' }}>฿{discountValue.toLocaleString()}</strong> (ลด {formData.originalPrice > 0 ? Math.round((1 - discountValue / formData.originalPrice) * 100) : 0}%)</>
+                                                    )}
+                                                </div>
+                                            )}
 
                                             <div>
                                                 <Input
