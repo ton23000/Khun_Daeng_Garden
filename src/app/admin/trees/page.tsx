@@ -547,28 +547,33 @@ export default function AdminTreesPage() {
                                             <Button type="button" variant="outline" size="sm" onClick={() => setIsCategoryModalOpen(true)} title="เพิ่มหมวดหมู่ใหม่" style={{ fontSize: '1rem', padding: '0 0.5rem', height: 'auto' }}>+</Button>
                                         </div>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.5rem', maxHeight: '150px', overflowY: 'auto' }}>
-                                            {Array.from(new Set([...categories.map(c => c.name), ...(formData.category ? formData.category.split(',').map(c => c.trim()).filter(Boolean) : [])])).sort().map(catName => {
-                                                const currentCats = formData.category ? formData.category.split(',').map(c => c.trim()).filter(Boolean) : [];
-                                                const isSelected = currentCats.includes(catName);
-                                                return (
-                                                    <label key={catName} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.5rem', backgroundColor: isSelected ? '#dcfce7' : '#f3f4f6', borderRadius: '9999px', cursor: 'pointer', fontSize: '0.875rem' }} title={catName}>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={isSelected}
-                                                            onChange={() => {
-                                                                if (isSelected) {
-                                                                    setFormData({ ...formData, category: currentCats.filter(c => c !== catName).join(',') });
-                                                                } else {
-                                                                    setFormData({ ...formData, category: [...currentCats, catName].join(',') });
-                                                                }
-                                                            }}
-                                                            style={{ display: 'none' }}
-                                                        />
-                                                        <span style={{ color: isSelected ? '#166534' : '#374151', fontWeight: isSelected ? 'bold' : 'normal' }}>{catName}</span>
-                                                    </label>
-                                                );
-                                            })}
-                                            {categories.length === 0 && <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>ยังไม่มีหมวดหมู่</span>}
+                                            {(() => {
+                                                const allCats = Array.from(new Set([...categories.map(c => c.name), ...(formData.category ? formData.category.split(',').map(c => c.trim()).filter(Boolean) : [])])).sort();
+                                                if (allCats.length === 0) {
+                                                    return <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>ยังไม่มีหมวดหมู่</span>;
+                                                }
+                                                return allCats.map(catName => {
+                                                    const currentCats = formData.category ? formData.category.split(',').map(c => c.trim()).filter(Boolean) : [];
+                                                    const isSelected = currentCats.includes(catName);
+                                                    return (
+                                                        <label key={catName} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.5rem', backgroundColor: isSelected ? '#dcfce7' : '#f3f4f6', borderRadius: '9999px', cursor: 'pointer', fontSize: '0.875rem' }} title={catName}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={isSelected}
+                                                                onChange={() => {
+                                                                    if (isSelected) {
+                                                                        setFormData({ ...formData, category: currentCats.filter(c => c !== catName).join(',') });
+                                                                    } else {
+                                                                        setFormData({ ...formData, category: [...currentCats, catName].join(',') });
+                                                                    }
+                                                                }}
+                                                                style={{ display: 'none' }}
+                                                            />
+                                                            <span style={{ color: isSelected ? '#166534' : '#374151', fontWeight: isSelected ? 'bold' : 'normal', userSelect: 'none' }}>{catName}</span>
+                                                        </label>
+                                                    );
+                                                });
+                                            })()}
                                         </div>
 
                                     </div>
@@ -852,7 +857,7 @@ export default function AdminTreesPage() {
                 isCategoryModalOpen && (
                     <div style={{
                         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                        backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60
+                        backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
                     }}>
                         <Card style={{ width: '90%', maxWidth: '400px', backgroundColor: 'white' }}>
                             <CardHeader>
