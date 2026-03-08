@@ -19,14 +19,8 @@ const nextConfig: NextConfig = {
     ],
     unoptimized: true
   },
-  // Add turbopack config to match webpack aliases
-  turbopack: {
-    resolveAlias: {
-      fs: false,
-      net: false,
-      tls: false,
-    },
-  },
+  // Add empty turbopack config to silence the webpack conflict error
+  turbopack: {},
   // Move webpack config to work with both webpack and turbopack
   webpack: (config, { isServer }) => {
     config.resolve.fallback = {
