@@ -258,6 +258,25 @@ export default function AdminTreesPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validation for promotion
+        if (formData.isPromotion) {
+            if (formData.price <= 0) {
+                alert('ราคาปัจจุบันต้องมากกว่า 0');
+                return;
+            }
+            
+            if (!formData.originalPrice || formData.originalPrice <= 0) {
+                alert('ราคาเดิมต้องมากกว่า 0 ในโปรโมชั่น');
+                return;
+            }
+            
+            if (formData.originalPrice <= formData.price) {
+                alert('ราคาเดิมต้องมากกว่าราคาปัจจุบันในโปรโมชั่น');
+                return;
+            }
+        }
+        
         const payload = {
             ...formData,
             images: formData.images, // Already an array
@@ -475,7 +494,14 @@ export default function AdminTreesPage() {
                                     />
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                                    <Input label="ราคา (บาท)" type="number" value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} required />
+                                    <Input 
+                                        label="ราคา (บาท)" 
+                                        type="number" 
+                                        value={formData.price} 
+                                        onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} 
+                                        min="0"
+                                        required 
+                                    />
                                     <Input label="สต็อกสินค้า" type="number" value={formData.stock || 0} onChange={e => setFormData({ ...formData, stock: Number(e.target.value) })} required />
 
                                     <div>
@@ -646,12 +672,33 @@ export default function AdminTreesPage() {
 
                                     {formData.isPromotion && (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem', backgroundColor: '#fef2f2', borderRadius: '0.5rem', border: '1px solid #fecaca' }}>
-                                            <Input label="ราคาเดิม (บาท)" type="number" value={formData.originalPrice} onChange={e => setFormData({ ...formData, originalPrice: Number(e.target.value) })} />
+                                            <Input 
+                                                label="ราคาเดิม (บาท)" 
+                                                type="number" 
+                                                value={formData.originalPrice} 
+                                                onChange={e => setFormData({ ...formData, originalPrice: Number(e.target.value) })}
+                                                min="0"
+                                                required={formData.isPromotion}
+                                            />
                                             <Input label="ชื่อโปรโมชั่น" value={formData.promotionName} onChange={e => setFormData({ ...formData, promotionName: e.target.value })} placeholder="เช่น ลดราคาต้อนรับปีใหม่" />
                                             <Input label="วันหมดเขต" type="date" value={formData.promotionEndDate} onChange={e => setFormData({ ...formData, promotionEndDate: e.target.value })} />
-                                            {formData.originalPrice > 0 && formData.price > 0 && (
+                                            
+                                            {/* Validation Messages */}
+                                            {formData.originalPrice > 0 && formData.price > 0 && formData.originalPrice <= formData.price && (
                                                 <p style={{ fontSize: '0.875rem', color: '#dc2626', fontWeight: 'bold' }}>
-                                                    💰 ลด {Math.round(((formData.originalPrice - formData.price) / formData.originalPrice) * 100)}% (จาก ฿{formData.originalPrice.toLocaleString()} เหลือ ฿{formData.price.toLocaleString()})
+                                                    ⚠️ ราคาเดิมต้องมากกว่าราคาปัจจุบัน
+                                                </p>
+                                            )}
+                                            
+                                            {formData.originalPrice > 0 && formData.price > 0 && formData.originalPrice > formData.price && (
+                                                <p style={{ fontSize: '0.875rem', color: '#059669', fontWeight: 'bold' }}>
+                                                    ✅ ลด {Math.round(((formData.originalPrice - formData.price) / formData.originalPrice) * 100)}% (จาก ฿{formData.originalPrice.toLocaleString()} เหลือ ฿{formData.price.toLocaleString()})
+                                                </p>
+                                            )}
+                                            
+                                            {formData.price <= 0 && (
+                                                <p style={{ fontSize: '0.875rem', color: '#dc2626', fontWeight: 'bold' }}>
+                                                    ⚠️ ราคาปัจจุบันต้องมากกว่า 0
                                                 </p>
                                             )}
                                         </div>

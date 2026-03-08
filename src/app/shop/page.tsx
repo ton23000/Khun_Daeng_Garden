@@ -94,8 +94,8 @@ function ShopContent() {
 
     
     const processTreeData = (data: Tree[]) => {
-         // Extract unique categories
-         const uniqueCategories = Array.from(new Set(data.flatMap((t: Tree) => t.category ? t.category.split(',').filter(Boolean) : []))).sort() as string[];
+         // Extract unique categories - categories are simple strings, not comma-separated
+         const uniqueCategories = Array.from(new Set(data.map((t: Tree) => t.category).filter(Boolean))).sort() as string[];
          setCategories(uniqueCategories);
 
          // Extract all tags
@@ -134,8 +134,7 @@ function ShopContent() {
         // Filter by categories
         if (filters.selectedCategories.length > 0) {
             filtered = filtered.filter(t => {
-                const treeCategories = t.category ? t.category.split(',').filter(Boolean) : [];
-                return filters.selectedCategories.some(cat => treeCategories.includes(cat));
+                return filters.selectedCategories.includes(t.category);
             });
         }
 
