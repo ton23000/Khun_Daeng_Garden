@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { jwtVerify } from 'jose';
 import { MOCK_SITE_SETTINGS } from '@/lib/mock-data';
+import { revalidatePath } from 'next/cache';
 
 const getJwtSecretKey = () => {
     const secret = process.env.JWT_SECRET;
@@ -56,6 +57,9 @@ export async function POST(request: NextRequest) {
         });
 
         await prisma.$transaction(updates);
+
+        // Force Next.js to re-render the layout with fresh settings
+        revalidatePath('/', 'layout');
 
         return NextResponse.json({ success: true });
     } catch (error) {

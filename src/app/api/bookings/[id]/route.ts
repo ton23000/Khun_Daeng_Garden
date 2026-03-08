@@ -356,6 +356,11 @@ export async function DELETE(
             where: { bookingId: id }
         });
 
+        // Delete related reviews (foreign key constraint)
+        await prisma.review.deleteMany({
+            where: { bookingId: id }
+        });
+
         // Delete related notifications
         await prisma.notification.deleteMany({
             where: { bookingId: id }

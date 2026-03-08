@@ -116,11 +116,16 @@ function ShopContent() {
     const handleFilterChange = (filters: FilterState) => {
         let filtered = [...trees];
 
-        // Apply Search
+        // Always apply URL search query first
         if (initialQuery) {
             const lowerQuery = initialQuery.toLowerCase();
             filtered = filtered.filter(t =>
-                t.name.toLowerCase().includes(lowerQuery)
+                t.name.toLowerCase().includes(lowerQuery) ||
+                t.category.toLowerCase().includes(lowerQuery) ||
+                (t.tags &&
+                    (typeof t.tags === 'string'
+                        ? t.tags.toLowerCase().includes(lowerQuery)
+                        : Array.isArray(t.tags) && t.tags.some(tag => tag.toLowerCase().includes(lowerQuery))))
             );
         }
 
@@ -156,6 +161,7 @@ function ShopContent() {
         }
 
         setFilteredTrees(filtered);
+        setIsLoading(false);
     };
 
     if (isLoading) {

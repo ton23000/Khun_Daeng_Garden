@@ -286,7 +286,15 @@ export default function StaffOrdersPage() {
             {viewMode === 'by-customer' && (
                 <Card style={{ marginBottom: '1rem' }}>
                     <CardContent style={{ padding: '1rem' }}>
-                        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.75rem' }}>เลือกลูกค้า:</h3>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>เลือกลูกค้า:</h3>
+                            <button
+                                onClick={() => { setViewMode('all'); setSelectedCustomer(null); setStatusFilter(null); }}
+                                style={{ padding: '0.4rem 0.8rem', borderRadius: '0.375rem', border: '1px solid #1d4ed8', backgroundColor: 'white', color: '#1d4ed8', cursor: 'pointer', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                            >
+                                ← ออเดอร์ทั้งหมด
+                            </button>
+                        </div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                             {customers.map(customer => {
                                 const stats = getCustomerStats(customer);
