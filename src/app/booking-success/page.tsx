@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import PaymentModal from '@/components/PaymentModal';
+import './styles.css';
 
 export default function BookingSuccessPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [booking, setBooking] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [uploadSuccess, setUploadSuccess] = useState(false);
+    const [qrLoading, setQrLoading] = useState(true);
 
     useEffect(() => {
         const data = localStorage.getItem('last_booking');
@@ -58,6 +60,17 @@ export default function BookingSuccessPage() {
             console.error('Upload failed:', error);
             alert('การอัปโหลดสลิปล้มเหลว กรุณาลองใหม่อีกครั้ง');
         }
+    };
+
+    const downloadQRCode = () => {
+        if (!booking) return;
+        
+        const link = document.createElement('a');
+        link.href = `https://promptpay.io/0616900908/${booking.deposit}.png`;
+        link.download = `promptpay-${booking.refCode || booking.id}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     if (!booking) return null;
@@ -109,18 +122,97 @@ export default function BookingSuccessPage() {
                             backgroundColor: 'white',
                             padding: '1rem',
                             borderRadius: '0.5rem',
-                            display: 'inline-block',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                            position: 'relative'
                         }}>
+                            {qrLoading && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    backgroundColor: 'rgba(255,255,255,0.9)',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    borderRadius: '0.5rem'
+                                }}>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <div style={{ 
+                                            width: '40px', 
+                                            height: '40px', 
+                                            border: '4px solid #f3f4f6', 
+                                            borderTop: '4px solid #3b82f6', 
+                                            borderRadius: '50%', 
+                                            animation: 'spin 1s linear infinite',
+                                            margin: '0 auto 0.5rem'
+                                        }}></div>
+                                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>กำลังโหลด QR Code...</div>
+                                    </div>
+                                </div>
+                            )}
                             <img
                                 src={`https://promptpay.io/0616900908/${booking.deposit}.png`}
                                 alt="PromptPay QR Code"
                                 style={{
                                     width: '250px',
                                     height: '250px',
-                                    display: 'block'
+                                    display: 'block',
+                                    objectFit: 'contain',
+                                    opacity: qrLoading ? 0.5 : 1
+                                }}
+                                onLoad={() => setQrLoading(false)}
+                                onError={(e) => {
+                                    // Fallback if image fails to load
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=promptpay://0616900908?amount=${booking.deposit}`;
+                                    setQrLoading(false);
                                 }}
                             />
+                        </div>
+                        <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                            <button
+                                onClick={downloadQRCode}
+                                style={{
+                                    padding: '0.5rem 1rem',
+                                    borderRadius: '0.375rem',
+                                    border: '1px solid #3b82f6',
+                                    backgroundColor: 'white',
+                                    color: '#3b82f6',
+                                    fontSize: '0.875rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem'
+                                }}
+                            >
+                                📥 ดาวน์โหลด QR Code
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const qrUrl = `https://promptpay.io/0616900908/${booking.deposit}.png`;
+                                    navigator.clipboard.writeText(qrUrl);
+                                    alert('คัดลอกลิงก์ QR Code แล้ว');
+                                }}
+                                style={{
+                                    padding: '0.5rem 1rem',
+                                    borderRadius: '0.375rem',
+                                    border: '1px solid #10b981',
+                                    backgroundColor: 'white',
+                                    color: '#10b981',
+                                    fontSize: '0.875rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem'
+                                }}
+                            >
+                                📋 คัดลอกลิงก์
+                            </button>
                         </div>
                         <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.75rem' }}>
                             สแกนด้วยแอพธนาคารเพื่อชำระ ฿{booking.deposit.toLocaleString()}
