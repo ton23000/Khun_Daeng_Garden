@@ -915,45 +915,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Blog Section (บทความใหม่) */}
-      <section className="container" style={{ padding: '6rem 1rem' }}>
-        <ScrollAnimation animation="fade-up">
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span style={{ color: '#4d7c0f', fontWeight: 'bold', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Our Blog Posts</span>
-            <h2 style={{ fontSize: 'clamp(1.75rem, 6vw, 3rem)', marginTop: '0.5rem', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', color: '#1f2937' }}>บทความน่ารู้</h2>
-          </div>
-        </ScrollAnimation>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '2rem' }}>
-          {/* Fake Blog 1 */}
-          <ScrollAnimation animation="fade-up" delay={100}>
-            <div>
-              <div style={{ height: '240px', backgroundColor: '#e5e7eb', borderRadius: '12px', marginBottom: '1.5rem' }}></div>
-              <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginBottom: '0.5rem' }}>17 January 2024</div>
-              <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-playfair), serif', fontWeight: 'bold', marginBottom: '1rem', lineHeight: '1.3' }}>เทคนิคการดูแลไม้ด่าง<br />ให้สีสดตลอดปี</h3>
-              <a href="#" style={{ color: '#4d7c0f', fontWeight: 'bold', textDecoration: 'none' }}>อ่านเพิ่มเติม ➔</a>
-            </div>
-          </ScrollAnimation>
-          {/* Fake Blog 2 */}
-          <ScrollAnimation animation="fade-up" delay={200}>
-            <div>
-              <div style={{ height: '240px', backgroundColor: '#e5e7eb', borderRadius: '12px', marginBottom: '1.5rem' }}></div>
-              <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginBottom: '0.5rem' }}>23 March 2024</div>
-              <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-playfair), serif', fontWeight: 'bold', marginBottom: '1rem', lineHeight: '1.3' }}>5 ต้นไม้มงคล<br />ปลูกแล้วรวย</h3>
-              <a href="#" style={{ color: '#4d7c0f', fontWeight: 'bold', textDecoration: 'none' }}>อ่านเพิ่มเติม ➔</a>
-            </div>
-          </ScrollAnimation>
-          {/* Fake Blog 3 */}
-          <ScrollAnimation animation="fade-up" delay={300}>
-            <div>
-              <div style={{ height: '240px', backgroundColor: '#e5e7eb', borderRadius: '12px', marginBottom: '1.5rem' }}></div>
-              <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginBottom: '0.5rem' }}>12 February 2024</div>
-              <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-playfair), serif', fontWeight: 'bold', marginBottom: '1rem', lineHeight: '1.3' }}>มือใหม่หัดปลูก<br />เริ่มที่ต้นอะไรดี?</h3>
-              <a href="#" style={{ color: '#4d7c0f', fontWeight: 'bold', textDecoration: 'none' }}>อ่านเพิ่มเติม ➔</a>
-            </div>
-          </ScrollAnimation>
-        </div>
-      </section>
 
     </main >
   );

@@ -1,8 +1,31 @@
-'use client';
-
 import Link from 'next/link';
+import { prisma } from '@/lib/prisma';
 
-export function Footer() {
+export async function Footer() {
+    let email = 'kittitusjuprajak@gmail.com';
+    let phone = '089-876-2045';
+    let facebook = 'https://web.facebook.com/kittitusjupraja';
+    let facebookName = 'สวนคุณแดง';
+
+    try {
+        const settings = await prisma.siteSetting.findMany({
+            where: {
+                key: { in: ['contact_email', 'contact_phone', 'contact_facebook', 'contact_facebook_name'] }
+            }
+        });
+        const settingsMap = settings.reduce((acc: Record<string, string>, curr) => {
+            acc[curr.key] = curr.value;
+            return acc;
+        }, {});
+
+        if (settingsMap['contact_email']) email = settingsMap['contact_email'];
+        if (settingsMap['contact_phone']) phone = settingsMap['contact_phone'];
+        if (settingsMap['contact_facebook']) facebook = settingsMap['contact_facebook'];
+        if (settingsMap['contact_facebook_name']) facebookName = settingsMap['contact_facebook_name'];
+    } catch {
+        // Fallback to defaults
+    }
+
     const footerStyle: React.CSSProperties = {
         backgroundColor: '#2d3e2d', // Dark green from image
         color: '#ffffff',
@@ -64,13 +87,13 @@ export function Footer() {
                         </p>
                         <div style={{ marginBottom: '1rem' }}>
                             <div style={{ fontSize: '0.875rem', color: '#d1d5db', marginBottom: '0.5rem' }}>
-                                อีเมล: <a href="mailto:kittitusjuprajak@gmail.com" style={{ color: '#7fb069', textDecoration: 'none' }}>kittitusjuprajak@gmail.com</a>
+                                อีเมล: <a href={`mailto:${email}`} style={{ color: '#7fb069', textDecoration: 'none' }}>{email}</a>
                             </div>
                             <div style={{ fontSize: '0.875rem', color: '#d1d5db', marginBottom: '0.5rem' }}>
-                                โทรศัพท์: <span style={{ color: '#7fb069' }}>089-876-2045</span>
+                                โทรศัพท์: <span style={{ color: '#7fb069' }}>{phone}</span>
                             </div>
                             <div style={{ fontSize: '0.875rem', color: '#d1d5db' }}>
-                                Facebook: <a href="https://web.facebook.com/kittitusjupraja" target="_blank" rel="noopener noreferrer" style={{ color: '#7fb069', textDecoration: 'none' }}>สวนคุณแดง</a>
+                                Facebook: <a href={facebook} target="_blank" rel="noopener noreferrer" style={{ color: '#7fb069', textDecoration: 'none' }}>{facebookName}</a>
                             </div>
                         </div>
                         {/* Payment Icons */}
