@@ -57,6 +57,15 @@ export default function TechStackPage() {
             ]
         },
         {
+            category: '🤖 Automated Testing',
+            color: '#14b8a6',
+            technologies: [
+                { name: 'Playwright', version: '1.x', description: 'End-to-End (E2E) & UI Testing Agent' },
+                { name: 'Jest', version: '29.x', description: 'Unit & Integration Testing Agent' },
+                { name: 'React Testing Library', version: '16.x', description: 'React Component Testing' },
+            ]
+        },
+        {
             category: '🔧 Type Definitions',
             color: '#06b6d4',
             technologies: [
@@ -238,6 +247,7 @@ export default function TechStackPage() {
                             <li><strong>Email:</strong> Transactional emails via SendGrid & Resend</li>
                             <li><strong>File Transfer:</strong> FTP Support for deployment</li>
                             <li><strong>Type Safety:</strong> Full TypeScript implementation</li>
+                            <li><strong>Automated Testing:</strong> End-to-End with Playwright & Unit Testing with Jest</li>
                             <li><strong>Validation:</strong> Zod schema validation</li>
                         </ul>
                     </CardContent>
@@ -279,7 +289,7 @@ export default function TechStackPage() {
                             </div>
                             <div style={{ textAlign: 'center', padding: '1rem' }}>
                                 <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#6b21a8' }}>
-                                    6
+                                    {techCategories.length}
                                 </div>
                                 <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
                                     Tech Categories
