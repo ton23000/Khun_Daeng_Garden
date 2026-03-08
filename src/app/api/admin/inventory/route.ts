@@ -57,7 +57,7 @@ export async function GET() {
                 sold: tree.sold,
                 category: tree.category,
                 status: tree.status,
-                images: JSON.parse(tree.images),
+                images: (() => { try { return JSON.parse(tree.images); } catch { return []; } })(),
                 tags: tree.tags.split(',').filter(Boolean)
             };
         });

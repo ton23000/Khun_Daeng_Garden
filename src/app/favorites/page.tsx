@@ -138,7 +138,7 @@ export default function FavoritesPage() {
                                 </div>
 
                                 {/* Image */}
-                                <Link href={`/shop/${favorite.tree.id}`}>
+                                <Link href={`/trees/${favorite.tree.id}`}>
                                     <div style={{
                                         backgroundColor: '#f3f4f6',
                                         borderRadius: '0.5rem',
@@ -175,7 +175,7 @@ export default function FavoritesPage() {
                                 </Link>
 
                                 {/* Details */}
-                                <Link href={`/shop/${favorite.tree.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <Link href={`/trees/${favorite.tree.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                     <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
                                         {favorite.tree.name}
                                     </h3>

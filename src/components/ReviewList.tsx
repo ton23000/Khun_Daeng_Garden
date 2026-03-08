@@ -167,7 +167,10 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
             {/* Reviews */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {sortedReviews.map((review) => {
-                    const reviewImages = review.images ? JSON.parse(review.images) : [];
+                    const reviewImages: string[] = (() => {
+                        if (!review.images) return [];
+                        try { return JSON.parse(review.images); } catch { return []; }
+                    })();
 
                     return (
                         <div
