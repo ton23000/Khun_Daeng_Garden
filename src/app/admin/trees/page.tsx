@@ -660,47 +660,189 @@ export default function AdminTreesPage() {
 
                                 {/* Promotion Section */}
                                 <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '1rem', marginTop: '0.5rem' }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', marginBottom: '1rem' }}>
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.isPromotion}
-                                            onChange={e => setFormData({ ...formData, isPromotion: e.target.checked })}
-                                            style={{ width: '18px', height: '18px', accentColor: '#dc2626' }}
-                                        />
-                                        <span style={{ fontWeight: 'bold', color: '#dc2626' }}>🔥 เปิดโปรโมชั่น</span>
-                                    </label>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.isPromotion}
+                                                onChange={e => setFormData({ ...formData, isPromotion: e.target.checked })}
+                                                style={{ width: '18px', height: '18px', accentColor: '#dc2626' }}
+                                            />
+                                            <span style={{ fontWeight: 'bold', color: '#dc2626', fontSize: '1rem' }}>🔥 เปิดโปรโมชั่น</span>
+                                        </label>
+                                        
+                                        {formData.isPromotion && (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: '#059669' }}>
+                                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#059669' }}></div>
+                                                <span>กำลังตั้งโปรโมชั่น</span>
+                                            </div>
+                                        )}
+                                    </div>
 
                                     {formData.isPromotion && (
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem', backgroundColor: '#fef2f2', borderRadius: '0.5rem', border: '1px solid #fecaca' }}>
-                                            <Input 
-                                                label="ราคาเดิม (บาท)" 
-                                                type="number" 
-                                                value={formData.originalPrice} 
-                                                onChange={e => setFormData({ ...formData, originalPrice: Number(e.target.value) })}
-                                                min="0"
-                                                required={formData.isPromotion}
-                                            />
-                                            <Input label="ชื่อโปรโมชั่น" value={formData.promotionName} onChange={e => setFormData({ ...formData, promotionName: e.target.value })} placeholder="เช่น ลดราคาต้อนรับปีใหม่" />
-                                            <Input label="วันหมดเขต" type="date" value={formData.promotionEndDate} onChange={e => setFormData({ ...formData, promotionEndDate: e.target.value })} />
-                                            
-                                            {/* Validation Messages */}
-                                            {formData.originalPrice > 0 && formData.price > 0 && formData.originalPrice <= formData.price && (
-                                                <p style={{ fontSize: '0.875rem', color: '#dc2626', fontWeight: 'bold' }}>
-                                                    ⚠️ ราคาเดิมต้องมากกว่าราคาปัจจุบัน
-                                                </p>
-                                            )}
-                                            
-                                            {formData.originalPrice > 0 && formData.price > 0 && formData.originalPrice > formData.price && (
-                                                <p style={{ fontSize: '0.875rem', color: '#059669', fontWeight: 'bold' }}>
-                                                    ✅ ลด {Math.round(((formData.originalPrice - formData.price) / formData.originalPrice) * 100)}% (จาก ฿{formData.originalPrice.toLocaleString()} เหลือ ฿{formData.price.toLocaleString()})
-                                                </p>
-                                            )}
-                                            
-                                            {formData.price <= 0 && (
-                                                <p style={{ fontSize: '0.875rem', color: '#dc2626', fontWeight: 'bold' }}>
-                                                    ⚠️ ราคาปัจจุบันต้องมากกว่า 0
-                                                </p>
-                                            )}
+                                        <div style={{ 
+                                            display: 'grid', 
+                                            gridTemplateColumns: '1fr 1fr', 
+                                            gap: '1rem', 
+                                            padding: '1.5rem', 
+                                            backgroundColor: '#fef2f2', 
+                                            borderRadius: '0.75rem', 
+                                            border: '1px solid #fecaca' 
+                                        }}>
+                                            {/* Left Column - Image Preview */}
+                                            <div style={{ 
+                                                display: 'flex', 
+                                                flexDirection: 'column', 
+                                                gap: '0.75rem',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                <div style={{ 
+                                                    width: '100%', 
+                                                    aspectRatio: '4/5', 
+                                                    maxWidth: '200px',
+                                                    backgroundColor: '#fff5f5', 
+                                                    borderRadius: '0.5rem', 
+                                                    border: '2px dashed #fca5a5',
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    justifyContent: 'center',
+                                                    overflow: 'hidden',
+                                                    position: 'relative'
+                                                }}>
+                                                    {formData.images && formData.images.length > 0 ? (
+                                                        <img
+                                                            src={formData.images[0]}
+                                                            alt={formData.name || 'Preview'}
+                                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                        />
+                                                    ) : (
+                                                        <div style={{ textAlign: 'center', color: '#dc2626', padding: '1rem' }}>
+                                                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📷</div>
+                                                            <div style={{ fontSize: '0.75rem' }}>ไม่มีรูปภาพ</div>
+                                                        </div>
+                                                    )}
+                                                    
+                                                    {/* Promotion Badge Overlay */}
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        top: '10px',
+                                                        right: '10px',
+                                                        backgroundColor: '#dc2626',
+                                                        color: 'white',
+                                                        padding: '0.25rem 0.75rem',
+                                                        borderRadius: '9999px',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 'bold',
+                                                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                                    }}>
+                                                        🔥 ลดราคา
+                                                    </div>
+                                                </div>
+                                                
+                                                <div style={{ textAlign: 'center', fontSize: '0.875rem', color: '#991b1b' }}>
+                                                    <div style={{ fontWeight: 'bold' }}>{formData.name || 'ชื่อสินค้า'}</div>
+                                                    {formData.category && (
+                                                        <div style={{ color: '#7f1d1d', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+                                                            {formData.category}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Right Column - Promotion Details */}
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                                <div>
+                                                    <Input 
+                                                        label="ราคาเดิม (บาท)" 
+                                                        type="number" 
+                                                        value={formData.originalPrice} 
+                                                        onChange={e => setFormData({ ...formData, originalPrice: Number(e.target.value) })}
+                                                        min="0"
+                                                        required={formData.isPromotion}
+                                                        style={{ backgroundColor: 'white' }}
+                                                    />
+                                                </div>
+                                                
+                                                <div>
+                                                    <Input 
+                                                        label="ราคาขาย (บาท)" 
+                                                        type="number" 
+                                                        value={formData.price} 
+                                                        onChange={e => setFormData({ ...formData, price: Number(e.target.value) })}
+                                                        min="0"
+                                                        required
+                                                        style={{ backgroundColor: 'white' }}
+                                                    />
+                                                </div>
+                                                
+                                                <div>
+                                                    <Input 
+                                                        label="ชื่อโปรโมชั่น" 
+                                                        value={formData.promotionName} 
+                                                        onChange={e => setFormData({ ...formData, promotionName: e.target.value })} 
+                                                        placeholder="เช่น ลดราคาต้อนรับปีใหม่"
+                                                        style={{ backgroundColor: 'white' }}
+                                                    />
+                                                </div>
+                                                
+                                                <div>
+                                                    <Input 
+                                                        label="วันหมดเขต" 
+                                                        type="date" 
+                                                        value={formData.promotionEndDate} 
+                                                        onChange={e => setFormData({ ...formData, promotionEndDate: e.target.value })}
+                                                        style={{ backgroundColor: 'white' }}
+                                                    />
+                                                </div>
+
+                                                {/* Discount Display */}
+                                                {formData.originalPrice > 0 && formData.price > 0 && formData.originalPrice > formData.price && (
+                                                    <div style={{
+                                                        padding: '0.75rem',
+                                                        backgroundColor: '#dc2626',
+                                                        color: 'white',
+                                                        borderRadius: '0.5rem',
+                                                        textAlign: 'center',
+                                                        fontWeight: 'bold',
+                                                        fontSize: '1.125rem'
+                                                    }}>
+                                                        💰 ลด {Math.round(((formData.originalPrice - formData.price) / formData.originalPrice) * 100)}%
+                                                        <div style={{ fontSize: '0.875rem', marginTop: '0.25rem' }}>
+                                                            จาก ฿{formData.originalPrice.toLocaleString()} เหลือ ฿{formData.price.toLocaleString()}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Validation Messages */}
+                                                {formData.originalPrice > 0 && formData.price > 0 && formData.originalPrice <= formData.price && (
+                                                    <div style={{
+                                                        padding: '0.75rem',
+                                                        backgroundColor: '#fef3c7',
+                                                        color: '#92400e',
+                                                        borderRadius: '0.5rem',
+                                                        textAlign: 'center',
+                                                        fontSize: '0.875rem',
+                                                        fontWeight: 'bold'
+                                                    }}>
+                                                        ⚠️ ราคาเดิมต้องมากกว่าราคาขาย
+                                                    </div>
+                                                )}
+                                                
+                                                {formData.price <= 0 && (
+                                                    <div style={{
+                                                        padding: '0.75rem',
+                                                        backgroundColor: '#fef3c7',
+                                                        color: '#92400e',
+                                                        borderRadius: '0.5rem',
+                                                        textAlign: 'center',
+                                                        fontSize: '0.875rem',
+                                                        fontWeight: 'bold'
+                                                    }}>
+                                                        ⚠️ ราคาขายต้องมากกว่า 0
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
