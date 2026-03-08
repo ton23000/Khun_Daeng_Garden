@@ -385,8 +385,10 @@ export default function MyBookingsPage() {
                                                             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                                                         }}>
                                                             <img
+                                                                id={`qr-img-${booking.id}`}
                                                                 src={`https://promptpay.io/0616900908/${booking.deposit}.png`}
                                                                 alt="PromptPay QR Code"
+                                                                crossOrigin="anonymous"
                                                                 style={{
                                                                     width: '200px',
                                                                     height: '200px',
@@ -397,6 +399,46 @@ export default function MyBookingsPage() {
                                                         <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
                                                             สแกนด้วยแอพธนาคารเพื่อชำระ ฿{booking.deposit.toLocaleString()}
                                                         </p>
+                                                        {/* Download Button */}
+                                                        <button
+                                                            onClick={() => {
+                                                                const qrUrl = `https://promptpay.io/0616900908/${booking.deposit}.png`;
+                                                                const canvas = document.createElement('canvas');
+                                                                canvas.width = 200;
+                                                                canvas.height = 200;
+                                                                const ctx = canvas.getContext('2d');
+                                                                const img = new Image();
+                                                                img.crossOrigin = 'anonymous';
+                                                                img.onload = () => {
+                                                                    ctx?.drawImage(img, 0, 0, 200, 200);
+                                                                    const link = document.createElement('a');
+                                                                    link.download = `QR-PromptPay-${booking.refCode}.png`;
+                                                                    link.href = canvas.toDataURL('image/png');
+                                                                    link.click();
+                                                                };
+                                                                img.onerror = () => {
+                                                                    // Fallback: open in new tab if CORS fails
+                                                                    window.open(qrUrl, '_blank');
+                                                                };
+                                                                img.src = qrUrl;
+                                                            }}
+                                                            style={{
+                                                                marginTop: '0.75rem',
+                                                                padding: '0.5rem 1.25rem',
+                                                                backgroundColor: '#0ea5e9',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                borderRadius: '0.5rem',
+                                                                cursor: 'pointer',
+                                                                fontSize: '0.875rem',
+                                                                fontWeight: 'bold',
+                                                                display: 'inline-flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.5rem'
+                                                            }}
+                                                        >
+                                                            ⬇️ ดาวน์โหลด QR Code
+                                                        </button>
                                                     </div>
 
                                                     {/* Bank Transfer Details */}
