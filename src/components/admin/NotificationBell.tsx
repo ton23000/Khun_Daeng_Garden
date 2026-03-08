@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 interface AdminNotification {
@@ -97,7 +96,6 @@ export default function NotificationBell() {
         } catch (error) {
             console.error('Failed to mark all as read:', error);
         }
-    };
     };
 
     return (
@@ -209,10 +207,13 @@ export default function NotificationBell() {
                                             borderBottom: '1px solid #f3f4f6',
                                             backgroundColor: notif.read ? 'white' : '#eff6ff',
                                             cursor: 'pointer',
-                                            transition: 'background 0.2s',
-                                            '&:hover': {
-                                                backgroundColor: notif.read ? '#f9fafb' : '#dbeafe'
-                                            }
+                                            transition: 'background 0.2s'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = notif.read ? '#f9fafb' : '#dbeafe';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = notif.read ? 'white' : '#eff6ff';
                                         }}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>

@@ -29,7 +29,7 @@ export function Navbar({ topBarText = 'ฟรีปุ๋ยหมักเม�
 
     const [searchQuery, setSearchQuery] = useState('');
 
-    const handleNotificationClick = (note: any) => {
+    const handleNotificationClick = (note: { id: string; message: string; date: string; read: boolean; }) => {
         // Mark as read
         markAllAsRead();
         setShowNotifications(false);
