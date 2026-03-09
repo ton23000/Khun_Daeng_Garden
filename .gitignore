@@ -63,3 +63,7 @@ website.zip
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+.vercel
+.env*.local
+vercel-env.txt
