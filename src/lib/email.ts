@@ -21,7 +21,7 @@ export async function sendPasswordResetEmail({
     try {
         const msg = {
             to: email,
-            from: 'khundaenggarden@gmail.com', // ต้อง verified sender ใน SendGrid
+            from: 'fhjilyyjg@gmail.com', // ต้อง verified sender ใน SendGrid
             templateId: 'd-5434401db6724dc8a62137a831422bf6',
             dynamicTemplateData: {
                 userName,
@@ -46,7 +46,7 @@ export async function sendEmail({ to, subject, html }: { to: string | string[]; 
     try {
         const msg = {
             to: Array.isArray(to) ? to : [to],
-            from: 'khundaenggarden@gmail.com',
+            from: 'fhjilyyjg@gmail.com',
             subject,
             html,
         };
@@ -179,7 +179,7 @@ export async function sendVerificationEmail({ email, verifyLink, userName }: { e
     try {
         const msg = {
             to: email,
-            from: 'khundaenggarden@gmail.com',
+            from: 'fhjilyyjg@gmail.com',
             subject: 'ยืนยันอีเมล - Khun Daeng Garden',
             html: verificationEmailTemplate(userName, verifyLink)
         };
@@ -234,7 +234,7 @@ export async function sendAdminMagicLinkEmail({ email, magicLink, userName }: { 
     try {
         const msg = {
             to: email,
-            from: 'khundaenggarden@gmail.com',
+            from: 'fhjilyyjg@gmail.com',
             subject: 'ลิงก์การเข้าสู่ระบบสำหรับแอดมิน - Khun Daeng Garden',
             html: adminMagicLinkTemplate(userName, magicLink)
         };
