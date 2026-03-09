@@ -81,6 +81,7 @@ export default function InlineEdit({
 
             const res = await fetch('/api/settings', {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                     ...(userId ? { 'x-user-id': userId } : {})
