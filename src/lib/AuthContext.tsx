@@ -46,28 +46,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     setUser(parsedUser);
 
                     // Always try to fetch fresh data from server to catch things like "verified: true" changes
-                    // Only do it for real database users, not the hardcoded admin
-                    if (parsedUser.id !== 'admin') {
-                        try {
-                            const res = await fetch(`/api/auth/me?userId=${parsedUser.id}`);
-                            if (res.ok) {
-                                const data = await res.json();
-                                if (data.user) {
-                                    setUser(prev => {
-                                        // Only update if the user ID hasn't changed in the meantime (e.g., via magic link login)
-                                        if (prev?.id === parsedUser.id) {
-                                            localStorage.setItem('khun_daeng_user', JSON.stringify(data.user));
-                                            return data.user;
-                                        }
-                                        return prev;
-                                    });
-                                }
+                    // and to ensure the cookie hasn't expired. We should do this for admin too.
+                    try {
+                        const res = await fetch(`/api/auth/me?userId=${parsedUser.id}`);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.user) {
+                                setUser(prev => {
+                                    // Only update if the user ID hasn't changed in the meantime (e.g., via magic link login)
+                                    if (prev?.id === parsedUser.id) {
+                                        localStorage.setItem('khun_daeng_user', JSON.stringify(data.user));
+                                        return data.user;
+                                    }
+                                    return prev;
+                                });
                             }
-                        } catch (e) {
-                            console.error('Initial session fetch failed:', e);
+                        } else if (res.status === 401) {
+                            // Cookie is missing or expired, clear local session
+                            console.warn('Session expired, logging out');
+                            setUser(null);
+                            localStorage.removeItem('khun_daeng_user');
                         }
+                    } catch (e) {
+                        console.error('Initial session fetch failed:', e);
                     }
-
                 } catch {
                     localStorage.removeItem('khun_daeng_user');
                 }
