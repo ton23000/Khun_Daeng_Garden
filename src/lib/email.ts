@@ -22,7 +22,7 @@ export async function sendPasswordResetEmail({
         const msg = {
             to: email,
             from: 'fhjilyyjg@gmail.com', // ต้อง verified sender ใน SendGrid
-            templateId: 'd-5434401db6724dc8a62137a831422bf6',
+            templateId: 'd-7bc12feb8eed4f5487ac2a94506112c6',
             dynamicTemplateData: {
                 userName,
                 resetLink
