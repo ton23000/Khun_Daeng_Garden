@@ -1,13 +1,12 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-// Initialize Nodemailer transporter
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+// Initialize Resend client
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Sender email - must be a verified domain in Resend
+// For testing, you can use onboarding@resend.dev
+const FROM_EMAIL = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+
 
 interface PasswordResetEmailParams {
     email: string;
@@ -58,13 +57,13 @@ export async function sendPasswordResetEmail({
     try {
         const mailOptions = {
             to: email,
-            from: process.env.EMAIL_USER || 'noreply@khundaenggarden.com',
+            from: FROM_EMAIL,
             subject: 'รีเซ็ตรหัสผ่าน - Khun Daeng Garden',
             html: passwordResetEmailTemplate(userName, resetLink)
         };
 
-        await transporter.sendMail(mailOptions);
-        console.log('✅ Password reset email sent via Nodemailer');
+        await resend.emails.send(mailOptions);
+        console.log('✅ Password reset email sent via Resend');
         return { success: true, data: mailOptions };
 
     } catch (error) {
@@ -80,13 +79,13 @@ export async function sendEmail({ to, subject, html }: { to: string | string[]; 
     try {
         const mailOptions = {
             to: Array.isArray(to) ? to : [to],
-            from: process.env.EMAIL_USER || 'noreply@khundaenggarden.com',
+            from: FROM_EMAIL,
             subject,
             html,
         };
 
-        await transporter.sendMail(mailOptions);
-        console.log('✅ Email sent via Nodemailer');
+        await resend.emails.send(mailOptions);
+        console.log('✅ Email sent via Resend');
         return { success: true, data: mailOptions };
     } catch (error) {
         console.error('❌ Error sending email:', error);
@@ -213,13 +212,13 @@ export async function sendVerificationEmail({ email, verifyLink, userName }: { e
     try {
         const mailOptions = {
             to: email,
-            from: process.env.EMAIL_USER || 'noreply@khundaenggarden.com',
+            from: FROM_EMAIL,
             subject: 'ยืนยันอีเมล - Khun Daeng Garden',
             html: verificationEmailTemplate(userName, verifyLink)
         };
 
-        await transporter.sendMail(mailOptions);
-        console.log('✅ Verification email sent via Nodemailer');
+        await resend.emails.send(mailOptions);
+        console.log('✅ Verification email sent via Resend');
         return { success: true, data: mailOptions };
     } catch (error) {
         console.error('❌ Error sending verification email:', error);
@@ -268,13 +267,13 @@ export async function sendAdminMagicLinkEmail({ email, magicLink, userName }: { 
     try {
         const mailOptions = {
             to: email,
-            from: process.env.EMAIL_USER || 'noreply@khundaenggarden.com',
+            from: FROM_EMAIL,
             subject: 'ลิงก์การเข้าสู่ระบบสำหรับแอดมิน - Khun Daeng Garden',
             html: adminMagicLinkTemplate(userName, magicLink)
         };
 
-        await transporter.sendMail(mailOptions);
-        console.log('✅ Admin magic link email sent via Nodemailer');
+        await resend.emails.send(mailOptions);
+        console.log('✅ Admin magic link email sent via Resend');
         return { success: true, data: mailOptions };
     } catch (error) {
         console.error('❌ Error sending admin magic link email:', error);
