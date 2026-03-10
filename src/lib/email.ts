@@ -1,11 +1,17 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Nodemailer transporter using Brevo SMTP
+const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || 'smtp-relay.brevo.com',
+    port: parseInt(process.env.EMAIL_PORT || '587'),
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
 
-// Sender email - must be a verified domain in Resend
-// For testing, you can use onboarding@resend.dev
-const FROM_EMAIL = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+const FROM_EMAIL = process.env.EMAIL_FROM || process.env.EMAIL_USER || 'noreply@khundaenggarden.com';
 
 
 interface PasswordResetEmailParams {
@@ -62,8 +68,8 @@ export async function sendPasswordResetEmail({
             html: passwordResetEmailTemplate(userName, resetLink)
         };
 
-        await resend.emails.send(mailOptions);
-        console.log('✅ Password reset email sent via Resend');
+        await transporter.sendMail(mailOptions);
+        console.log('✅ Email sent via Brevo SMTP');
         return { success: true, data: mailOptions };
 
     } catch (error) {
@@ -84,7 +90,7 @@ export async function sendEmail({ to, subject, html }: { to: string | string[]; 
             html,
         };
 
-        await resend.emails.send(mailOptions);
+        await transporter.sendMail(mailOptions);
         console.log('✅ Email sent via Resend');
         return { success: true, data: mailOptions };
     } catch (error) {
@@ -217,7 +223,7 @@ export async function sendVerificationEmail({ email, verifyLink, userName }: { e
             html: verificationEmailTemplate(userName, verifyLink)
         };
 
-        await resend.emails.send(mailOptions);
+        await transporter.sendMail(mailOptions);
         console.log('✅ Verification email sent via Resend');
         return { success: true, data: mailOptions };
     } catch (error) {
@@ -272,7 +278,7 @@ export async function sendAdminMagicLinkEmail({ email, magicLink, userName }: { 
             html: adminMagicLinkTemplate(userName, magicLink)
         };
 
-        await resend.emails.send(mailOptions);
+        await transporter.sendMail(mailOptions);
         console.log('✅ Admin magic link email sent via Resend');
         return { success: true, data: mailOptions };
     } catch (error) {
