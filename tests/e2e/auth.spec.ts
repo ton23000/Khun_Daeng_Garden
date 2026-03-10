@@ -1,0 +1,41 @@
+import { test, expect } from '@playwright/test';
+
+test.describe('Authentication Flow', () => {
+
+  test('should show login page correctly', async ({ page }) => {
+    await page.goto('/login');
+    
+    // Check if essential elements are present
+    await expect(page.getByRole('heading', { name: 'เข้าสู่ระบบ' })).toBeVisible();
+    
+    // The `<Input>` component does not connect `<label>` to `<input id="..." >`.
+    // Use placeholder instead to reliably find fields.
+    await expect(page.getByPlaceholder('0812345678 หรือ user@example.com')).toBeVisible();
+    await expect(page.getByPlaceholder('••••••')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'เข้าสู่ระบบ', exact: true })).toBeVisible();
+  });
+
+  test('should show validation errors on empty submission', async ({ page }) => {
+    await page.goto('/login');
+    
+    // Click login without filling info
+    await page.getByRole('button', { name: 'เข้าสู่ระบบ', exact: true }).click();
+
+    // The Input component should have the required attribute
+    const phoneInput = page.getByPlaceholder('0812345678 หรือ user@example.com');
+    const isRequired = await phoneInput.evaluate((el: HTMLInputElement) => el.required);
+    expect(isRequired).toBe(true);
+  });
+
+  test('should navigate to register page', async ({ page }) => {
+    await page.goto('/login');
+    
+    // Click register link (use .first() because there could be mobile and desktop nav links)
+    await page.getByRole('link', { name: 'สมัครสมาชิก' }).first().click();
+    
+    // Should be on register page
+    await expect(page).toHaveURL(/.*register/);
+    await expect(page.getByRole('heading', { name: 'สร้างบัญชี', exact: false })).toBeVisible();
+  });
+
+});
