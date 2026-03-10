@@ -1,8 +1,13 @@
-import sgMail from '@sendgrid/mail';
+import nodemailer from 'nodemailer';
 
-// Initialize SendGrid with API key from environment
-// Provide a dummy key if missing during build time to prevent errors
-sgMail.setApiKey(process.env.SENDGRID_API_KEY || 'SG.dummy_key_for_build');
+// Initialize Nodemailer transporter
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
 
 interface PasswordResetEmailParams {
     email: string;
@@ -51,16 +56,16 @@ export async function sendPasswordResetEmail({
     userName
 }: PasswordResetEmailParams) {
     try {
-        const msg = {
+        const mailOptions = {
             to: email,
-            from: 'fhjilyyjg@gmail.com', // ต้อง verified sender ใน SendGrid
+            from: process.env.EMAIL_USER || 'noreply@khundaenggarden.com',
             subject: 'รีเซ็ตรหัสผ่าน - Khun Daeng Garden',
             html: passwordResetEmailTemplate(userName, resetLink)
         };
 
-        await sgMail.send(msg);
-        console.log('✅ Password reset email sent via SendGrid');
-        return { success: true, data: msg };
+        await transporter.sendMail(mailOptions);
+        console.log('✅ Password reset email sent via Nodemailer');
+        return { success: true, data: mailOptions };
 
     } catch (error) {
         console.error('❌ Error sending password reset email:', error);
@@ -73,16 +78,16 @@ export async function sendPasswordResetEmail({
  */
 export async function sendEmail({ to, subject, html }: { to: string | string[]; subject: string; html: string }) {
     try {
-        const msg = {
+        const mailOptions = {
             to: Array.isArray(to) ? to : [to],
-            from: 'fhjilyyjg@gmail.com',
+            from: process.env.EMAIL_USER || 'noreply@khundaenggarden.com',
             subject,
             html,
         };
 
-        await sgMail.send(msg);
-        console.log('✅ Email sent via SendGrid');
-        return { success: true, data: msg };
+        await transporter.sendMail(mailOptions);
+        console.log('✅ Email sent via Nodemailer');
+        return { success: true, data: mailOptions };
     } catch (error) {
         console.error('❌ Error sending email:', error);
         return { success: false, error: 'Email service unavailable' };
@@ -206,16 +211,16 @@ export function verificationEmailTemplate(userName: string, verifyLink: string):
  */
 export async function sendVerificationEmail({ email, verifyLink, userName }: { email: string; verifyLink: string; userName: string }) {
     try {
-        const msg = {
+        const mailOptions = {
             to: email,
-            from: 'fhjilyyjg@gmail.com',
+            from: process.env.EMAIL_USER || 'noreply@khundaenggarden.com',
             subject: 'ยืนยันอีเมล - Khun Daeng Garden',
             html: verificationEmailTemplate(userName, verifyLink)
         };
 
-        await sgMail.send(msg);
-        console.log('✅ Verification email sent via SendGrid');
-        return { success: true, data: msg };
+        await transporter.sendMail(mailOptions);
+        console.log('✅ Verification email sent via Nodemailer');
+        return { success: true, data: mailOptions };
     } catch (error) {
         console.error('❌ Error sending verification email:', error);
         return { success: false, error: 'Email service unavailable' };
@@ -261,16 +266,16 @@ export function adminMagicLinkTemplate(userName: string, magicLink: string): str
  */
 export async function sendAdminMagicLinkEmail({ email, magicLink, userName }: { email: string; magicLink: string; userName: string }) {
     try {
-        const msg = {
+        const mailOptions = {
             to: email,
-            from: 'fhjilyyjg@gmail.com',
+            from: process.env.EMAIL_USER || 'noreply@khundaenggarden.com',
             subject: 'ลิงก์การเข้าสู่ระบบสำหรับแอดมิน - Khun Daeng Garden',
             html: adminMagicLinkTemplate(userName, magicLink)
         };
 
-        await sgMail.send(msg);
-        console.log('✅ Admin magic link email sent via SendGrid');
-        return { success: true, data: msg };
+        await transporter.sendMail(mailOptions);
+        console.log('✅ Admin magic link email sent via Nodemailer');
+        return { success: true, data: mailOptions };
     } catch (error) {
         console.error('❌ Error sending admin magic link email:', error);
         return { success: false, error: 'Email service unavailable' };
