@@ -73,7 +73,7 @@ export default function HowToOrderPage() {
                     <CardContent>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <div style={{ borderLeft: '4px solid #6b7280', paddingLeft: '1rem' }}>
-                                <span style={{ backgroundColor: '#6b7280', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: 'bold' }}>PRE_ORDER</span>
+                                <span style={{ backgroundColor: '#6b7280', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: 'bold' }}>รอการอนุมัติ</span>
                                 <p style={{ color: '#4b5563', marginTop: '0.5rem' }}>สินค้ารายการนี้เป็นแบบ Pre-Order หรือสินค้าในสวนมีน้อยกว่าจำนวนที่สั่ง <strong>ต้องรอแอดมินสวนอนุมัติก่อน</strong> จึงจะสามารถชำระเงินมัดจำและแนบสลิปได้</p>
                             </div>
                             <div style={{ borderLeft: '4px solid #f59e0b', paddingLeft: '1rem' }}>

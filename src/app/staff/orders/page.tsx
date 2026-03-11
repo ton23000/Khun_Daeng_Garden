@@ -197,8 +197,8 @@ export default function StaffOrdersPage() {
 
     const getStatusBadge = (status: string) => {
         const statusConfig: Record<string, { color: string; label: string }> = {
-            PENDING_APPROVAL: { color: '#6b7280', label: 'PRE_ORDER' },
-            PRE_ORDER: { color: '#6b7280', label: 'PRE_ORDER' },
+            PENDING_APPROVAL: { color: '#6b7280', label: 'รอการอนุมัติ' },
+            PRE_ORDER: { color: '#6b7280', label: 'รอการอนุมัติ' },
             PENDING: { color: '#f59e0b', label: 'รอชำระเงิน' },
             VERIFYING_PAYMENT: { color: '#3b82f6', label: 'ตรวจสอบการชำระเงิน' },
             PAYMENT_ISSUE: { color: '#ef4444', label: 'ชำระเงินมีปัญหา' },
@@ -215,7 +215,7 @@ export default function StaffOrdersPage() {
 
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {
-            PENDING_APPROVAL: 'PRE_ORDER', PRE_ORDER: 'PRE_ORDER',
+            PENDING_APPROVAL: 'รอการอนุมัติ', PRE_ORDER: 'รอการอนุมัติ',
             PENDING: 'รอชำระเงิน', PAID: 'ตรวจสอบการชำระเงิน', VERIFYING_PAYMENT: 'ตรวจสอบการชำระเงิน',
             PREPARING: 'กำลังเตรียม', READY: 'พร้อมรับ',
             COMPLETED: 'เสร็จสิ้น', CANCELLED: 'ยกเลิก'

@@ -192,8 +192,8 @@ export default function MyBookingsPage() {
 
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {
-            PENDING_APPROVAL: 'PRE_ORDER',
-            PRE_ORDER: 'PRE_ORDER',
+            PENDING_APPROVAL: 'รอการอนุมัติ',
+            PRE_ORDER: 'รอการอนุมัติ',
             PENDING: 'รอชำระเงิน',
             PAID: 'รอตรวจสอบ',
             PREPARING: 'กำลังเตรียมต้นไม้',
