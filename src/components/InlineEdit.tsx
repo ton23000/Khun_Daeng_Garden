@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 interface InlineEditProps {
     settingKey: string;
     initialValue: string;
-    renderAs?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'div';
+    renderAs?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'div' | 'a';
     className?: string;
     style?: React.CSSProperties;
     multiline?: boolean;
