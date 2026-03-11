@@ -292,7 +292,12 @@ export default function InlineEdit({
                     e.stopPropagation();
                 }
             }}
-            style={{ position: 'relative', cursor: 'default', ...appliedStyle }}
+            style={{ 
+                position: 'relative', 
+                cursor: 'default', 
+                display: renderAs === 'span' || renderAs === 'a' ? 'inline-block' : undefined,
+                ...appliedStyle 
+            }}
             className={`group ${className || ''}`}
         >
             {content}
