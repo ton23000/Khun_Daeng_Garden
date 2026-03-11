@@ -96,39 +96,29 @@ export async function Footer() {
                                 Facebook: <a href={facebook} target="_blank" rel="noopener noreferrer" style={{ color: '#7fb069', textDecoration: 'none' }}>{facebookName}</a>
                             </div>
                         </div>
-                        {/* Payment Icons */}
-                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-                            <div style={{
-                                backgroundColor: 'white',
-                                padding: '0.25rem 0.5rem',
-                                borderRadius: '4px',
-                                fontSize: '0.75rem',
-                                fontWeight: 'bold',
-                                color: '#1a1f71'
-                            }}>VISA</div>
-                            <div style={{
-                                backgroundColor: 'white',
-                                padding: '0.25rem 0.5rem',
-                                borderRadius: '4px',
-                                fontSize: '0.75rem',
-                                fontWeight: 'bold',
-                                color: '#eb001b'
-                            }}>Mastercard</div>
-                            <div style={{
-                                backgroundColor: 'white',
-                                padding: '0.25rem 0.5rem',
-                                borderRadius: '4px',
-                                fontSize: '0.75rem',
-                                fontWeight: 'bold',
-                                color: '#003087'
-                            }}>PayPal</div>
-                            <div style={{
-                                backgroundColor: 'white',
-                                padding: '0.25rem 0.5rem',
-                                borderRadius: '4px',
-                                fontSize: '0.75rem',
-                                fontWeight: 'bold'
-                            }}>💳</div>
+                        {/* Payment Options */}
+                        <div style={{ marginTop: '1.25rem' }}>
+                            <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginBottom: '0.5rem' }}>ช่องทางการชำระเงินที่รองรับ:</p>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <div style={{
+                                    backgroundColor: 'white',
+                                    padding: '0.25rem 0.75rem',
+                                    borderRadius: '4px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 'bold',
+                                    color: '#115e59',
+                                    border: '1px solid #e5e7eb'
+                                }}>PromptPay</div>
+                                <div style={{
+                                    backgroundColor: 'white',
+                                    padding: '0.25rem 0.75rem',
+                                    borderRadius: '4px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 'bold',
+                                    color: '#0369a1',
+                                    border: '1px solid #e5e7eb'
+                                }}>โอนเงินธนาคาร</div>
+                            </div>
                         </div>
                     </div>
 
@@ -137,8 +127,8 @@ export async function Footer() {
                         <h4 style={sectionTitleStyle}>เมนูข้อมูล</h4>
                         <Link href="/about" style={linkStyle}>เกี่ยวกับเรา</Link>
                         <Link href="/services" style={linkStyle}>บริการของเรา</Link>
-                        <Link href="/services#order" style={linkStyle}>วิธีการสั่งซื้อ</Link>
-                        <Link href="/services#planting" style={linkStyle}>คำปรึกษาการปลูก</Link>
+                        <Link href="/how-to-order" style={linkStyle}>วิธีการสั่งซื้อ</Link>
+                        <Link href="/consultation" style={linkStyle}>คำปรึกษาการปลูก</Link>
                         <Link href="/faq" style={linkStyle}>คำถามที่พบบ่อย</Link>
                     </div>
 
@@ -175,10 +165,8 @@ export async function Footer() {
                         สงวนลิขสิทธิ์ © 2026 สวนคุณแดง สงวนสิทธิ์ทั้งหมด
                     </div>
                     <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.875rem' }}>
-                        <Link href="/privacy" style={{ color: '#2d3e2d', textDecoration: 'none' }}>นโยบายความเป็นส่วนตัว</Link>
-                        <Link href="/terms" style={{ color: '#2d3e2d', textDecoration: 'none' }}>ข้อกำหนดการใช้งาน</Link>
                         <Link href="/about" style={{ color: '#2d3e2d', textDecoration: 'none' }}>เกี่ยวกับเรา</Link>
-                        <Link href="/tech-stack" style={{ color: '#2d3e2d', textDecoration: 'none' }}>เทคโนโลยี</Link>
+                        <Link href="/contact" style={{ color: '#2d3e2d', textDecoration: 'none' }}>ติดต่อเรา</Link>
                     </div>
                     <div style={{ fontSize: '0.75rem', color: '#4a5a4a' }}>
                         Made with 🌿 by Khun Daeng Garden
