@@ -180,11 +180,17 @@ export default function InlineEdit({
                     <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', flexWrap: 'wrap', backgroundColor: '#f9fafb', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #e5e7eb' }}>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: '#374151' }}>
                             สีข้อความ:
-                            <input type="color" value={color && /^#[0-9A-Fa-f]{6}$/i.test(color) ? color : '#000000'} onChange={e => setColor(e.target.value)} style={{ cursor: 'pointer', height: '28px', width: '36px', padding: 0, border: 'none' }} />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                <input type="color" value={color === 'transparent' ? '#000000' : (color && /^#[0-9A-Fa-f]{6}$/i.test(color) ? color : '#000000')} onChange={e => setColor(e.target.value)} style={{ cursor: 'pointer', height: '28px', width: '36px', padding: 0, border: 'none', opacity: color === 'transparent' ? 0.3 : 1 }} />
+                                <button type="button" onClick={() => setColor(color === 'transparent' ? '#000000' : 'transparent')} style={{ fontSize: '0.75rem', padding: '0.2rem 0.4rem', border: '1px solid #d1d5db', borderRadius: '4px', background: color === 'transparent' ? '#e5e7eb' : 'white', cursor: 'pointer' }}>ไม่มีสี</button>
+                            </div>
                         </label>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: '#374151' }}>
                             สีพื้นหลัง:
-                            <input type="color" value={bgColor && /^#[0-9A-Fa-f]{6}$/i.test(bgColor) ? bgColor : '#ffffff'} onChange={e => setBgColor(e.target.value)} style={{ cursor: 'pointer', height: '28px', width: '36px', padding: 0, border: 'none' }} />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                <input type="color" value={bgColor === 'transparent' ? '#ffffff' : (bgColor && /^#[0-9A-Fa-f]{6}$/i.test(bgColor) ? bgColor : '#ffffff')} onChange={e => setBgColor(e.target.value)} style={{ cursor: 'pointer', height: '28px', width: '36px', padding: 0, border: 'none', opacity: bgColor === 'transparent' ? 0.3 : 1 }} />
+                                <button type="button" onClick={() => setBgColor(bgColor === 'transparent' ? '#ffffff' : 'transparent')} style={{ fontSize: '0.75rem', padding: '0.2rem 0.4rem', border: '1px solid #d1d5db', borderRadius: '4px', background: bgColor === 'transparent' ? '#e5e7eb' : 'white', cursor: 'pointer' }}>ไม่มีสี</button>
+                            </div>
                         </label>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: '#374151' }}>
                             ขนาด (เช่น 2rem, 32px):
