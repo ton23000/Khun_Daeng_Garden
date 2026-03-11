@@ -14,6 +14,20 @@ export default function BookingSuccessPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [uploadSuccess, setUploadSuccess] = useState(false);
 
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('คัดลอกเลขบัญชีแล้ว!');
+        }).catch(() => {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert('คัดลอกเลขบัญชีแล้ว!');
+        });
+    };
+
     useEffect(() => {
         const data = localStorage.getItem('last_booking');
         if (data) {
@@ -177,15 +191,24 @@ export default function BookingSuccessPage() {
                         </p>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                             <span>ธนาคาร</span>
-                            <span style={{ fontWeight: 'bold' }}>กสิกรไทย (KBank)</span>
+                            <span style={{ fontWeight: 'bold' }}>ธนาคารกรุงเทพ (BBL)</span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                             <span>เลขที่บัญชี</span>
-                            <span style={{ fontWeight: 'bold', fontFamily: 'monospace' }}>123-4-56789-0</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span style={{ fontWeight: 'bold', fontFamily: 'monospace' }}>499-082-3108</span>
+                                <button
+                                    onClick={() => copyToClipboard('4990823108')}
+                                    title="คัดลอกเลขบัญชี"
+                                    style={{ padding: '0.2rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #0ea5e9', backgroundColor: 'white', color: '#0ea5e9', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 'bold' }}
+                                >
+                                    📋 ก็อป
+                                </button>
+                            </div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                             <span>ชื่อบัญชี</span>
-                            <span>บจก. สวนคุณแดง</span>
+                            <span>สวนคุณแดง</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', fontWeight: 'bold', fontSize: '1.125rem' }}>
                             <span>ยอดมัดจำที่ต้องโอน</span>
@@ -201,18 +224,23 @@ export default function BookingSuccessPage() {
 
                     {booking.slipUrl && (
                         <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem' }}>
-                            <p style={{ fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#374151' }}>📎 สลิปที่แนบ:</p>
-                            <img
-                                src={booking.slipUrl}
-                                alt="Payment Slip"
-                                style={{
-                                    width: '100%',
-                                    maxHeight: '300px',
-                                    objectFit: 'contain',
-                                    borderRadius: '0.375rem',
-                                    border: '1px solid #e5e7eb'
-                                }}
-                            />
+                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                <img
+                                    src={booking.slipUrl}
+                                    alt="Payment Slip"
+                                    style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '0.375rem', border: '1px solid #e5e7eb', cursor: 'pointer' }}
+                                    onClick={() => window.open(booking.slipUrl, '_blank')}
+                                />
+                                <div>
+                                    <p style={{ fontSize: '0.875rem', color: '#166534', fontWeight: 'bold', marginBottom: '0.5rem' }}>✅ แนบสลิปเรียบร้อยแล้ว</p>
+                                    <button
+                                        onClick={() => setIsModalOpen(true)}
+                                        style={{ padding: '0.4rem 0.8rem', borderRadius: '0.375rem', border: '1px solid #6b7280', backgroundColor: 'white', color: '#6b7280', cursor: 'pointer', fontSize: '0.8rem' }}
+                                    >
+                                        🔄 แนบสลิปใหม่
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -221,8 +249,8 @@ export default function BookingSuccessPage() {
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href="/"><button style={{ padding: '0.5rem 1.5rem', borderRadius: '9999px', border: '1px solid #22c55e', color: '#22c55e', backgroundColor: 'transparent', fontWeight: 500, cursor: 'pointer' }}>หน้าหลัก</button></Link>
                 <Link href="/profile/bookings"><button style={{ padding: '0.5rem 1.5rem', borderRadius: '9999px', border: '1px solid #14b8a6', color: '#14b8a6', backgroundColor: 'transparent', fontWeight: 500, cursor: 'pointer' }}>รายละเอียดการจอง</button></Link>
-                {!uploadSuccess && !['PENDING_APPROVAL', 'PRE_ORDER'].includes(booking.status) && (
-                    <Button variant="primary" onClick={() => setIsModalOpen(true)}>แนบสลิปการโอนเงิน</Button>
+                {!['PENDING_APPROVAL', 'PRE_ORDER'].includes(booking.status) && (
+                    <Button variant="primary" onClick={() => setIsModalOpen(true)}>{booking.slipUrl ? '🔄 แนบสลิปใหม่' : 'แนบสลิปการโอนเงิน'}</Button>
                 )}
             </div>
 

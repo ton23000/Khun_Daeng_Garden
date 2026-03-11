@@ -97,7 +97,22 @@ export default function MyBookingsPage() {
     };
 
     const canUploadSlip = (status: string) => {
-        return status === 'PENDING' || status === 'PAID';
+        return status === 'PENDING' || status === 'PAID' || status === 'VERIFYING_PAYMENT';
+    };
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('คัดลอกเลขบัญชีแล้ว!');
+        }).catch(() => {
+            // fallback for older browsers
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert('คัดลอกเลขบัญชีแล้ว!');
+        });
     };
 
     const handleFileSelect = async (bookingId: string, event: React.ChangeEvent<HTMLInputElement>) => {
@@ -354,8 +369,8 @@ export default function MyBookingsPage() {
                                                 </div>
                                             </div>
 
-                                            {/* PromptPay QR Code - Show for PENDING orders */}
-                                            {booking.status === 'PENDING' && (
+                                            {/* PromptPay QR Code - Show for PENDING and PAID orders */}
+                                             {(booking.status === 'PENDING' || booking.status === 'PAID') && (
                                                 <div style={{
                                                     marginTop: '1rem',
                                                     padding: '1rem',
@@ -441,17 +456,26 @@ export default function MyBookingsPage() {
                                                     </div>
 
                                                     {/* Bank Transfer Details */}
-                                                    <div style={{ fontSize: '0.875rem', color: '#78350f' }}>
-                                                        <p style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.5rem', textAlign: 'center' }}>
-                                                            หรือโอนเงินผ่านบัญชีธนาคาร
-                                                        </p>
-                                                        <p style={{ marginBottom: '0.25rem' }}>ธนาคาร: <strong>กสิกรไทย (KBank)</strong></p>
-                                                        <p style={{ marginBottom: '0.25rem' }}>เลขที่บัญชี: <strong>123-4-56789-0</strong></p>
-                                                        <p style={{ marginBottom: '0.25rem' }}>ชื่อบัญชี: <strong>บจก. สวนคุณแดง</strong></p>
-                                                        <p style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>
-                                                            ยอดที่ต้องชำระ: ฿{booking.deposit.toLocaleString()}
-                                                        </p>
-                                                    </div>
+                                                     <div style={{ fontSize: '0.875rem', color: '#78350f' }}>
+                                                         <p style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.75rem', textAlign: 'center' }}>
+                                                             หรือโอนเงินผ่านบัญชีธนาคาร
+                                                         </p>
+                                                         <p style={{ marginBottom: '0.25rem' }}>ธนาคาร: <strong>ธนาคารกรุงเทพ (BBL)</strong></p>
+                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                                                             <span>เลขที่บัญชี: <strong style={{ fontFamily: 'monospace' }}>499-082-3108</strong></span>
+                                                             <button
+                                                                 onClick={() => copyToClipboard('4990823108')}
+                                                                 title="คัดลอกเลขบัญชี"
+                                                                 style={{ padding: '0.2rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #0ea5e9', backgroundColor: 'white', color: '#0ea5e9', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                                                             >
+                                                                 📋 ก็อป
+                                                             </button>
+                                                         </div>
+                                                         <p style={{ marginBottom: '0.25rem' }}>ชื่อบัญชี: <strong>สวนคุณแดง</strong></p>
+                                                         <p style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>
+                                                             ยอดที่ต้องชำระ: ฿{booking.deposit.toLocaleString()}
+                                                         </p>
+                                                     </div>
                                                 </div>
                                             )}
 
@@ -499,37 +523,37 @@ export default function MyBookingsPage() {
                                                                 <p style={{ fontSize: '0.875rem', color: '#166534', marginBottom: '0.5rem' }}>
                                                                     ✅ แนบสลิปเรียบร้อยแล้ว
                                                                 </p>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() => setViewingSlip(booking.slipUrl)}
-                                                                >
-                                                                    🔍 ดูสลิปขนาดเต็ม
-                                                                </Button>
+                                                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        onClick={() => setViewingSlip(booking.slipUrl)}
+                                                                    >
+                                                                        🔍 ดูสลิปขนาดเต็ม
+                                                                    </Button>
+                                                                    {canUploadSlip(booking.status) && (
+                                                                        <>
+                                                                            <input
+                                                                                ref={el => { fileInputRefs.current[booking.id] = el; }}
+                                                                                type="file"
+                                                                                accept="image/*"
+                                                                                onChange={(e) => handleFileSelect(booking.id, e)}
+                                                                                style={{ display: 'none' }}
+                                                                                id={`file-${booking.id}`}
+                                                                            />
+                                                                            <Button
+                                                                                size="sm"
+                                                                                variant="outline"
+                                                                                onClick={() => document.getElementById(`file-${booking.id}`)?.click()}
+                                                                                disabled={uploadingId === booking.id}
+                                                                            >
+                                                                                {uploadingId === booking.id ? 'กำลังอัปโหลด...' : '🔄 แนบสลิปใหม่'}
+                                                                            </Button>
+                                                                        </>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
-
-                                                        {canUploadSlip(booking.status) && (
-                                                            <div>
-                                                                <input
-                                                                    ref={el => { fileInputRefs.current[booking.id] = el; }}
-                                                                    type="file"
-                                                                    accept="image/*"
-                                                                    onChange={(e) => handleFileSelect(booking.id, e)}
-                                                                    style={{ display: 'none' }}
-                                                                    id={`file-${booking.id}`}
-                                                                />
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() => document.getElementById(`file-${booking.id}`)?.click()}
-                                                                    disabled={uploadingId === booking.id}
-                                                                    style={{ marginTop: '0.5rem' }}
-                                                                >
-                                                                    {uploadingId === booking.id ? 'กำลังอัปโหลด...' : '🔄 เปลี่ยนสลิป'}
-                                                                </Button>
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 ) : (
                                                     <div>
