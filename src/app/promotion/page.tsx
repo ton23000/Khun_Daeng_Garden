@@ -56,20 +56,28 @@ export default async function PromotionPage() {
     return (
         <div className="container" style={{ padding: '2rem 1rem' }}>
             {/* Header */}
-            <div style={{
-                background: 'linear-gradient(135deg, #dc2626, #f59e0b)',
-                borderRadius: '1rem',
-                padding: '3rem 2rem',
-                marginBottom: '2rem',
-                textAlign: 'center',
-                color: 'white',
-                position: 'relative',
-                overflow: 'hidden'
-            }}>
+            <InlineEdit
+                settingKey="promotion_banner"
+                initialValue=""
+                initialBgColor={settingsMap['promotion_banner_bgColor'] || 'linear-gradient(135deg, #dc2626, #f59e0b)'}
+                renderAs="div"
+                allowStyleEdit
+                style={{
+                    background: settingsMap['promotion_banner_bgColor'] || 'linear-gradient(135deg, #dc2626, #f59e0b)',
+                    borderRadius: '1rem',
+                    padding: '3rem 2rem',
+                    marginBottom: '2rem',
+                    textAlign: 'center',
+                    color: 'white',
+                    position: 'relative',
+                    overflow: 'hidden'
+                }}
+            >
                 <div style={{
                     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
                     background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat',
-                    opacity: 0.3
+                    opacity: 0.3,
+                    pointerEvents: 'none'
                 }} />
                 <InlineEdit
                     settingKey="promotion_title"
@@ -93,7 +101,7 @@ export default async function PromotionPage() {
                         <CountdownTimer endDate={nearestEndDate.toISOString()} style={{ color: 'white' }} />
                     </div>
                 )}
-            </div>
+            </InlineEdit>
 
             {/* Promotion Grid */}
             {promotionTrees.length === 0 ? (
