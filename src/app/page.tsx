@@ -796,7 +796,7 @@ export default async function Home() {
             </h2>
           </ScrollAnimation>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '2rem' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {topReviews.length > 0 ? (
               topReviews.map((review, index) => {
                 const colors = ['#dcfce7', '#ffedd5', '#e0e7ff', '#fce7f3'];
