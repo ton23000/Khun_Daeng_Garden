@@ -149,6 +149,8 @@ export default function OrdersPage() {
         if (statusFilter) {
             if (statusFilter === 'VERIFYING_PAYMENT') {
                 result = result.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID');
+            } else if (statusFilter === 'PENDING_APPROVAL') {
+                result = result.filter(b => b.status === 'PENDING_APPROVAL' || b.status === 'PRE_ORDER');
             } else {
                 result = result.filter(b => b.status === statusFilter);
             }
@@ -330,7 +332,7 @@ export default function OrdersPage() {
             {/* Stats */}
             <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
                 {[
-                    { id: 'PENDING_APPROVAL', label: 'รอการอนุมัติ', color: '#f59e0b' },
+                    { id: 'PENDING_APPROVAL', label: 'รอการอนุมัติ', color: '#f59e0b', count: bookings.filter(b => b.status === 'PENDING_APPROVAL' || b.status === 'PRE_ORDER').length },
                     { id: 'PENDING', label: 'รอชำระเงิน', color: '#f59e0b' },
                     { id: 'VERIFYING_PAYMENT', label: 'รอตรวจสอบ', color: '#3b82f6', count: bookings.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID').length },
                     { id: 'PAYMENT_ISSUE', label: 'ชำระมีปัญหา', color: '#ef4444' },
