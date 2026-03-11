@@ -136,7 +136,6 @@ export async function Footer() {
                     <div>
                         <h4 style={sectionTitleStyle}>ร้านค้า</h4>
                         <Link href="/shop" style={linkStyle}>สินค้าทั้งหมด</Link>
-                        <Link href="/shop?category=cactus" style={linkStyle}>กระบองเพชร</Link>
                         <Link href="/promotion" style={linkStyle}>โปรโมชั่น</Link>
                     </div>
 
