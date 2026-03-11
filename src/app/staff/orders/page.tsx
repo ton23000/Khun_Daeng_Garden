@@ -115,6 +115,8 @@ export default function StaffOrdersPage() {
         if (statusFilter) {
             if (statusFilter === 'VERIFYING_PAYMENT') {
                 result = result.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID');
+            } else if (statusFilter === 'PENDING_APPROVAL') {
+                result = result.filter(b => b.status === 'PENDING_APPROVAL' || b.status === 'PRE_ORDER');
             } else {
                 result = result.filter(b => b.status === statusFilter);
             }
@@ -242,7 +244,7 @@ export default function StaffOrdersPage() {
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
                 {[
-                    { id: 'PENDING_APPROVAL', label: 'รอการอนุมัติ', color: '#f59e0b' },
+                    { id: 'PENDING_APPROVAL', label: 'รอการอนุมัติ', color: '#f59e0b', count: bookings.filter(b => b.status === 'PENDING_APPROVAL' || b.status === 'PRE_ORDER').length },
                     { id: 'PENDING', label: 'รอชำระ', color: '#f59e0b' },
                     { id: 'VERIFYING_PAYMENT', label: 'รอตรวจสอบ', color: '#3b82f6', count: bookings.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID').length },
                     { id: 'PREPARING', label: 'เตรียมสินค้า', color: '#8b5cf6' },
