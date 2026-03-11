@@ -35,25 +35,26 @@ export default function BookingSuccessPage() {
         }
     }, []);
 
-    const handleUpload = async (file: File) => {
+    const handleUpload = async (files: File[]) => {
         if (!booking) return;
 
         try {
-            // Upload file first
+            // Upload all files at once
             const formData = new FormData();
-            formData.append('file', file);
+            files.forEach(f => formData.append('file', f));
 
             const uploadRes = await fetch('/api/upload', {
                 method: 'POST',
                 body: formData,
             });
 
-            if (!uploadRes.ok) {
-                throw new Error('Failed to upload file');
-            }
+            if (!uploadRes.ok) throw new Error('Failed to upload file');
 
             const uploadData = await uploadRes.json();
-            const slipUrl = uploadData.urls?.[0] || uploadData.url;
+            const newUrls: string[] = uploadData.urls || [];
+
+            // Store as JSON array string
+            const slipUrl = JSON.stringify(newUrls);
 
             // Update booking with slip URL via API
             const updateRes = await fetch(`/api/bookings/${booking.id}`, {
@@ -62,9 +63,7 @@ export default function BookingSuccessPage() {
                 body: JSON.stringify({ slipUrl }),
             });
 
-            if (!updateRes.ok) {
-                throw new Error('Failed to update booking');
-            }
+            if (!updateRes.ok) throw new Error('Failed to update booking');
 
             const updatedBooking = await updateRes.json();
             setBooking(updatedBooking);
@@ -222,27 +221,28 @@ export default function BookingSuccessPage() {
                         </div>
                     )}
 
-                    {booking.slipUrl && (
-                        <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem' }}>
-                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '0.75rem' }}>
-                                <img
-                                    src={booking.slipUrl}
-                                    alt="Payment Slip"
-                                    style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '0.375rem', border: '1px solid #e5e7eb', cursor: 'pointer' }}
-                                    onClick={() => window.open(booking.slipUrl, '_blank')}
-                                />
-                                <div>
-                                    <p style={{ fontSize: '0.875rem', color: '#166534', fontWeight: 'bold', marginBottom: '0.5rem' }}>✅ แนบสลิปเรียบร้อยแล้ว</p>
-                                    <button
-                                        onClick={() => setIsModalOpen(true)}
-                                        style={{ padding: '0.4rem 0.8rem', borderRadius: '0.375rem', border: '1px solid #6b7280', backgroundColor: 'white', color: '#6b7280', cursor: 'pointer', fontSize: '0.8rem' }}
-                                    >
-                                        🔄 แนบสลิปใหม่
+                    {booking.slipUrl && (() => {
+                        let slipUrls: string[] = [];
+                        try { slipUrls = JSON.parse(booking.slipUrl); } catch { slipUrls = [booking.slipUrl]; }
+                        return (
+                            <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f0fdf4', borderRadius: '0.5rem', border: '1px solid #bbf7d0' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                    <p style={{ fontSize: '0.875rem', color: '#166534', fontWeight: 'bold' }}>✅ สลิปที่แนบ ({slipUrls.length} รูป)</p>
+                                    <button onClick={() => setIsModalOpen(true)} style={{ padding: '0.3rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #6b7280', backgroundColor: 'white', color: '#6b7280', cursor: 'pointer', fontSize: '0.8rem' }}>
+                                        🔄 แนบใหม่
                                     </button>
                                 </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(slipUrls.length, 3)}, 1fr)`, gap: '0.5rem' }}>
+                                    {slipUrls.map((url, i) => (
+                                        <img key={i} src={url} alt={`สลิป ${i + 1}`}
+                                            style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '0.375rem', border: '1px solid #e5e7eb', cursor: 'pointer' }}
+                                            onClick={() => window.open(url, '_blank')}
+                                        />
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        );
+                    })()}
                 </div>
             )}
 

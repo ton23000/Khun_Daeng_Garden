@@ -116,72 +116,37 @@ export default function MyBookingsPage() {
     };
 
     const handleFileSelect = async (bookingId: string, event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        console.log('🔵 handleFileSelect called', { bookingId, fileName: file.name });
+        const files = Array.from(event.target.files || []).slice(0, 3);
+        if (files.length === 0) return;
         setUploadingId(bookingId);
-
         try {
-            // Upload file first
             const formData = new FormData();
-            formData.append('file', file);
-
-            console.log('📤 Uploading file to /api/upload...');
-            const uploadRes = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!uploadRes.ok) {
-                const errorText = await uploadRes.text();
-                console.error('❌ Upload failed:', uploadRes.status, errorText);
-                throw new Error('Failed to upload file');
-            }
-
+            files.forEach(f => formData.append('file', f));
+            const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+            if (!uploadRes.ok) throw new Error('Failed to upload file');
             const uploadData = await uploadRes.json();
-            console.log('✅ Upload response:', uploadData);
-
-            // API returns { urls: [...] }, get the first URL
-            const url = uploadData.urls?.[0] || uploadData.url;
-
-            if (!url) {
-                console.error('❌ No URL in response:', uploadData);
-                throw new Error('No URL returned from upload');
-            }
-
-            console.log('📎 Slip URL:', url);
-
-            // Update booking with slip URL
-            console.log('📤 Updating booking...');
+            const newUrls: string[] = uploadData.urls || [];
+            if (newUrls.length === 0) throw new Error('No URL returned from upload');
+            const slipUrl = JSON.stringify(newUrls);
             const updateRes = await fetch(`/api/bookings/${bookingId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ slipUrl: url }),
+                body: JSON.stringify({ slipUrl }),
             });
-
-            if (!updateRes.ok) {
-                const errorText = await updateRes.text();
-                console.error('❌ Update failed:', updateRes.status, errorText);
-                throw new Error('Failed to update booking');
-            }
-
-            console.log('✅ Booking updated successfully');
-
-            // Refresh bookings
+            if (!updateRes.ok) throw new Error('Failed to update booking');
             await fetchBookings();
-            alert('แนบสลิปสำเร็จ! รอร้านตรวจสอบ');
+            alert(`แนบสลิปสำเร็จ ${newUrls.length} รูป! รอร้านตรวจสอบ`);
         } catch (error) {
             console.error('❌ Upload error:', error);
             alert('เกิดข้อผิดพลาดในการแนบสลิป กรุณาลองใหม่');
         } finally {
             setUploadingId(null);
-            // Reset file input
             if (fileInputRefs.current[bookingId]) {
                 fileInputRefs.current[bookingId]!.value = '';
             }
         }
     };
+
 
     const getStatusBadge = (status: string) => {
         const colors: Record<string, string> = {
@@ -490,102 +455,46 @@ export default function MyBookingsPage() {
                                                 <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#166534' }}>
                                                     📎 หลักฐานการโอนเงิน
                                                 </h4>
-                                                {booking.slipUrl ? (
-                                                    <div>
-                                                        {/* Slip Preview */}
-                                                        <div style={{
-                                                            display: 'flex',
-                                                            gap: '1rem',
-                                                            alignItems: 'center',
-                                                            marginBottom: '0.75rem'
-                                                        }}>
-                                                            <div style={{
-                                                                width: '100px',
-                                                                height: '100px',
-                                                                borderRadius: '0.5rem',
-                                                                overflow: 'hidden',
-                                                                border: '2px solid #bbf7d0',
-                                                                cursor: 'pointer'
-                                                            }}
-                                                                onClick={() => setViewingSlip(booking.slipUrl)}
-                                                            >
-                                                                <img
-                                                                    src={booking.slipUrl}
-                                                                    alt="Payment Slip"
-                                                                    style={{
-                                                                        width: '100%',
-                                                                        height: '100%',
-                                                                        objectFit: 'cover'
-                                                                    }}
-                                                                />
-                                                            </div>
-                                                            <div style={{ flex: 1 }}>
-                                                                <p style={{ fontSize: '0.875rem', color: '#166534', marginBottom: '0.5rem' }}>
-                                                                    ✅ แนบสลิปเรียบร้อยแล้ว
-                                                                </p>
-                                                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                                                    <Button
-                                                                        size="sm"
-                                                                        variant="outline"
-                                                                        onClick={() => setViewingSlip(booking.slipUrl)}
-                                                                    >
-                                                                        🔍 ดูสลิปขนาดเต็ม
-                                                                    </Button>
-                                                                    {canUploadSlip(booking.status) && (
-                                                                        <>
-                                                                            <input
-                                                                                ref={el => { fileInputRefs.current[booking.id] = el; }}
-                                                                                type="file"
-                                                                                accept="image/*"
-                                                                                onChange={(e) => handleFileSelect(booking.id, e)}
-                                                                                style={{ display: 'none' }}
-                                                                                id={`file-${booking.id}`}
-                                                                            />
-                                                                            <Button
-                                                                                size="sm"
-                                                                                variant="outline"
-                                                                                onClick={() => document.getElementById(`file-${booking.id}`)?.click()}
-                                                                                disabled={uploadingId === booking.id}
-                                                                            >
-                                                                                {uploadingId === booking.id ? 'กำลังอัปโหลด...' : '🔄 แนบสลิปใหม่'}
-                                                                            </Button>
-                                                                        </>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <div>
-                                                        {canUploadSlip(booking.status) ? (
+                                                {(() => {
+                                                    const rawSlip = booking.slipUrl;
+                                                    if (!rawSlip) {
+                                                        return canUploadSlip(booking.status) ? (
                                                             <div>
-                                                                <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
-                                                                    กรุณาแนบสลิปการโอนเงิน
-                                                                </p>
-                                                                <input
-                                                                    ref={el => { fileInputRefs.current[booking.id] = el; }}
-                                                                    type="file"
-                                                                    accept="image/*"
-                                                                    onChange={(e) => handleFileSelect(booking.id, e)}
-                                                                    style={{ display: 'none' }}
-                                                                    id={`file-${booking.id}`}
-                                                                />
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="primary"
-                                                                    onClick={() => document.getElementById(`file-${booking.id}`)?.click()}
-                                                                    disabled={uploadingId === booking.id}
-                                                                >
-                                                                    {uploadingId === booking.id ? 'กำลังอัปโหลด...' : '📤 แนบสลิป'}
+                                                                <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>กรุณาแนบสลิปการโอนเงิน (สูงสุด 3 รูป)</p>
+                                                                <input ref={el => { fileInputRefs.current[booking.id] = el; }} type="file" accept="image/*" multiple onChange={(e) => handleFileSelect(booking.id, e)} style={{ display: 'none' }} id={`file-${booking.id}`} />
+                                                                <Button size="sm" variant="primary" onClick={() => document.getElementById(`file-${booking.id}`)?.click()} disabled={uploadingId === booking.id}>
+                                                                    {uploadingId === booking.id ? 'กำลังอัปโหลด...' : '📤 แนบสลิป (1-3 รูป)'}
                                                                 </Button>
                                                             </div>
                                                         ) : (
-                                                            <p style={{ fontSize: '0.875rem', color: '#9ca3af' }}>
-                                                                ไม่สามารถแนบสลิปได้ในสถานะนี้
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                )}
+                                                            <p style={{ fontSize: '0.875rem', color: '#9ca3af' }}>ไม่สามารถแนบสลิปได้ในสถานะนี้</p>
+                                                        );
+                                                    }
+                                                    let slipUrls: string[] = [];
+                                                    try { slipUrls = JSON.parse(rawSlip); } catch { slipUrls = [rawSlip]; }
+                                                    return (
+                                                        <div>
+                                                            <p style={{ fontSize: '0.875rem', color: '#166534', marginBottom: '0.5rem' }}>✅ แนบสลิปแล้ว {slipUrls.length} รูป</p>
+                                                            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(slipUrls.length, 3)}, 1fr)`, gap: '0.5rem', marginBottom: '0.75rem' }}>
+                                                                {slipUrls.map((url, i) => (
+                                                                    <img key={i} src={url} alt={`สลิป ${i + 1}`}
+                                                                        style={{ width: '100%', height: '90px', objectFit: 'cover', borderRadius: '0.375rem', border: '1px solid #bbf7d0', cursor: 'pointer' }}
+                                                                        onClick={() => setViewingSlip(url)}
+                                                                    />
+                                                                ))}
+                                                            </div>
+                                                            {canUploadSlip(booking.status) && (
+                                                                <>
+                                                                    <input ref={el => { fileInputRefs.current[booking.id] = el; }} type="file" accept="image/*" multiple onChange={(e) => handleFileSelect(booking.id, e)} style={{ display: 'none' }} id={`file-${booking.id}`} />
+                                                                    <Button size="sm" variant="outline" onClick={() => document.getElementById(`file-${booking.id}`)?.click()} disabled={uploadingId === booking.id}>
+                                                                        {uploadingId === booking.id ? 'กำลังอัปโหลด...' : '🔄 แนบสลิปใหม่ (1-3 รูป)'}
+                                                                    </Button>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })()}
+
                                             </div>
 
                                             {booking.note && (
