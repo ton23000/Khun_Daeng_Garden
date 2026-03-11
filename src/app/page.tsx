@@ -434,7 +434,6 @@ export default async function Home() {
       {/* Festival Banner */}
       <section className="container" style={{ marginTop: '4rem', marginBottom: '2rem' }}>
         <ScrollAnimation animation="fade-up">
-          <Link href="/promotion" style={{ textDecoration: 'none' }}>
             <InlineEdit
               settingKey="valentine_banner"
               initialValue="" // No text content for the wrapper itself
@@ -497,16 +496,17 @@ export default async function Home() {
                   />
                 </div>
                 <br />
-                <span
-                  role="button"
-                  style={{ marginTop: '1.5rem', backgroundColor: '#7f1d1d', color: 'white', borderRadius: '9999px', padding: '0.75rem 2.5rem', fontSize: '1.25rem', fontWeight: 'bold', position: 'relative', zIndex: 40, display: 'inline-block', transition: 'transform 0.2s, background-color 0.2s', boxShadow: '0 4px 6px rgba(127, 29, 29, 0.3)' }}
-                  className="hover:scale-105 hover:bg-[#991b1b]"
-                >
-                  ช้อปเลย →
-                </span>
+                <Link href="/promotion" style={{ textDecoration: 'none' }}>
+                  <span
+                    role="button"
+                    style={{ marginTop: '1.5rem', backgroundColor: '#7f1d1d', color: 'white', borderRadius: '9999px', padding: '0.75rem 2.5rem', fontSize: '1.25rem', fontWeight: 'bold', position: 'relative', zIndex: 40, display: 'inline-block', transition: 'transform 0.2s, background-color 0.2s', boxShadow: '0 4px 6px rgba(127, 29, 29, 0.3)' }}
+                    className="hover:scale-105 hover:bg-[#991b1b]"
+                  >
+                    ช้อปเลย →
+                  </span>
+                </Link>
               </div>
             </InlineEdit>
-          </Link>
         </ScrollAnimation>
       </section>
 
