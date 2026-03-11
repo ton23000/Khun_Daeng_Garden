@@ -199,7 +199,7 @@ export default function InlineEdit({
                     </div>
                 )}
 
-                <div style={{ position: 'absolute', right: '0', bottom: '-30px', display: 'flex', gap: '0.25rem', zIndex: 100 }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
@@ -208,16 +208,17 @@ export default function InlineEdit({
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
-                            padding: '4px',
+                            padding: '6px 12px',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            opacity: isSaving ? 0.7 : 1
+                            opacity: isSaving ? 0.7 : 1,
+                            fontSize: '0.875rem'
                         }}
                         title="บันทึก (Enter)"
                     >
-                        <Check size={16} />
+                        <Check size={16} style={{ marginRight: '4px' }}/> บันทึก
                     </button>
                     <button
                         onClick={handleCancel}
@@ -227,16 +228,17 @@ export default function InlineEdit({
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
-                            padding: '4px',
+                            padding: '6px 12px',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            opacity: isSaving ? 0.7 : 1
+                            opacity: isSaving ? 0.7 : 1,
+                            fontSize: '0.875rem'
                         }}
                         title="ยกเลิก (Esc)"
                     >
-                        <X size={16} />
+                        <X size={16} style={{ marginRight: '4px' }}/> ยกเลิก
                     </button>
                 </div>
             </div>
@@ -302,28 +304,27 @@ export default function InlineEdit({
                     e.stopPropagation();
                     setIsEditing(true);
                 }}
-                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                className="opacity-0 group-hover:opacity-100 transition-all duration-200"
                 style={{
                     position: 'absolute',
-                    top: '0',
-                    right: '0',
-                    transform: 'translate(50%, -50%)',
+                    top: '-12px',
+                    right: '-12px',
                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
                     color: '#166534',
                     border: '1px solid #dcfce7',
                     borderRadius: '50%',
-                    width: '28px',
-                    height: '28px',
+                    width: '32px',
+                    height: '32px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                    zIndex: 50
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                    zIndex: 20
                 }}
                 title="คลิกเพื่อแก้ไขข้อความนี้"
             >
-                <Pencil size={12} />
+                <Pencil size={14} />
             </button>
         </Tag>
     );
