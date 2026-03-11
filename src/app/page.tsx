@@ -456,8 +456,8 @@ export default async function Home() {
                 boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
               }}
             >
-              <div style={{ flex: '1 1 300px', zIndex: 10, position: 'relative' }}>
-                <div style={{ display: 'inline-block', position: 'relative', zIndex: 20 }}>
+              <div style={{ flex: '1 1 300px', zIndex: 10, position: 'relative', display: 'flex', flexDirection: 'column', gap: '1.25rem', alignItems: 'center', textAlign: 'center' }}>
+                <div>
                   <InlineEdit
                     settingKey="valentine_heading"
                     initialValue={valHeading}
@@ -466,10 +466,10 @@ export default async function Home() {
                     initialBgColor={settingsMap['valentine_heading_bgColor']}
                     initialFontSize={valHeadingSize}
                     renderAs="span"
-                    style={{ fontSize: valHeadingSize, fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase', color: valHeadingColor, background: settingsMap['valentine_heading_bgColor'] || 'transparent', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', display: 'inline-block' }}
+                    style={{ fontSize: valHeadingSize, fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase', color: valHeadingColor, background: settingsMap['valentine_heading_bgColor'] || 'transparent', padding: '0.25rem 0.75rem', borderRadius: '0.25rem', display: 'inline-block' }}
                   />
                 </div>
-                <div style={{ display: 'inline-block', position: 'relative', zIndex: 20 }}>
+                <div>
                   <InlineEdit
                     settingKey="valentine_title"
                     initialValue={valTitle}
@@ -479,11 +479,10 @@ export default async function Home() {
                     initialFontSize={valTitleSize}
                     renderAs="h2"
                     multiline
-                    style={{ fontSize: valTitleSize, color: valTitleColor, background: settingsMap['valentine_title_bgColor'] || 'transparent', fontWeight: 'bold', marginTop: '0.5rem', fontFamily: 'var(--font-playfair), serif', lineHeight: 1.1, whiteSpace: 'pre-line', padding: '0.25rem 0.5rem', borderRadius: '0.5rem', display: 'inline-block' }}
+                    style={{ fontSize: valTitleSize, color: valTitleColor, background: settingsMap['valentine_title_bgColor'] || 'transparent', fontWeight: 'bold', fontFamily: 'var(--font-playfair), serif', lineHeight: 1.2, whiteSpace: 'pre-line', padding: '0.25rem 0.75rem', borderRadius: '0.5rem', display: 'inline-block' }}
                   />
                 </div>
-                <br />
-                <div style={{ display: 'inline-block', position: 'relative', zIndex: 20 }}>
+                <div>
                   <InlineEdit
                     settingKey="valentine_subtitle"
                     initialValue={valSubtitle}
@@ -492,14 +491,13 @@ export default async function Home() {
                     initialBgColor={settingsMap['valentine_subtitle_bgColor']}
                     initialFontSize={valSubtitleSize}
                     renderAs="p"
-                    style={{ fontSize: valSubtitleSize, color: valSubtitleColor, background: settingsMap['valentine_subtitle_bgColor'] || 'transparent', marginTop: '0.75rem', opacity: 0.9, padding: '0.25rem 0.5rem', borderRadius: '0.5rem', display: 'inline-block' }}
+                    style={{ fontSize: valSubtitleSize, color: valSubtitleColor, background: settingsMap['valentine_subtitle_bgColor'] || 'transparent', opacity: 0.9, padding: '0.25rem 0.75rem', borderRadius: '0.5rem', display: 'inline-block' }}
                   />
                 </div>
-                <br />
-                <Link href="/promotion" style={{ textDecoration: 'none' }}>
+                <Link href="/promotion" style={{ textDecoration: 'none', marginTop: '0.5rem' }}>
                   <span
                     role="button"
-                    style={{ marginTop: '1.5rem', backgroundColor: '#7f1d1d', color: 'white', borderRadius: '9999px', padding: '0.75rem 2.5rem', fontSize: '1.25rem', fontWeight: 'bold', position: 'relative', zIndex: 40, display: 'inline-block', transition: 'transform 0.2s, background-color 0.2s', boxShadow: '0 4px 6px rgba(127, 29, 29, 0.3)' }}
+                    style={{ backgroundColor: '#7f1d1d', color: 'white', borderRadius: '9999px', padding: '0.75rem 2.5rem', fontSize: '1.25rem', fontWeight: 'bold', position: 'relative', zIndex: 40, display: 'inline-block', transition: 'transform 0.2s, background-color 0.2s', boxShadow: '0 4px 6px rgba(127, 29, 29, 0.3)' }}
                     className="hover:scale-105 hover:bg-[#991b1b]"
                   >
                     ช้อปเลย →
