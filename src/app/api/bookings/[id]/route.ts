@@ -367,6 +367,11 @@ export async function DELETE(
             where: { bookingId: id }
         });
 
+        // Delete related admin notifications
+        await prisma.adminNotification.deleteMany({
+            where: { bookingId: id }
+        });
+
         // Release reserved stock if booking was active
         if (!['PENDING_APPROVAL', 'CANCELLED', 'COMPLETED'].includes(booking.status)) {
             for (const item of booking.items) {
