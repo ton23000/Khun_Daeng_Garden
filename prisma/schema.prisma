@@ -149,6 +149,7 @@ model Tree {
   originalPrice    Float?
   promotionName    String?
   promotionEndDate DateTime?
+  sku              String?       @unique
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   items            BookingItem[]

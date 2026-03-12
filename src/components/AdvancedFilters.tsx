@@ -161,7 +161,7 @@ export default function AdvancedFilters({ categories, allTags, onFilterChange }:
                 {categories.length > 0 && (
                     <div style={{ marginBottom: '1.5rem' }}>
                         <label style={{ display: 'block', fontWeight: 500, marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-                            หมวดหมู่
+                            ประเภท
                         </label>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                             {categories.map(category => (

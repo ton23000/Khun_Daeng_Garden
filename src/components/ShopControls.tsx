@@ -54,7 +54,7 @@ export function ShopControls({ categories }: ShopControlsProps) {
 
                 {/* Category Filter */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexGrow: 1 }}>
-                    <label style={{ fontSize: '0.875rem', fontWeight: 'bold', color: 'var(--foreground)' }}>หมวดหมู่:</label>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 'bold', color: 'var(--foreground)' }}>ประเภท:</label>
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <button
                             onClick={() => updateParams({ category: null })}

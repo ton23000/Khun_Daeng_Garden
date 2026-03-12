@@ -12,6 +12,7 @@ import { getFirstImageUrl } from '@/lib/imageUtils';
 
 interface Tree {
     id: string;
+    sku: string | null;
     name: string;
     price: number;
     category: string;
@@ -72,6 +73,7 @@ function ShopContent() {
         if (query) {
             const lowerQuery = query.toLowerCase();
             filtered = filtered.filter(t =>
+                (t.sku && t.sku.toLowerCase().includes(lowerQuery)) ||
                 t.name.toLowerCase().includes(lowerQuery) ||
                 t.category.toLowerCase().includes(lowerQuery) ||
                 (t.tags && (
@@ -120,6 +122,7 @@ function ShopContent() {
         if (initialQuery) {
             const lowerQuery = initialQuery.toLowerCase();
             filtered = filtered.filter(t =>
+                (t.sku && t.sku.toLowerCase().includes(lowerQuery)) ||
                 t.name.toLowerCase().includes(lowerQuery) ||
                 t.category.toLowerCase().includes(lowerQuery) ||
                 (t.tags &&
@@ -316,6 +319,7 @@ function ShopContent() {
 
                                     <CardContent style={{ padding: '0.75rem', textAlign: 'left', display: 'flex', flexDirection: 'column', flex: 1 }}>
                                         <h3 style={{ fontSize: '1rem', fontWeight: 'bold', fontFamily: 'var(--font-prompt), sans-serif', color: '#115e59', marginBottom: '0.25rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{tree.name}</h3>
+                                        <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>รหัสสินค้า: {tree.sku || '-'}</div>
                                         <p style={{ fontSize: '0.9rem', color: tree.isPromotion ? '#dc2626' : '#6b7280', fontWeight: tree.isPromotion ? 'bold' : 'normal', marginBottom: '0.75rem' }}>
                                             ฿ {tree.price.toLocaleString()}
                                             {tree.isPromotion && tree.originalPrice && tree.originalPrice > tree.price && (

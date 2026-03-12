@@ -12,6 +12,7 @@ import { SortableTableHeader } from '@/components/admin/SortableTableHeader';
 
 interface Tree {
     id: string;
+    sku: string | null;
     name: string;
     description: string;
     price: number;
@@ -170,6 +171,7 @@ export default function AdminTreesPage() {
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
             result = result.filter(t =>
+                (t.sku && t.sku.toLowerCase().includes(query)) ||
                 t.name.toLowerCase().includes(query) ||
                 t.category.toLowerCase().includes(query) ||
                 t.tags?.some(tag => tag.toLowerCase().includes(query))
@@ -191,6 +193,10 @@ export default function AdminTreesPage() {
                 let bValue: string | number = 0;
 
                 switch (sortConfig.key) {
+                    case 'sku':
+                        aValue = a.sku || '';
+                        bValue = b.sku || '';
+                        break;
                     case 'name':
                         aValue = a.name;
                         bValue = b.name;
@@ -397,7 +403,7 @@ export default function AdminTreesPage() {
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
                     <SearchBar
-                        placeholder="ค้นหาชื่อต้นไม้, หมวดหมู่, tags..."
+                        placeholder="รหัสสินค้า, ชื่อต้นไม้, ประเภท, tags..."
                         onSearch={setSearchQuery}
                     />
                 </div>
@@ -426,13 +432,19 @@ export default function AdminTreesPage() {
                             <tr>
                                 <th style={{ padding: '1rem' }}>รูปภาพ</th>
                                 <SortableTableHeader
+                                    label="รหัสสินค้า"
+                                    sortKey="sku"
+                                    currentSort={sortConfig}
+                                    onSort={handleSort}
+                                />
+                                <SortableTableHeader
                                     label="ชื่อ"
                                     sortKey="name"
                                     currentSort={sortConfig}
                                     onSort={handleSort}
                                 />
                                 <SortableTableHeader
-                                    label="หมวดหมู่"
+                                    label="ประเภท"
                                     sortKey="category"
                                     currentSort={sortConfig}
                                     onSort={handleSort}
@@ -460,6 +472,7 @@ export default function AdminTreesPage() {
                                             <img src={tree.images[0] || '/placeholder-tree.svg'} alt={tree.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '0.25rem' }} />
                                             {tree.images.length > 1 && <span className="text-xs text-gray-500 ml-1">+{tree.images.length - 1}</span>}
                                         </td>
+                                        <td style={{ padding: '1rem', fontWeight: 500, color: '#4b5563', fontSize: '0.875rem' }}>{tree.sku || '-'}</td>
                                         <td style={{ padding: '1rem', fontWeight: 500 }}>{tree.name}</td>
                                         <td style={{ padding: '1rem' }}>
                                             <div className="flex flex-wrap gap-1">
@@ -543,30 +556,24 @@ export default function AdminTreesPage() {
 
                                     <div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                                            <label className="block text-sm font-medium">หมวดหมู่</label>
-                                            <Button type="button" variant="outline" size="sm" onClick={() => setIsCategoryModalOpen(true)} title="เพิ่มหมวดหมู่ใหม่" style={{ fontSize: '1rem', padding: '0 0.5rem', height: 'auto' }}>+</Button>
+                                            <label className="block text-sm font-medium">ประเภท</label>
+                                            <Button type="button" variant="outline" size="sm" onClick={() => setIsCategoryModalOpen(true)} title="เพิ่มประเภทใหม่" style={{ fontSize: '1rem', padding: '0 0.5rem', height: 'auto' }}>+</Button>
                                         </div>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.5rem', maxHeight: '150px', overflowY: 'auto' }}>
                                             {(() => {
-                                                const allCats = Array.from(new Set([...categories.map(c => c.name), ...(formData.category ? formData.category.split(',').map(c => c.trim()).filter(Boolean) : [])])).sort();
+                                                const allCats = Array.from(new Set([...categories.map(c => c.name)])).sort();
                                                 if (allCats.length === 0) {
-                                                    return <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>ยังไม่มีหมวดหมู่</span>;
+                                                    return <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>ยังไม่มีประเภท</span>;
                                                 }
                                                 return allCats.map(catName => {
-                                                    const currentCats = formData.category ? formData.category.split(',').map(c => c.trim()).filter(Boolean) : [];
-                                                    const isSelected = currentCats.includes(catName);
+                                                    const isSelected = formData.category === catName;
                                                     return (
-                                                        <label key={catName} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.5rem', backgroundColor: isSelected ? '#dcfce7' : '#f3f4f6', borderRadius: '9999px', cursor: 'pointer', fontSize: '0.875rem' }} title={catName}>
+                                                        <label key={catName} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', backgroundColor: isSelected ? '#dcfce7' : '#f3f4f6', borderRadius: '9999px', cursor: 'pointer', fontSize: '0.875rem', border: isSelected ? '1.5px solid #16a34a' : '1.5px solid transparent' }} title={catName}>
                                                             <input
-                                                                type="checkbox"
+                                                                type="radio"
+                                                                name="tree-category"
                                                                 checked={isSelected}
-                                                                onChange={() => {
-                                                                    if (isSelected) {
-                                                                        setFormData({ ...formData, category: currentCats.filter(c => c !== catName).join(',') });
-                                                                    } else {
-                                                                        setFormData({ ...formData, category: [...currentCats, catName].join(',') });
-                                                                    }
-                                                                }}
+                                                                onChange={() => setFormData({ ...formData, category: catName })}
                                                                 style={{ display: 'none' }}
                                                             />
                                                             <span style={{ color: isSelected ? '#166534' : '#374151', fontWeight: isSelected ? 'bold' : 'normal', userSelect: 'none' }}>{catName}</span>
@@ -861,15 +868,15 @@ export default function AdminTreesPage() {
                     }}>
                         <Card style={{ width: '90%', maxWidth: '400px', backgroundColor: 'white' }}>
                             <CardHeader>
-                                <CardTitle>เพิ่มหมวดหมู่ใหม่</CardTitle>
+                                <CardTitle>เพิ่มประเภทใหม่</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <form onSubmit={handleAddCategory} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     <Input
-                                        label="ชื่อหมวดหมู่"
+                                        label="ชื่อประเภท"
                                         value={newCategoryName}
                                         onChange={e => setNewCategoryName(e.target.value)}
-                                        placeholder="เช่น ไม้มงคล, ไม้ประดับ"
+                                        placeholder="เช่น 🌞 ไม้แดด, 🌤️ ไม้รำไร"
                                         required
                                     />
                                     <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>

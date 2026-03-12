@@ -13,6 +13,7 @@ import FavoriteButton from './FavoriteButton';
 
 interface Tree {
     id: string;
+    sku: string | null;
     name: string;
     description: string;
     price: number;
@@ -73,7 +74,12 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                 {/* Right: Details & Booking */}
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                        <h1 style={{ fontSize: '2rem', flex: 1 }}>{tree.name}</h1>
+                        <div>
+                            <h1 style={{ fontSize: '2rem', flex: 1, marginBottom: '0.25rem' }}>{tree.name}</h1>
+                            <div style={{ color: '#6b7280', fontSize: '1rem', marginBottom: '1rem' }}>
+                                รหัสสินค้า: <span style={{ fontWeight: 600, color: '#4b5563' }}>{tree.sku || '-'}</span>
+                            </div>
+                        </div>
 
                         {/* Favorite Button */}
                         <div style={{ marginLeft: '1rem' }}>

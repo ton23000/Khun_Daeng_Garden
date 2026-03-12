@@ -29,6 +29,7 @@ export async function GET() {
             orderBy: { createdAt: 'desc' },
             select: {
                 id: true,
+                sku: true,
                 name: true,
                 description: true,
                 price: true,
@@ -86,10 +87,34 @@ export async function POST(request: Request) {
         const validated = treeSchema.parse(body);
         
 
+        const prefixMap: Record<string, string> = {
+            '🌞 ไม้แดด': 'A',
+            '🌤️ ไม้รำไร': 'B',
+            '🌑 ไม้ร่ม': 'C',
+            '🌺 ไม้ดอก': 'D',
+        };
+        const prefix = prefixMap[validated.category] || 'Z';
+        
+        // Find existing SKUs with this prefix to get the next number
+        const existingTrees = await prisma.tree.findMany({
+            where: { sku: { startsWith: prefix } },
+            select: { sku: true }
+        });
+
+        let maxNum = 0;
+        for (const t of existingTrees) {
+            if (t.sku) {
+                const num = parseInt(t.sku.slice(1));
+                if (!isNaN(num) && num > maxNum) maxNum = num;
+            }
+        }
+        
+        const newSku = `${prefix}${String(maxNum + 1).padStart(3, '0')}`;
 
         const tree = await prisma.tree.create({
             data: {
                 id: crypto.randomUUID(),
+                sku: newSku,
                 name: validated.name,
                 description: validated.description,
                 price: validated.price,

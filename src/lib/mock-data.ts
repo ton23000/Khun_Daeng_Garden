@@ -2,6 +2,7 @@ export const MOCK_TREES = [
   {
     id: '86689128-236e-41d7-9b28-ac157ed62766',
     name: 'กวักพระพรหม',
+    sku: 'B005',
     price: 350,
     originalPrice: null,
     description: 'ไม้มงคลหายาก เสริมสิริมงคล',
@@ -24,6 +25,7 @@ export const MOCK_TREES = [
   {
     id: '69abe344-321c-46c9-ab9d-918f44edd251',
     name: 'คุ้มภัย',
+    sku: 'A005',
     price: 50,
     originalPrice: null,
     description: 'ต้นไม้ขนาดเล็ก เหมาะสำหรับตกแต่งในออฟฟิศ',
@@ -46,6 +48,7 @@ export const MOCK_TREES = [
   {
     id: 'dcaff166-0e1c-4296-a9b8-ef785f01ce13',
     name: 'มรดกโลก',
+    sku: 'B007',
     price: 1500,
     originalPrice: null,
     description: 'ไม้ประดับใบสวย ทรงพุ่มสง่า เหมาะสำหรับตกแต่งห้องนั่งเล่นหรือมุมทำงาน',
@@ -67,6 +70,7 @@ export const MOCK_TREES = [
   {
     id: 'mock-4',
     name: 'กวักพระพรหม',
+    sku: 'B006',
     price: 150,
     originalPrice: null,
     description: 'ไม้มงคลเชื่อว่าเรียกทรัพย์ เลี้ยงง่ายมาก ไม่ต้องรดน้ำบ่อย',
