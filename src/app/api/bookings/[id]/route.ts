@@ -346,9 +346,10 @@ export async function DELETE(
             return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
         }
 
-        // Prevent deletion of COMPLETED bookings
-        if (booking.status === 'COMPLETED') {
-            return NextResponse.json({ error: 'ไม่สามารถลบออเดอร์ที่เสร็จสิ้นแล้วได้' }, { status: 400 });
+        // Prevent deletion of bookings in certain statuses
+        const unDeletableStatuses = ['PENDING', 'PAID', 'VERIFYING_PAYMENT', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED'];
+        if (unDeletableStatuses.includes(booking.status)) {
+            return NextResponse.json({ error: 'ไม่สามารถลบออเดอร์ในสถานะนี้ได้' }, { status: 400 });
         }
 
         // Delete booking items first (foreign key constraint)

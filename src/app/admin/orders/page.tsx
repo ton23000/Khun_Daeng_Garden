@@ -553,7 +553,7 @@ export default function OrdersPage() {
                                     ) : (
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                             <Button size="sm" variant="outline" onClick={() => handleEdit(booking)} style={{ flex: 1 }}>แก้ไข</Button>
-                                            {booking.status !== 'COMPLETED' && (
+                                            {!['PENDING', 'PAID', 'VERIFYING_PAYMENT', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED'].includes(booking.status) && (
                                                 <Button size="sm" variant="outline" onClick={() => handleDelete(booking.id, booking.refCode)} style={{ borderColor: '#ef4444', color: '#ef4444', flex: 1 }}>ลบ</Button>
                                             )}
                                         </div>
@@ -656,8 +656,8 @@ export default function OrdersPage() {
                                                         </div>
                                                     ) : (
                                                         <div style={{ display: 'flex', gap: '0.5rem', minWidth: '100px' }}>
-                                                            <Button size="sm" variant="outline" onClick={() => handleEdit(booking)}>แก้ไข</Button>
-                                                            {booking.status !== 'COMPLETED' && (
+                                                            <Button size="sm" variant="outline" onClick={() => handleEdit(booking)} style={{ borderColor: '#1d4ed8', color: '#1d4ed8' }}>แก้ไข</Button>
+                                                            {!['PENDING', 'PAID', 'VERIFYING_PAYMENT', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED'].includes(booking.status) && (
                                                                 <Button size="sm" variant="outline" onClick={() => handleDelete(booking.id, booking.refCode)} style={{ borderColor: '#ef4444', color: '#ef4444' }}>ลบ</Button>
                                                             )}
                                                         </div>

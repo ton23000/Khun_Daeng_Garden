@@ -224,16 +224,6 @@ export default function MyBookingsPage() {
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     {bookings.map(booking => {
-                        let firstImage = null;
-                        if (booking.items[0]?.tree?.images) {
-                            try {
-                                const parsed = JSON.parse(booking.items[0].tree.images);
-                                firstImage = Array.isArray(parsed) ? parsed[0] : parsed;
-                            } catch {
-                                firstImage = booking.items[0].tree.images;
-                            }
-                        }
-
                         return (
                             <Card key={booking.id} id={`booking-${booking.id}`}>
                                 <CardHeader style={{ borderBottom: '1px solid #e5e7eb' }}>
@@ -253,27 +243,50 @@ export default function MyBookingsPage() {
                                 </CardHeader>
                                 <CardContent style={{ padding: '1.5rem' }}>
                                     <div className="responsive-grid">
-                                        {/* Image */}
-                                        {firstImage && (
-                                            <div style={{
-                                                backgroundColor: '#f9fafb',
-                                                borderRadius: '0.5rem',
-                                                padding: '1rem',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
-                                            }}>
-                                                <img
-                                                    src={firstImage}
-                                                    alt="Tree"
-                                                    style={{
-                                                        maxWidth: '100%',
-                                                        maxHeight: '150px',
-                                                        objectFit: 'contain'
-                                                    }}
-                                                />
-                                            </div>
-                                        )}
+                                        {/* Images */}
+                                        <div style={{
+                                            backgroundColor: '#f9fafb',
+                                            borderRadius: '0.5rem',
+                                            padding: '1rem',
+                                            display: 'grid',
+                                            gridTemplateColumns: booking.items.length > 1 ? 'repeat(auto-fit, minmax(80px, 1fr))' : '1fr',
+                                            gap: '0.75rem',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            {booking.items.map((item, idx) => {
+                                                let image = null;
+                                                if (item.tree?.images) {
+                                                    try {
+                                                        const parsed = JSON.parse(item.tree.images);
+                                                        image = Array.isArray(parsed) ? parsed[0] : parsed;
+                                                    } catch {
+                                                        image = item.tree.images;
+                                                    }
+                                                }
+                                                return image ? (
+                                                    <div key={idx} style={{ textAlign: 'center' }}>
+                                                        <img
+                                                            src={image}
+                                                            alt={item.tree.name}
+                                                            style={{
+                                                                width: '100%',
+                                                                maxWidth: booking.items.length > 1 ? '100px' : '150px',
+                                                                maxHeight: '150px',
+                                                                objectFit: 'contain',
+                                                                margin: '0 auto',
+                                                                borderRadius: '0.375rem'
+                                                            }}
+                                                        />
+                                                        {booking.items.length > 1 && (
+                                                            <div style={{ fontSize: '0.75rem', color: '#4b5563', marginTop: '0.25rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                {item.tree.name}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : null;
+                                            })}
+                                        </div>
 
                                         {/* Details */}
                                         <div>

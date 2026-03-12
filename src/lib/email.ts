@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-// Initialize Nodemailer transporter using Brevo SMTP
+// Nodemailer transporter (Brevo SMTP - for other emails)
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp-relay.brevo.com',
     port: parseInt(process.env.EMAIL_PORT || '587'),
@@ -11,7 +11,8 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const FROM_EMAIL = process.env.EMAIL_FROM || process.env.EMAIL_USER || 'noreply@khundaenggarden.com';
+const FROM_EMAIL = process.env.EMAIL_FROM || 'fhjilyyjg@gmail.com';
+const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
 
 
 interface PasswordResetEmailParams {
@@ -53,29 +54,36 @@ export function passwordResetEmailTemplate(userName: string, resetLink: string):
 }
 
 /**
- * Send password reset email with reset link
+ * Send password reset email using Brevo REST API
  */
 export async function sendPasswordResetEmail({
     email,
     resetLink,
     userName
 }: PasswordResetEmailParams) {
-    try {
-        const mailOptions = {
-            to: email,
-            from: FROM_EMAIL,
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'api-key': BREVO_API_KEY
+        },
+        body: JSON.stringify({
+            sender: { name: 'คุณแดงการ์เด้น', email: FROM_EMAIL },
+            to: [{ email }],
             subject: 'รีเซ็ตรหัสผ่าน - Khun Daeng Garden',
-            html: passwordResetEmailTemplate(userName, resetLink)
-        };
+            htmlContent: passwordResetEmailTemplate(userName, resetLink)
+        })
+    });
 
-        await transporter.sendMail(mailOptions);
-        console.log('✅ Email sent via Brevo SMTP');
-        return { success: true, data: mailOptions };
-
-    } catch (error) {
-        console.error('❌ Error sending password reset email:', error);
-        throw error;
+    if (!response.ok) {
+        const err = await response.json();
+        console.error('❌ Error sending email via Brevo API:', err);
+        throw new Error(err.message || 'Failed to send email via Brevo');
     }
+
+    const data = await response.json();
+    console.log('✅ Password reset email sent via Brevo API:', data.messageId);
+    return { success: true, data };
 }
 
 /**
