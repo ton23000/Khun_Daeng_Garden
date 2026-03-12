@@ -1,22 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { jwtVerify } from 'jose';
+
+const getJwtSecretKey = () => {
+    const secret = process.env.JWT_SECRET || 'fallback_secret_for_development_only_12345';
+    return new TextEncoder().encode(secret);
+};
 
 // GET - Fetch reviews for a tree
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const treeId = searchParams.get('treeId');
-        const userId = searchParams.get('userId');
+        const userIdFilter = searchParams.get('userId');
         const limit = parseInt(searchParams.get('limit') || '10');
         const offset = parseInt(searchParams.get('offset') || '0');
+
+        // Get authentication if available
+        let currentUserId: string | null = null;
+        const token = req.cookies.get('khun_daeng_token')?.value;
+        if (token) {
+            try {
+                const verified = await jwtVerify(token, getJwtSecretKey());
+                currentUserId = verified.payload.id as string;
+            } catch (_err) {
+                // Ignore invalid tokens for GET requests, just treat as anonymous
+            }
+        }
 
         const where: { hidden: boolean; treeId?: string; userId?: string } = {
             hidden: false // Only show visible reviews by default
         };
         if (treeId) where.treeId = treeId;
-        if (userId) where.userId = userId;
+        if (userIdFilter) where.userId = userIdFilter;
 
-        const reviews = await prisma.review.findMany({
+        const reviewsData = await prisma.review.findMany({
             where,
             include: {
                 user: {
@@ -30,7 +48,10 @@ export async function GET(req: NextRequest) {
                         id: true,
                         name: true
                     }
-                }
+                },
+                helpfulVotes: currentUserId ? {
+                    where: { userId: currentUserId }
+                } : false
             },
             orderBy: { createdAt: 'desc' },
             take: limit,
@@ -38,6 +59,15 @@ export async function GET(req: NextRequest) {
         });
 
         const total = await prisma.review.count({ where });
+
+        // Map data to include isHelpful flag
+        const reviews = reviewsData.map(review => {
+            const { helpfulVotes, ...rest } = review;
+            return {
+                ...rest,
+                isHelpful: !!(helpfulVotes && helpfulVotes.length > 0)
+            };
+        });
 
         return NextResponse.json({
             reviews,
@@ -53,7 +83,18 @@ export async function GET(req: NextRequest) {
 // POST - Create a review
 export async function POST(req: NextRequest) {
     try {
-        const userId = req.headers.get('x-user-id');
+        let userId: string | null = null;
+        const token = req.cookies.get('khun_daeng_token')?.value;
+
+        if (token) {
+            try {
+                const verified = await jwtVerify(token, getJwtSecretKey());
+                userId = verified.payload.id as string;
+            } catch (_err) {
+                return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
+            }
+        }
+
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }

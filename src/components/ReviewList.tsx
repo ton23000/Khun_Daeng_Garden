@@ -11,6 +11,7 @@ interface Review {
     comment: string | null;
     images: string | null;
     helpful: number;
+    isHelpful?: boolean;
     createdAt: string;
     user: {
         id: string;
@@ -52,6 +53,11 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
     };
 
     const handleHelpful = async (reviewId: string) => {
+        if (!currentUserId) {
+            alert('กรุณาเข้าสู่ระบบเพื่อโหวตรีวิว');
+            return;
+        }
+
         try {
             const res = await fetch(`/api/reviews/${reviewId}/helpful`, {
                 method: 'POST'
@@ -59,6 +65,9 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
             if (res.ok) {
                 // Refresh reviews
                 fetchReviews();
+            } else {
+                const data = await res.json();
+                alert(data.error || 'เกิดข้อผิดพลาด');
             }
         } catch (error) {
             console.error('Error marking helpful:', error);
@@ -243,17 +252,20 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                                     onClick={() => handleHelpful(review.id)}
                                     style={{
                                         fontSize: '0.875rem',
-                                        color: '#6b7280',
-                                        background: 'none',
-                                        border: '1px solid #d1d5db',
+                                        color: review.isHelpful ? 'white' : '#6b7280',
+                                        backgroundColor: review.isHelpful ? 'var(--primary)' : 'transparent',
+                                        border: review.isHelpful ? '1px solid var(--primary)' : '1px solid #d1d5db',
                                         borderRadius: '9999px',
                                         padding: '0.25rem 0.75rem',
                                         cursor: 'pointer',
-                                        transition: 'all 0.2s'
+                                        transition: 'all 0.2s',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.25rem'
                                     }}
-                                    className="hover:bg-gray-100"
+                                    className={review.isHelpful ? '' : 'hover:bg-gray-100'}
                                 >
-                                    👍 มีประโยชน์ ({review.helpful})
+                                    <span>👍</span> มีประโยชน์ ({review.helpful})
                                 </button>
                             </div>
                         </div>
