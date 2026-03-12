@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
         if (treeId) where.treeId = treeId;
         if (userIdFilter) where.userId = userIdFilter;
 
-        const reviewsData = await prisma.review.findMany({
+        const reviews = await prisma.review.findMany({
             where,
             include: {
                 user: {
@@ -48,10 +48,7 @@ export async function GET(req: NextRequest) {
                         id: true,
                         name: true
                     }
-                },
-                helpfulVotes: currentUserId ? {
-                    where: { userId: currentUserId }
-                } : false
+                }
             },
             orderBy: { createdAt: 'desc' },
             take: limit,
@@ -60,17 +57,28 @@ export async function GET(req: NextRequest) {
 
         const total = await prisma.review.count({ where });
 
+        // Get helpful votes for current user if logged in
+        let userHelpfulReviewIds = new Set<string>();
+        if (currentUserId && reviews.length > 0) {
+            const reviewIds = reviews.map(r => r.id);
+            const helpfulVotes = await prisma.reviewHelpful.findMany({
+                where: {
+                    userId: currentUserId,
+                    reviewId: { in: reviewIds }
+                },
+                select: { reviewId: true }
+            });
+            userHelpfulReviewIds = new Set(helpfulVotes.map(v => v.reviewId));
+        }
+
         // Map data to include isHelpful flag
-        const reviews = reviewsData.map(review => {
-            const { helpfulVotes, ...rest } = review;
-            return {
-                ...rest,
-                isHelpful: !!(helpfulVotes && helpfulVotes.length > 0)
-            };
-        });
+        const formattedReviews = reviews.map(review => ({
+            ...review,
+            isHelpful: userHelpfulReviewIds.has(review.id)
+        }));
 
         return NextResponse.json({
-            reviews,
+            reviews: formattedReviews,
             total,
             hasMore: offset + limit < total
         });
