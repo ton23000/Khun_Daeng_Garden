@@ -32,6 +32,7 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
     const [isLoading, setIsLoading] = useState(true);
     const [sortBy, setSortBy] = useState<'newest' | 'highest' | 'helpful'>('newest');
     const [editingReview, setEditingReview] = useState<Review | null>(null);
+    const [currentPage, setCurrentPage] = useState(0);
 
     useEffect(() => {
         fetchReviews();
@@ -109,6 +110,10 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
         }
     });
 
+    const itemsPerPage = 2;
+    const totalPages = Math.ceil(sortedReviews.length / itemsPerPage);
+    const currentReviews = sortedReviews.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
     if (isLoading) {
         return <p>กำลังโหลดรีวิว...</p>;
     }
@@ -128,7 +133,7 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>เรียงตาม:</span>
                 <button
-                    onClick={() => setSortBy('newest')}
+                    onClick={() => { setSortBy('newest'); setCurrentPage(0); }}
                     style={{
                         fontSize: '0.875rem',
                         fontWeight: sortBy === 'newest' ? 600 : 400,
@@ -143,7 +148,7 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                 </button>
                 <span style={{ color: '#d1d5db' }}>|</span>
                 <button
-                    onClick={() => setSortBy('highest')}
+                    onClick={() => { setSortBy('highest'); setCurrentPage(0); }}
                     style={{
                         fontSize: '0.875rem',
                         fontWeight: sortBy === 'highest' ? 600 : 400,
@@ -158,7 +163,7 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                 </button>
                 <span style={{ color: '#d1d5db' }}>|</span>
                 <button
-                    onClick={() => setSortBy('helpful')}
+                    onClick={() => { setSortBy('helpful'); setCurrentPage(0); }}
                     style={{
                         fontSize: '0.875rem',
                         fontWeight: sortBy === 'helpful' ? 600 : 400,
@@ -173,9 +178,75 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                 </button>
             </div>
 
-            {/* Reviews */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                {sortedReviews.map((review) => {
+            {/* Reviews Carousel */}
+            <div style={{ position: 'relative', padding: '0 10px' }}>
+                {totalPages > 1 && (
+                    <button
+                        onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+                        disabled={currentPage === 0}
+                        style={{
+                            position: 'absolute',
+                            left: '-20px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            backgroundColor: 'white',
+                            border: '1px solid #e5e7eb',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: currentPage === 0 ? 'not-allowed' : 'pointer',
+                            opacity: currentPage === 0 ? 0.3 : 1,
+                            zIndex: 10
+                        }}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 18L9 12L15 6" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </button>
+                )}
+
+                {totalPages > 1 && (
+                    <button
+                        onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
+                        disabled={currentPage >= totalPages - 1}
+                        style={{
+                            position: 'absolute',
+                            right: '-20px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            backgroundColor: 'white',
+                            border: '1px solid #e5e7eb',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: currentPage >= totalPages - 1 ? 'not-allowed' : 'pointer',
+                            opacity: currentPage >= totalPages - 1 ? 0.3 : 1,
+                            zIndex: 10
+                        }}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 18L15 12L9 6" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </button>
+                )}
+
+                <div 
+                    style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+                        gap: '1.5rem',
+                        // Ensure it forces 2 columns if enough space
+                        ...(currentReviews.length > 1 ? { gridTemplateColumns: 'repeat(2, 1fr)' } : {})
+                    }}>
+                    {currentReviews.map((review) => {
                     const reviewImages: string[] = (() => {
                         if (!review.images) return [];
                         try { return JSON.parse(review.images); } catch { return []; }
@@ -271,7 +342,29 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                         </div>
                     );
                 })}
+                </div>
             </div>
+            
+            {/* Pagination Indicators (Optional, good for UX) */}
+            {totalPages > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.5rem' }}>
+                    {Array.from({ length: totalPages }).map((_, i) => (
+                        <div 
+                            key={i} 
+                            onClick={() => setCurrentPage(i)}
+                            style={{
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                backgroundColor: i === currentPage ? 'var(--primary)' : '#d1d5db',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
+            
             {editingReview && currentUserId && (
                 <ReviewModal
                     treeId={treeId}
