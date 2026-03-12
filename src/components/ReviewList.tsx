@@ -186,25 +186,38 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                         disabled={currentPage === 0}
                         style={{
                             position: 'absolute',
-                            left: '-20px',
+                            left: '10px',
                             top: '50%',
                             transform: 'translateY(-50%)',
-                            width: '40px',
-                            height: '40px',
+                            width: '48px',
+                            height: '48px',
                             borderRadius: '50%',
                             backgroundColor: 'white',
-                            border: '1px solid #e5e7eb',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                            border: 'none',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             cursor: currentPage === 0 ? 'not-allowed' : 'pointer',
-                            opacity: currentPage === 0 ? 0.3 : 1,
-                            zIndex: 10
+                            opacity: currentPage === 0 ? 0 : 1, // Hide when disabled instead of dimming
+                            zIndex: 10,
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            if (currentPage !== 0) {
+                                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)';
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.05)';
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (currentPage !== 0) {
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                            }
                         }}
                     >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 18L9 12L15 6" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 18L9 12L15 6" stroke="#111827" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                     </button>
                 )}
@@ -215,25 +228,38 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                         disabled={currentPage >= totalPages - 1}
                         style={{
                             position: 'absolute',
-                            right: '-20px',
+                            right: '10px',
                             top: '50%',
                             transform: 'translateY(-50%)',
-                            width: '40px',
-                            height: '40px',
+                            width: '48px',
+                            height: '48px',
                             borderRadius: '50%',
                             backgroundColor: 'white',
-                            border: '1px solid #e5e7eb',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                            border: 'none',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             cursor: currentPage >= totalPages - 1 ? 'not-allowed' : 'pointer',
-                            opacity: currentPage >= totalPages - 1 ? 0.3 : 1,
-                            zIndex: 10
+                            opacity: currentPage >= totalPages - 1 ? 0 : 1, // Hide when disabled
+                            zIndex: 10,
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            if (currentPage < totalPages - 1) {
+                                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)';
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.05)';
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (currentPage < totalPages - 1) {
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                            }
                         }}
                     >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 18L15 12L9 6" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 18L15 12L9 6" stroke="#111827" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                     </button>
                 )}
@@ -241,10 +267,9 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                 <div 
                     style={{ 
                         display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+                        gridTemplateColumns: 'repeat(2, 1fr)', 
                         gap: '1.5rem',
-                        // Ensure it forces 2 columns if enough space
-                        ...(currentReviews.length > 1 ? { gridTemplateColumns: 'repeat(2, 1fr)' } : {})
+                        padding: '10px 40px' // Add padding so shadow of cards doesn't clip, and make room for arrows
                     }}>
                     {currentReviews.map((review) => {
                     const reviewImages: string[] = (() => {
@@ -256,10 +281,14 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                         <div
                             key={review.id}
                             style={{
-                                backgroundColor: '#f9fafb',
+                                backgroundColor: '#ffffff',
                                 padding: '1.5rem',
-                                borderRadius: '0.75rem',
-                                border: '1px solid #e5e7eb'
+                                borderRadius: '1rem', // Match more rounded style
+                                border: '1px solid #f3f4f6', // Lighter border
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.04)', // Subtle shadow
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '100%' // Ensure equal height for both columns
                             }}
                         >
                             {/* Header */}
@@ -317,8 +346,8 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                                 </div>
                             )}
 
-                            {/* Helpful Button */}
-                            <div style={{ marginTop: '1rem' }}>
+                            {/* Helpful Button (Pushed to bottom) */}
+                            <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
                                 <button
                                     onClick={() => handleHelpful(review.id)}
                                     style={{
@@ -327,12 +356,12 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                                         backgroundColor: review.isHelpful ? 'var(--primary)' : 'transparent',
                                         border: review.isHelpful ? '1px solid var(--primary)' : '1px solid #d1d5db',
                                         borderRadius: '9999px',
-                                        padding: '0.25rem 0.75rem',
+                                        padding: '0.35rem 1rem', // Slightly larger padding
                                         cursor: 'pointer',
                                         transition: 'all 0.2s',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '0.25rem'
+                                        gap: '0.35rem'
                                     }}
                                     className={review.isHelpful ? '' : 'hover:bg-gray-100'}
                                 >
