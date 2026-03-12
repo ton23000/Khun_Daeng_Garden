@@ -389,7 +389,7 @@ export default function OrdersPage() {
                     </div>
                     <Button
                         variant={viewMode === 'all' && !statusFilter ? 'primary' : 'outline'}
-                        onClick={() => handleStatusClick(null)}
+                        onClick={() => { setViewMode('all'); setSelectedCustomer(null); setStatusFilter(null); }}
                         style={{ 
                             backgroundColor: viewMode === 'all' && !statusFilter ? '#e11d48' : 'transparent',
                             color: viewMode === 'all' && !statusFilter ? 'white' : '#374151',
