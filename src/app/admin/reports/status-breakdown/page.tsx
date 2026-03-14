@@ -68,9 +68,9 @@ export default function StatusBreakdownPage() {
     const filteredBookings = getFilteredBookings();
 
     const statusCounts = {
-        PENDING_APPROVAL: filteredBookings.filter(b => b.status === 'PENDING_APPROVAL').length,
+        PENDING_APPROVAL: filteredBookings.filter(b => b.status === 'PENDING_APPROVAL' || b.status === 'PRE_ORDER').length,
         PENDING: filteredBookings.filter(b => b.status === 'PENDING').length,
-        VERIFYING_PAYMENT: filteredBookings.filter(b => b.status === 'VERIFYING_PAYMENT').length,
+        VERIFYING_PAYMENT: filteredBookings.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID').length,
         PAYMENT_ISSUE: filteredBookings.filter(b => b.status === 'PAYMENT_ISSUE').length,
         CONFIRMED: filteredBookings.filter(b => b.status === 'CONFIRMED').length,
         PREPARING: filteredBookings.filter(b => b.status === 'PREPARING').length,
@@ -109,10 +109,6 @@ export default function StatusBreakdownPage() {
             CANCELLED: 'ยกเลิก',
         };
         return labels[status] || status;
-    };
-
-    const getStatusRoute = (status: string) => {
-        return `/admin/orders/${status.toLowerCase().replace(/_/g, '-')}`;
     };
 
     const getFilterLabel = () => {
@@ -204,7 +200,7 @@ export default function StatusBreakdownPage() {
                 {Object.entries(statusCounts).map(([status, count]) => (
                     <Card
                         key={status}
-                        onClick={() => router.push(getStatusRoute(status))}
+                        onClick={() => router.push(`/admin/orders?status=${status}`)}
                         style={{
                             borderLeft: `4px solid ${getStatusColor(status)}`,
                             cursor: 'pointer',

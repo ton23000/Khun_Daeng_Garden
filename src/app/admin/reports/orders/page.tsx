@@ -77,9 +77,9 @@ export default function OrdersOverviewPage() {
 
     // Calculate statistics
     const statusCounts = {
-        PENDING_APPROVAL: filteredBookings.filter(b => b.status === 'PENDING_APPROVAL').length,
+        PENDING_APPROVAL: filteredBookings.filter(b => b.status === 'PENDING_APPROVAL' || b.status === 'PRE_ORDER').length,
         PENDING: filteredBookings.filter(b => b.status === 'PENDING').length,
-        VERIFYING_PAYMENT: filteredBookings.filter(b => b.status === 'VERIFYING_PAYMENT').length,
+        VERIFYING_PAYMENT: filteredBookings.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID').length,
         PAYMENT_ISSUE: filteredBookings.filter(b => b.status === 'PAYMENT_ISSUE').length,
         CONFIRMED: filteredBookings.filter(b => b.status === 'CONFIRMED').length,
         PREPARING: filteredBookings.filter(b => b.status === 'PREPARING').length,
@@ -279,7 +279,7 @@ export default function OrdersOverviewPage() {
                             {Object.entries(statusCounts).map(([status, count]) => (
                                 <div
                                     key={status}
-                                    onClick={() => router.push(`/admin/orders/${status.toLowerCase().replace(/_/g, '-')}`)}
+                                    onClick={() => router.push(`/admin/orders?status=${status}`)}
                                     style={{
                                         display: 'flex',
                                         justifyContent: 'space-between',
