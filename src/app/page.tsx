@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import Link from 'next/link';
-import { ArrowRight, Leaf, ShieldCheck, Truck, Percent, Heart } from 'lucide-react';
+import { ArrowRight, Leaf, ShieldCheck, Percent, Heart } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
 import { ParallaxSection } from '@/components/ParallaxSection';
@@ -409,15 +409,7 @@ export default async function Home() {
                 <p style={{ fontSize: '0.875rem', color: 'white', opacity: 0.95 }}>คัดสรรต้นไม้เกรดพรีเมียมเพื่อคุณ</p>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ padding: '1rem', border: '2px solid white', borderRadius: '50%' }}>
-                <Truck color="white" />
-              </div>
-              <div>
-                <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem', fontFamily: 'var(--font-playfair), serif', color: 'white' }}>จัดส่งถึงหน้าบ้าน</h4>
-                <p style={{ fontSize: '0.875rem', color: 'white', opacity: 0.95 }}>แพ็คอย่างดี ส่งไว ปลอดภัย 100%</p>
-              </div>
-            </div>
+
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div style={{ padding: '1rem', border: '2px solid white', borderRadius: '50%' }}>
                 <ShieldCheck color="white" />

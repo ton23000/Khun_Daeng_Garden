@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
 import Link from 'next/link';
-import { ChevronDown, HelpCircle, ShieldCheck, Truck, Leaf } from 'lucide-react';
+import { ChevronDown, HelpCircle, ShieldCheck, Leaf } from 'lucide-react';
 
 interface FAQItemProps {
     question: string;
@@ -101,32 +101,6 @@ export default function FAQPage() {
             </ScrollAnimation>
 
             <ScrollAnimation animation="fade-up" delay={100}>
-                {/* Category: Ordering & Delivery */}
-                <div style={{ marginBottom: '3rem' }}>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Truck size={24} color="#16a34a" /> 
-                        การสั่งซื้อและการจัดส่ง
-                    </h2>
-                    <FAQItem 
-                        question="ใช้เวลานานแค่ไหนในการจัดส่ง?" 
-                        answer={
-                            <p>โดยปกติเราใช้เวลาในการเตรียมและจัดส่งสินค้าภายใน <strong>3-5 วันทำการ</strong> หรือตามวันที่คุณลูกค้านัดหมายล่วงหน้า สำหรับลูกค้าระยะไกลอาจใช้เวลาเพิ่มเติม 1-2 วันครับ</p>
-                        } 
-                    />
-                    <FAQItem 
-                        question="สามารถมารับสินค้าเองได้หรือไม่?" 
-                        answer={
-                            <p><strong>ได้แน่นอนครับ!</strong> คุณลูกค้าสามารถมารับต้นไม้ได้ที่หน้าสวนโดยตรง เพียงแค่แจ้งล่วงหน้าอย่างน้อย 1 วัน เพื่อให้ทางเราเตรียมต้นไม้และแพ็คให้พร้อมสำหรับการขนย้ายครับ</p>
-                        } 
-                    />
-                    <FAQItem 
-                        question="ค่าจัดส่งคิดอย่างไร?" 
-                        answer={
-                            <p>ค่าจัดส่งจะคำนวณตาม<strong>ระยะทางและขนาดของต้นไม้</strong> ในเขตกรุงเทพฯ และปริมณฑล เริ่มต้นที่ 300 บาท สำหรับต่างจังหวัดเราใช้บริการขนส่งเอกชนที่เชี่ยวชาญด้านต้นไม้โดยเฉพาะ สามารถตรวจสอบค่าส่งก่อนยืนยันการสั่งซื้อได้ครับ</p>
-                        } 
-                    />
-                </div>
-
                 {/* Category: Warranty & Plants */}
                 <div style={{ marginBottom: '3rem' }}>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
