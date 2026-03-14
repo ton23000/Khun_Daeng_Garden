@@ -12,8 +12,8 @@ interface Tree {
     price: number;
     stock: number;
     reserved: number;        // total (activeReserved + preorderReserved)
-    activeReserved: number;  // จอง (มีของ)
-    preorderReserved: number; // ค้างส่ง / สั่งล่วงหน้า
+    activeReserved: number;  // จอง
+    preorderReserved: number; // สั่งล่วงหน้า
     sold: number;
     category: string;
     status: string;
@@ -150,13 +150,13 @@ export default function InventoryPage() {
                 </Card>
                 <Card>
                     <CardContent style={{ padding: '1.5rem' }}>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>จอง (มีของ)</div>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>จอง</div>
                         <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>{totalReservedInStock}</div>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardContent style={{ padding: '1.5rem' }}>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>ค้างส่ง / สั่งล่วงหน้า</div>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>สั่งล่วงหน้า</div>
                         <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ef4444' }}>{totalReservedOutStock}</div>
                     </CardContent>
                 </Card>
@@ -248,8 +248,8 @@ export default function InventoryPage() {
                                         <SortableTableHeader label="ชื่อ" sortKey="name" currentSort={sortConfig} onSort={handleSort} />
                                         <SortableTableHeader label="ราคา" sortKey="price" currentSort={sortConfig} onSort={handleSort} />
                                         <SortableTableHeader label="สต็อกทั้งหมด" sortKey="stock" currentSort={sortConfig} onSort={handleSort} />
-                                        <SortableTableHeader label="จอง (มีของ)" sortKey="reservedInStock" currentSort={sortConfig} onSort={handleSort} />
-                                        <SortableTableHeader label="ค้างส่ง / สั่งล่วงหน้า" sortKey="reservedOutStock" currentSort={sortConfig} onSort={handleSort} />
+                                        <SortableTableHeader label="จอง" sortKey="reservedInStock" currentSort={sortConfig} onSort={handleSort} />
+                                        <SortableTableHeader label="สั่งล่วงหน้า" sortKey="reservedOutStock" currentSort={sortConfig} onSort={handleSort} />
                                         <SortableTableHeader label="พร้อมขาย" sortKey="available" currentSort={sortConfig} onSort={handleSort} />
                                         <SortableTableHeader label="ขายไปแล้ว" sortKey="sold" currentSort={sortConfig} onSort={handleSort} />
                                         <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} />

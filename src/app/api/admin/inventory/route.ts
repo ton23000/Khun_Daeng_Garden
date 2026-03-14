@@ -52,8 +52,8 @@ export async function GET() {
                 price: tree.price,
                 stock: tree.stock,
                 reserved: totalReserved,
-                activeReserved,    // จอง (มีของ) base value
-                preorderReserved,  // ค้างส่ง / สั่งล่วงหน้า base value  
+                activeReserved,    // จอง base value
+                preorderReserved,  // สั่งล่วงหน้า base value  
                 sold: tree.sold,
                 category: tree.category,
                 status: tree.status,
