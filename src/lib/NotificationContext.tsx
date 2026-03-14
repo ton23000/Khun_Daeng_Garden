@@ -33,8 +33,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         try {
             let url = `/api/notifications?userId=${user.id}`;
 
-            // If admin, fetch admin notifications
-            if (user.role === 'admin') {
+            // If admin or staff, fetch admin notifications (new orders)
+            if (user.role === 'admin' || user.role === 'staff') {
                 url = '/api/admin/notifications';
             }
 
@@ -43,11 +43,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                 const data = await res.json();
 
                 let newData: Notification[];
-                // Map admin notifications if needed
-                if (user.role === 'admin') {
+                // Map admin/staff notifications if needed
+                if (user.role === 'admin' || user.role === 'staff') {
                     newData = data.map((n: { id: string; message: string; read: boolean; createdAt: string; type?: 'info' | 'success' | 'warning' | 'error' }) => ({
                         id: n.id,
-                        userId: 'admin',
+                        userId: user.role,
                         message: n.message,
                         read: n.read,
                         date: n.createdAt,
@@ -131,8 +131,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
 
         try {
-            if (user.role === 'admin') {
-                // Admin notifications use different endpoint and payload
+            if (user.role === 'admin' || user.role === 'staff') {
+                // Admin/staff notifications use admin endpoint
                 await fetch('/api/admin/notifications', {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },

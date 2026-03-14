@@ -165,6 +165,25 @@ export async function POST(req: NextRequest) {
         const booking = result;
         console.log('[Booking API] Booking created and stock reserved successfully:', booking.id);
 
+        // Notify admin/staff of the new order
+        try {
+            const itemSummary = validated.items.map(i => `${i.treeName} x${i.quantity}`).join(', ');
+            const customerName = `${booking.user.firstName} ${booking.user.lastName}`;
+            await prisma.adminNotification.create({
+                data: {
+                    id: crypto.randomUUID(),
+                    type: 'new_order',
+                    message: `🛒 ออเดอร์ใหม่ #${booking.refCode} จาก ${customerName} — ${itemSummary} — ฿${booking.totalPrice.toLocaleString()}`,
+                    bookingId: booking.id,
+                    read: false,
+                }
+            });
+            console.log('[Booking API] Admin notification created for booking:', booking.refCode);
+        } catch (notifError) {
+            console.error('[Booking API] Failed to create admin notification:', notifError);
+            // Don't fail booking if notification fails
+        }
+
         // Send confirmation email (only in production)
         if (process.env.NODE_ENV === 'production' && userExists.email) {
             try {
