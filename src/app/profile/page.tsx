@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
-    const { user, refreshUser, logout } = useAuth();
+    const { user, refreshUser } = useAuth();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -260,22 +260,19 @@ export default function ProfilePage() {
                 {/* Logout Section */}
                 <Card>
                     <CardContent style={{ padding: '2rem', textAlign: 'center' }}>
-                        <Button
-                            variant="outline"
-                            fullWidth
-                            onClick={() => {
-                                if (confirm('คุณต้องการออกจากระบบหรือไม่?')) {
-                                    logout();
-                                }
-                            }}
-                            style={{
-                                color: '#d97706',
-                                borderColor: '#d97706',
-                                fontWeight: 'bold'
-                            }}
-                        >
-                            ออกจากระบบ
-                        </Button>
+                        <Link href="/logout" style={{ textDecoration: 'none' }}>
+                            <Button
+                                variant="outline"
+                                fullWidth
+                                style={{
+                                    color: '#d97706',
+                                    borderColor: '#d97706',
+                                    fontWeight: 'bold'
+                                }}
+                            >
+                                ออกจากระบบ
+                            </Button>
+                        </Link>
                     </CardContent>
                 </Card>
             </div>
