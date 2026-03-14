@@ -35,17 +35,27 @@ function ShopContent() {
     const [filteredTrees, setFilteredTrees] = useState<Tree[]>([]);
     const [categories, setCategories] = useState<string[]>([]);
     const [allTags, setAllTags] = useState<string[]>([]);
+    const [hotTreeIds, setHotTreeIds] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchTrees = useCallback(async () => {
         try {
-            const res = await fetch('/api/trees');
+            const [res, hotRes] = await Promise.all([
+                fetch('/api/trees'),
+                fetch('/api/trees/hot-weekly')
+            ]);
+            
             if (res.ok) {
                 const data = await res.json();
                 setTrees(data);
                 processTreeData(data);
             } else {
                 throw new Error('API response not ok');
+            }
+
+            if (hotRes.ok) {
+                const hotData = await hotRes.json();
+                setHotTreeIds(hotData.hotTreeIds || []);
             }
         } catch (error) {
             console.error('Failed to fetch trees, using mock data:', error);
@@ -257,30 +267,32 @@ function ShopContent() {
                                         )}
 
                                         {/* HOT Ribbon */}
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: 0,
-                                            right: 0,
-                                            width: '60px',
-                                            height: '60px',
-                                            overflow: 'hidden'
-                                        }}>
+                                        {hotTreeIds.includes(tree.id) && (
                                             <div style={{
                                                 position: 'absolute',
-                                                top: '10px',
-                                                right: '-20px',
-                                                transform: 'rotate(45deg)',
-                                                backgroundColor: '#f97316',
-                                                background: 'linear-gradient(90deg, #ea580c 0%, #f97316 100%)',
-                                                color: 'white',
-                                                fontSize: '0.7rem',
-                                                fontWeight: 'bold',
-                                                padding: '2px 30px',
-                                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                                top: 0,
+                                                right: 0,
+                                                width: '60px',
+                                                height: '60px',
+                                                overflow: 'hidden'
                                             }}>
-                                                HOT
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    top: '10px',
+                                                    right: '-20px',
+                                                    transform: 'rotate(45deg)',
+                                                    backgroundColor: '#f97316',
+                                                    background: 'linear-gradient(90deg, #ea580c 0%, #f97316 100%)',
+                                                    color: 'white',
+                                                    fontSize: '0.7rem',
+                                                    fontWeight: 'bold',
+                                                    padding: '2px 30px',
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                                }}>
+                                                    HOT
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
 
                                         {/* Original Badges Context */}
                                         <div style={{ position: 'absolute', top: '40px', left: '10px', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
