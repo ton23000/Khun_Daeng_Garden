@@ -137,6 +137,7 @@ export async function POST(request: Request) {
         revalidatePath('/shop');
         revalidatePath('/promotion');
         revalidatePath('/admin/trees');
+        revalidatePath('/admin/promotions');
         revalidatePath('/api/trees');
 
         return NextResponse.json(tree);
