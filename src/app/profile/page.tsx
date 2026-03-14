@@ -263,7 +263,11 @@ export default function ProfilePage() {
                         <Button
                             variant="outline"
                             fullWidth
-                            onClick={logout}
+                            onClick={() => {
+                                if (confirm('คุณต้องการออกจากระบบหรือไม่?')) {
+                                    logout();
+                                }
+                            }}
                             style={{
                                 color: '#d97706',
                                 borderColor: '#d97706',
