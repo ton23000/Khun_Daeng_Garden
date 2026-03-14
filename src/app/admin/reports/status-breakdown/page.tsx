@@ -100,13 +100,13 @@ export default function StatusBreakdownPage() {
         const labels: Record<string, string> = {
             PENDING_APPROVAL: 'รอการอนุมัติ',
             PENDING: 'รอชำระเงิน',
-            VERIFYING_PAYMENT: 'ตรวจสอบการชำระเงิน',
-            PAYMENT_ISSUE: 'ชำระเงินมีปัญหา',
-            CONFIRMED: 'ยืนยันการจอง',
-            PREPARING: 'เตรียมต้นไม้',
-            READY: 'พร้อมรับที่ร้าน',
+            VERIFYING_PAYMENT: 'รอตรวจสอบ',
+            PAYMENT_ISSUE: 'ชำระมีปัญหา',
+            CONFIRMED: 'ยืนยันจอง',
+            PREPARING: 'กำลังเตรียม',
+            READY: 'พร้อมรับ',
             COMPLETED: 'เสร็จสิ้น',
-            CANCELLED: 'ยกเลิกการจอง',
+            CANCELLED: 'ยกเลิก',
         };
         return labels[status] || status;
     };

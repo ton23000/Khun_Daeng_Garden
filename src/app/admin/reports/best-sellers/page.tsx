@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 interface Booking {
     id: string;
     status: string;
+    totalPrice: number;
+    deposit: number;
     createdAt: string;
     items: {
         treeId: string;
@@ -76,9 +78,14 @@ export default function BestSellersPage() {
 
     const filteredBookings = getFilteredBookings();
 
-    // Calculate best sellers
+    // Calculate best sellers using exact same logic as Sales Report
+    // Filter out unconfirmed/cancelled statuses
+    const confirmedBookings = filteredBookings.filter(b =>
+        !['CANCELLED', 'PENDING', 'PENDING_APPROVAL', 'VERIFYING_PAYMENT', 'PAID', 'PAYMENT_ISSUE'].includes(b.status)
+    );
+
     const treeSales: Record<string, { name: string; count: number; revenue: number; images: string }> = {};
-    filteredBookings.forEach(b => {
+    confirmedBookings.forEach(b => {
         b.items.forEach(item => {
             if (!treeSales[item.treeId]) {
                 treeSales[item.treeId] = {
@@ -94,7 +101,9 @@ export default function BestSellersPage() {
     });
 
     const sortedTrees = Object.values(treeSales).sort((a, b) => b.count - a.count).slice(0, 10);
-    const totalRevenue = sortedTrees.reduce((sum, tree) => sum + tree.revenue, 0);
+    const totalRevenue = confirmedBookings.reduce((sum, b) =>
+        sum + (b.status === 'COMPLETED' ? b.totalPrice : b.deposit), 0
+    );
 
     const getFilterLabel = () => {
         switch (dateFilter) {
