@@ -264,15 +264,13 @@ export default function OrdersPage() {
             PENDING_APPROVAL: { color: '#6b7280', label: 'รอการอนุมัติ' },
             PRE_ORDER: { color: '#6b7280', label: 'รอการอนุมัติ' },
             PENDING: { color: '#f59e0b', label: 'รอชำระเงิน' },
-            VERIFYING_PAYMENT: { color: '#3b82f6', label: 'ตรวจสอบการชำระเงิน' },
-            PAYMENT_ISSUE: { color: '#ef4444', label: 'ชำระเงินมีปัญหา' },
-            CONFIRMED: { color: '#10b981', label: 'ยืนยันการจอง' },
-            PREPARING: { color: '#8b5cf6', label: 'เตรียมต้นไม้' },
-            READY: { color: '#22c55e', label: 'พร้อมรับที่ร้าน' },
+            VERIFYING_PAYMENT: { color: '#3b82f6', label: 'รอตรวจสอบ' },
+            PREPARING: { color: '#8b5cf6', label: 'กำลังเตรียม' },
+            READY: { color: '#22c55e', label: 'พร้อมรับ' },
             COMPLETED: { color: '#6b7280', label: 'เสร็จสิ้น' },
-            CANCELLED: { color: '#dc2626', label: 'ยกเลิกการจอง' },
+            CANCELLED: { color: '#dc2626', label: 'ยกเลิก' },
             // Legacy statuses
-            PAID: { color: '#3b82f6', label: 'ตรวจสอบการชำระเงิน' }
+            PAID: { color: '#3b82f6', label: 'รอตรวจสอบ' }
         };
         const config = statusConfig[status] || { color: '#6b7280', label: status };
         return {
@@ -292,8 +290,8 @@ export default function OrdersPage() {
             PENDING_APPROVAL: 'รอการอนุมัติ',
             PRE_ORDER: 'รอการอนุมัติ',
             PENDING: 'รอชำระเงิน',
-            PAID: 'ตรวจสอบการชำระเงิน',
-            VERIFYING_PAYMENT: 'ตรวจสอบการชำระเงิน',
+            PAID: 'รอตรวจสอบ',
+            VERIFYING_PAYMENT: 'รอตรวจสอบ',
             PREPARING: 'กำลังเตรียม',
             READY: 'พร้อมรับ',
             COMPLETED: 'เสร็จสิ้น',
@@ -335,9 +333,7 @@ export default function OrdersPage() {
                     { id: 'PENDING_APPROVAL', label: 'รอการอนุมัติ', color: '#f59e0b', count: bookings.filter(b => b.status === 'PENDING_APPROVAL' || b.status === 'PRE_ORDER').length },
                     { id: 'PENDING', label: 'รอชำระเงิน', color: '#f59e0b' },
                     { id: 'VERIFYING_PAYMENT', label: 'รอตรวจสอบ', color: '#3b82f6', count: bookings.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID').length },
-                    { id: 'PAYMENT_ISSUE', label: 'ชำระมีปัญหา', color: '#ef4444' },
-                    { id: 'CONFIRMED', label: 'ยืนยันจอง', color: '#10b981' },
-                    { id: 'PREPARING', label: 'เตรียมสินค้า', color: '#8b5cf6' },
+                    { id: 'PREPARING', label: 'กำลังเตรียม', color: '#8b5cf6' },
                     { id: 'READY', label: 'พร้อมรับ', color: '#22c55e' },
                     { id: 'COMPLETED', label: 'เสร็จสิ้น', color: '#6b7280' },
                     { id: 'CANCELLED', label: 'ยกเลิก', color: '#dc2626' },

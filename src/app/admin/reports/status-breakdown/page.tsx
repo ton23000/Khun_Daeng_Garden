@@ -71,8 +71,6 @@ export default function StatusBreakdownPage() {
         PENDING_APPROVAL: filteredBookings.filter(b => b.status === 'PENDING_APPROVAL' || b.status === 'PRE_ORDER').length,
         PENDING: filteredBookings.filter(b => b.status === 'PENDING').length,
         VERIFYING_PAYMENT: filteredBookings.filter(b => b.status === 'VERIFYING_PAYMENT' || b.status === 'PAID').length,
-        PAYMENT_ISSUE: filteredBookings.filter(b => b.status === 'PAYMENT_ISSUE').length,
-        CONFIRMED: filteredBookings.filter(b => b.status === 'CONFIRMED').length,
         PREPARING: filteredBookings.filter(b => b.status === 'PREPARING').length,
         READY: filteredBookings.filter(b => b.status === 'READY').length,
         COMPLETED: filteredBookings.filter(b => b.status === 'COMPLETED').length,
@@ -86,8 +84,6 @@ export default function StatusBreakdownPage() {
             PENDING_APPROVAL: '#f97316',
             PENDING: '#f59e0b',
             VERIFYING_PAYMENT: '#3b82f6',
-            PAYMENT_ISSUE: '#ef4444',
-            CONFIRMED: '#10b981',
             PREPARING: '#8b5cf6',
             READY: '#22c55e',
             COMPLETED: '#6b7280',
@@ -101,8 +97,6 @@ export default function StatusBreakdownPage() {
             PENDING_APPROVAL: 'รอการอนุมัติ',
             PENDING: 'รอชำระเงิน',
             VERIFYING_PAYMENT: 'รอตรวจสอบ',
-            PAYMENT_ISSUE: 'ชำระมีปัญหา',
-            CONFIRMED: 'ยืนยันจอง',
             PREPARING: 'กำลังเตรียม',
             READY: 'พร้อมรับ',
             COMPLETED: 'เสร็จสิ้น',
@@ -270,7 +264,7 @@ export default function StatusBreakdownPage() {
                         <div>
                             <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>กำลังดำเนินการ</div>
                             <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#3b82f6' }}>
-                                {statusCounts.PENDING_APPROVAL + statusCounts.PENDING + statusCounts.VERIFYING_PAYMENT + statusCounts.CONFIRMED + statusCounts.PREPARING + statusCounts.READY}
+                                {statusCounts.PENDING_APPROVAL + statusCounts.PENDING + statusCounts.VERIFYING_PAYMENT + statusCounts.PREPARING + statusCounts.READY}
                             </div>
                         </div>
                         <div>
