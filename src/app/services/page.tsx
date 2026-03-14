@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
-import { Phone, MessageCircle, MapPin, Clock, Leaf, ShoppingCart, HelpCircle } from 'lucide-react';
+import { Phone, MapPin, Clock, Leaf, ShoppingCart, HelpCircle, Facebook } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata = {
@@ -115,11 +115,11 @@ export default function ServicesPage() {
                     <ScrollAnimation animation="fade-up" delay={200}>
                         <Card style={{ textAlign: 'center', padding: '2rem', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', borderRadius: '1rem' }}>
                             <div style={{ width: '64px', height: '64px', backgroundColor: '#dbeafe', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: '#1e40af' }}>
-                                <MessageCircle size={32} />
+                                <Facebook size={32} />
                             </div>
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1f2937' }}>LINE</h3>
+                            <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1f2937' }}>Facebook</h3>
                             <p style={{ color: '#6b7280', marginBottom: '1rem' }}>ตอบกลับรวดเร็ว</p>
-                            <a href="https://line.me/ti/p/nananI009" target="_blank" rel="noopener noreferrer" style={{ color: '#1e40af', fontWeight: 'bold', fontSize: '1.1rem', textDecoration: 'none' }}>nananI009</a>
+                            <a href="https://www.facebook.com/KhunDaengGarden" target="_blank" rel="noopener noreferrer" style={{ color: '#1e40af', fontWeight: 'bold', fontSize: '1.1rem', textDecoration: 'none' }}>สวนคุณแดง</a>
                         </Card>
                     </ScrollAnimation>
 
