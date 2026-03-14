@@ -82,8 +82,10 @@ export default function StatusBreakdownPage() {
     const getStatusColor = (status: string) => {
         const colors: Record<string, string> = {
             PENDING_APPROVAL: '#f97316',
+            PRE_ORDER: '#f97316',
             PENDING: '#f59e0b',
             VERIFYING_PAYMENT: '#3b82f6',
+            PAID: '#3b82f6',
             PREPARING: '#8b5cf6',
             READY: '#22c55e',
             COMPLETED: '#6b7280',
@@ -95,8 +97,10 @@ export default function StatusBreakdownPage() {
     const getStatusLabel = (status: string) => {
         const labels: Record<string, string> = {
             PENDING_APPROVAL: 'รอการอนุมัติ',
+            PRE_ORDER: 'รอการอนุมัติ',
             PENDING: 'รอชำระเงิน',
             VERIFYING_PAYMENT: 'รอตรวจสอบ',
+            PAID: 'รอตรวจสอบ',
             PREPARING: 'กำลังเตรียม',
             READY: 'พร้อมรับ',
             COMPLETED: 'เสร็จสิ้น',
