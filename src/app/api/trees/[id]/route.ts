@@ -35,7 +35,17 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
             updateData.tags = validated.tags.join(',');
         }
         if (validated.promotionEndDate !== undefined) {
-            updateData.promotionEndDate = validated.promotionEndDate ? new Date(validated.promotionEndDate) : null;
+            if (validated.promotionEndDate) {
+                const endDateStr = validated.promotionEndDate;
+                if (endDateStr.length === 10) {
+                    // Set to end of day in Thailand time
+                    updateData.promotionEndDate = new Date(`${endDateStr}T23:59:59.999+07:00`);
+                } else {
+                    updateData.promotionEndDate = new Date(endDateStr);
+                }
+            } else {
+                updateData.promotionEndDate = null;
+            }
         }
 
         const tree = await prisma.tree.update({
