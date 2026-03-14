@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 
 interface FavoriteButtonProps {
@@ -26,6 +26,34 @@ export default function FavoriteButton({
         lg: { fontSize: '1.5rem', padding: '0.75rem' }
     };
 
+    useEffect(() => {
+        let isMounted = true;
+        const checkFavoriteStatus = async () => {
+            if (!user) {
+                if (isMounted) setIsFavorite(false);
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/favorites', {
+                    headers: { 'x-user-id': user.id }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (isMounted) {
+                        const isFav = data.some((f: { treeId: string }) => f.treeId === treeId);
+                        setIsFavorite(isFav);
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking default favorite status:', error);
+            }
+        };
+
+        checkFavoriteStatus();
+        return () => { isMounted = false; };
+    }, [user, treeId]);
+
     const handleToggle = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -46,8 +74,9 @@ export default function FavoriteButton({
                         'x-user-id': user.id
                     }
                 });
-
-                if (res.ok) {
+                
+                // Also accept 404 (already deleted) or 200/201
+                if (res.ok || res.status === 404) {
                     setIsFavorite(false);
                     onToggle?.(false);
                 }
