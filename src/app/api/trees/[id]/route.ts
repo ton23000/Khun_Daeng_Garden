@@ -58,6 +58,8 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
         revalidatePath('/shop');
         revalidatePath('/promotion');
         revalidatePath(`/trees/${id}`);
+        revalidatePath('/admin/trees');
+        revalidatePath('/api/trees');
 
         return NextResponse.json(tree);
     } catch (error) {
@@ -92,6 +94,8 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
         revalidatePath('/shop');
         revalidatePath('/promotion');
         revalidatePath(`/trees/${id}`);
+        revalidatePath('/admin/trees');
+        revalidatePath('/api/trees');
 
         return NextResponse.json({ success: true });
     } catch (error) {

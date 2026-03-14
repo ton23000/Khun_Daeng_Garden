@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 
 
 const treeSchema = z.object({
@@ -130,6 +131,13 @@ export async function POST(request: Request) {
                 promotionEndDate: validated.promotionEndDate ? new Date(validated.promotionEndDate) : null
             }
         });
+
+        // Clear cache so changes appear immediately
+        revalidatePath('/');
+        revalidatePath('/shop');
+        revalidatePath('/promotion');
+        revalidatePath('/admin/trees');
+        revalidatePath('/api/trees');
 
         return NextResponse.json(tree);
     } catch (error) {

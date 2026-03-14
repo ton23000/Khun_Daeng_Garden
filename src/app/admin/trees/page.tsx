@@ -251,7 +251,7 @@ export default function AdminTreesPage() {
 
     const fetchTrees = async () => {
         try {
-            const res = await fetch('/api/trees');
+            const res = await fetch(`/api/trees?t=${Date.now()}`, { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 setTrees(data);
