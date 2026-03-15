@@ -25,6 +25,26 @@ export async function PATCH(
             data: updateData
         });
 
+        // Enforce max 4 featured reviews
+        if (updateData.isFeatured) {
+            const featuredReviews = await prisma.review.findMany({
+                where: { isFeatured: true },
+                orderBy: { updatedAt: 'desc' },
+            });
+            
+            if (featuredReviews.length > 4) {
+                // Keep the 4 most recently updated, unfeature the rest
+                const reviewsToUnfeature = featuredReviews.slice(4);
+                
+                for (const oldReview of reviewsToUnfeature) {
+                    await prisma.review.update({
+                        where: { id: oldReview.id },
+                        data: { isFeatured: false }
+                    });
+                }
+            }
+        }
+
         // Recalculate tree rating
         const allReviews = await prisma.review.findMany({
             where: {
