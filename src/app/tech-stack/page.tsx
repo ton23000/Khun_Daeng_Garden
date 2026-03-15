@@ -1,80 +1,90 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
 import Link from 'next/link';
+import { Code2, Database, ShieldCheck, Mail, Wrench, FileSearch, Server, Layout } from 'lucide-react';
 
 export default function TechStackPage() {
     const techCategories = [
         {
-            category: '🎨 Frontend',
+            category: '💻 ภาษาที่ใช้ในการพัฒนา',
+            subtitle: 'Programming Languages',
             color: '#3b82f6',
+            icon: <Code2 className="w-6 h-6" style={{ color: '#3b82f6' }} />,
             technologies: [
-                { name: 'Next.js', version: '16.1.6', description: 'React Framework สำหรับ Full-Stack Development' },
-                { name: 'React', version: '19.2.3', description: 'JavaScript Library สำหรับสร้าง UI' },
-                { name: 'TypeScript', version: '5.x', description: 'JavaScript with Type Safety' },
-                { name: 'Lucide React', version: '0.563.0', description: 'Modern Icon Library' },
+                { name: 'TypeScript', version: '5.x', description: 'ภาษาหลักที่ใช้เขียนคำสั่งควบคุมการทำงานทั้งหมด ช่วยให้โค้ดมีระเบียบ ตรวจสอบง่าย และลดข้อผิดพลาดได้มาก' },
+                { name: 'HTML / CSS', version: '-', description: 'ใช้วางโครงสร้างหน้าเว็บไซต์ และตกแต่งสีสันการจัดรูปแบบให้สวยงาม' },
+                { name: 'SQL', version: '-', description: 'ภาษาในการจัดการและสื่อสารกับระบบฐานข้อมูล' },
             ]
         },
         {
-            category: '⚙️ Backend',
-            color: '#22c55e',
-            technologies: [
-                { name: 'Next.js API Routes', version: '16.1.6', description: 'Serverless API Endpoints' },
-                { name: 'Prisma', version: '6.19.2', description: 'Modern ORM สำหรับจัดการ Database' },
-                { name: 'Bcrypt.js', version: '3.0.3', description: 'Password Hashing & Security' },
-                { name: 'Jose', version: '6.1.3', description: 'JWT Token Handling' },
-                { name: 'JSON Web Token', version: '9.0.3', description: 'Authentication Tokens' },
-                { name: 'Zod', version: '4.3.6', description: 'Type-Safe Schema Validation' },
-                { name: 'Dotenv', version: '17.3.1', description: 'Environment Variable Management' },
-            ]
-        },
-        {
-            category: '🗄️ Database',
-            color: '#f59e0b',
-            technologies: [
-                { name: 'MySQL', version: '8.x', description: 'Production Database' },
-                { name: 'MySQL2', version: '3.18.2', description: 'MySQL Driver for Node.js' },
-                { name: 'Prisma Client', version: '6.19.2', description: 'Type-safe Database Client' },
-            ]
-        },
-        {
-            category: '📧 Services & Communication',
-            color: '#ef4444',
-            technologies: [
-                { name: 'SendGrid', version: '8.0.0', description: 'Email Service & Templates' },
-                { name: 'Resend', version: '6.9.1', description: 'Modern Email Service' },
-                { name: 'Basic FTP', version: '5.2.0', description: 'File Transfer Protocol' },
-                { name: 'FTP Client', version: '0.3.10', description: 'Legacy FTP Support' },
-            ]
-        },
-        {
-            category: '🛠️ Development Tools',
+            category: '🎨 โครงสร้างหลักหน้าบ้านและหลังบ้าน',
+            subtitle: 'Core Framework & UI',
             color: '#8b5cf6',
+            icon: <Layout className="w-6 h-6" style={{ color: '#8b5cf6' }} />,
             technologies: [
-                { name: 'ESLint', version: '9.x', description: 'Code Quality & Linting' },
-                { name: 'TypeScript Compiler', version: '5.x', description: 'TypeScript Compilation' },
-                { name: 'TS-Node', version: '10.9.2', description: 'TypeScript Execution' },
-                { name: 'Webpack', version: 'Built-in', description: 'Module Bundler (Next.js)' },
+                { name: 'Next.js', version: '16.1', description: 'โครงสร้างหลักที่ครอบคลุมการทำงาน สร้างหน้าเว็บและระบบหลังบ้านให้อยู่ในที่เดียวกันอย่างสมบูรณ์' },
+                { name: 'React', version: '19', description: 'เครื่องมือสร้างส่วนติดต่อผู้ใช้ (UI) เช่น ปุ่มกด ฟอร์มต่างๆ ช่วยให้เชื่อมต่อและลื่นไหลโดยไม่ต้องรีเฟรช' },
+                { name: 'Lucide React', version: '-', description: 'ชุดไอคอนสวยงามทันสมัยที่นำมาใช้ประดับเมนูและส่วนประกอบต่างๆบนเว็บไซต์' },
             ]
         },
         {
-            category: '🤖 Automated Testing',
-            color: '#14b8a6',
+            category: '🗄️ ระบบเก็บข้อมูล',
+            subtitle: 'Database & ORM',
+            color: '#f59e0b',
+            icon: <Database className="w-6 h-6" style={{ color: '#f59e0b' }} />,
             technologies: [
-                { name: 'Playwright', version: '1.x', description: 'End-to-End (E2E) & UI Testing Agent' },
-                { name: 'Jest', version: '29.x', description: 'Unit & Integration Testing Agent' },
-                { name: 'React Testing Library', version: '16.x', description: 'React Component Testing' },
+                { name: 'MySQL', version: '8.x', description: 'ระบบฐานข้อมูลหลัก ที่ใช้เก็บข้อมูลทุกอย่าง เช่น รายการต้นไม้ โปรโมชั่น คำสั่งซื้อ และพนักงาน' },
+                { name: 'Prisma', version: '6.19', description: 'เครื่องมือตัวกลาง (ORM) แปลคำสั่งไปดึงโชว์หรือบันทึกข้อมูลลงฐานข้อมูลได้รวดเร็วและปลอดภัย' },
             ]
         },
         {
-            category: '🔧 Type Definitions',
+            category: '🔒 ระบบความปลอดภัยและการเข้าถึง',
+            subtitle: 'Security & Auth',
+            color: '#10b981',
+            icon: <ShieldCheck className="w-6 h-6" style={{ color: '#10b981' }} />,
+            technologies: [
+                { name: 'JWT (JSON Web Token)', version: '9.0', description: 'ระบบสร้างป้ายชื่อจำลอง (Token) เพื่อให้ระบบจำได้ว่าใครกำลังใช้งานอยู่ โดยไม่ต้องล็อคอินซ้ำบ่อยๆ' },
+                { name: 'Bcrypt.js', version: '3.0', description: 'กลไกเข้ารหัสผ่าน (Hashing) แปลงรหัสผ่านให้อ่านไม่ออกเพื่อความปลอดภัยสูงสุดก่อนบันทึกลงระบบ' },
+            ]
+        },
+        {
+             category: '📧 ระบบแจ้งเตือนทางอีเมล',
+             subtitle: 'Email Services',
+             color: '#ef4444',
+             icon: <Mail className="w-6 h-6" style={{ color: '#ef4444' }} />,
+             technologies: [
+                 { name: 'Resend / SendGrid', version: '-', description: 'บริการส่งอีเมลอัตโนมัติ ติดต่อลูกค้า หรือส่งลิงก์ตั้งรหัสผ่านใหม่ทางอีเมล (Forgot Password)' },
+                 { name: 'Nodemailer', version: '8.0.2', description: 'เครื่องมือจัดการระบบส่งมอบอีเมลที่อยู่เบื้องหลัง' },
+             ]
+        },
+        {
+            category: '🛠️ ตัวช่วยทำงานข้อมูล',
+            subtitle: 'Utilities & Helpers',
             color: '#06b6d4',
+            icon: <Wrench className="w-6 h-6" style={{ color: '#06b6d4' }} />,
             technologies: [
-                { name: '@types/node', version: '20.x', description: 'Node.js Type Definitions' },
-                { name: '@types/react', version: '19.x', description: 'React Type Definitions' },
-                { name: '@types/react-dom', version: '19.x', description: 'React DOM Type Definitions' },
-                { name: '@types/bcryptjs', version: '2.4.6', description: 'Bcrypt.js Type Definitions' },
-                { name: '@types/jsonwebtoken', version: '9.0.10', description: 'JWT Type Definitions' },
-                { name: '@types/ftp', version: '0.3.36', description: 'FTP Type Definitions' },
+                { name: 'Zod', version: '4.3', description: 'ตัวช่วยคัดกรองเนื้อหา ตรวจสอบความถูกต้องของข้อมูลที่ลูกค้ากรอกมา (เช่น รูปแบบอีเมล) ก่อนจะให้บันทึก' },
+                { name: 'QRCode.react', version: '4.2', description: 'ระบบช่วยวาดภาพ QR Code ให้ปรากฏออกมาอัตโนมัติบนหน้าเว็บเพื่อสแกนหรือแชร์' },
+                { name: 'FTP (basic-ftp)', version: '5.2', description: 'ระบบหลังบ้านส่งต่อและอัปโหลดไฟล์รูปภาพไปเก็บไว้ในเซิร์ฟเวอร์หลัก' },
+            ]
+        },
+        {
+            category: '🤖 ระบบตรวจสอบและทดสอบคุณภาพเว็บ',
+            subtitle: 'Testing & QA',
+            color: '#14b8a6',
+            icon: <FileSearch className="w-6 h-6" style={{ color: '#14b8a6' }} />,
+            technologies: [
+                { name: 'Playwright', version: '1.58', description: 'บอทจำลองเสมือนคนจริงๆ เข้ามากดคลิกใช้งานเว็บ เพื่อทดสอบว่าใช้งานได้ครบถ้วน' },
+                { name: 'Jest', version: '30.2', description: 'ตรวจสอบเช็คฟังก์ชันคำนวณหลังบ้านว่าได้ผลลัพธ์ที่ถูกต้องตามที่ตั้งไว้' },
+            ]
+        },
+        {
+            category: '☁️ เซิร์ฟเวอร์และระบบออนไลน์',
+            subtitle: 'Hosting & Deployment',
+            color: '#0ea5e9',
+            icon: <Server className="w-6 h-6" style={{ color: '#0ea5e9' }} />,
+            technologies: [
+                { name: 'Vercel', version: 'Cloud Platform', description: 'แพลตฟอร์มคลาวด์ฝากเว็บไซต์ ทำให้เว็บออนไลน์เสถียร โหลดเร็ว และเปิดได้จากทุกที่' },
             ]
         }
     ];
@@ -83,226 +93,79 @@ export default function TechStackPage() {
         <div className="container" style={{ padding: '2rem' }}>
             <ScrollAnimation animation="fade-up">
                 <div style={{ marginBottom: '2rem' }}>
-                    <Link href="/" style={{ color: '#166534', textDecoration: 'none' }}>
-                        ← กลับหน้าหลัก
+                    <Link href="/" style={{ color: '#166534', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span>← กลับหน้าหลัก</span>
                     </Link>
                 </div>
                 <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#166534' }}>
-                    เทคโนโลยีที่ใช้พัฒนา
+                    ระบบและเทคโนโลยีที่ใช้พัฒนา 🚀
                 </h1>
-                <p style={{ fontSize: '1.1rem', color: '#6b7280', marginBottom: '2rem' }}>
-                    รายการโปรแกรมและภาษาที่ใช้ในการพัฒนาเว็บไซต์ Khun Daeng Garden
+                <p style={{ fontSize: '1.2rem', color: '#4b5563', marginBottom: '3rem', maxWidth: '800px', lineHeight: '1.6' }}>
+                    ข้อมูลสรุปเครื่องมือและภาษาทั้งหมดที่ขับเคลื่อนระบบของร้าน <b>สวนคุณแดงการ์เด้น (Khun Daeng Garden)</b> โดยแบ่งหมวดหมู่ให้อ่านและทำความเข้าใจได้ง่ายที่สุด
                 </p>
             </ScrollAnimation>
 
-            {/* Overview Stats */}
-            <ScrollAnimation animation="fade-up" delay={100}>
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                    gap: '1rem',
-                    marginBottom: '3rem'
-                }}>
-                    <Card style={{ borderTop: '4px solid #3b82f6', textAlign: 'center' }}>
-                        <CardContent style={{ padding: '1.5rem' }}>
-                            <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#3b82f6' }}>
-                                {techCategories[0].technologies.length}
-                            </div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                                Frontend Technologies
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card style={{ borderTop: '4px solid #22c55e', textAlign: 'center' }}>
-                        <CardContent style={{ padding: '1.5rem' }}>
-                            <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#22c55e' }}>
-                                {techCategories[1].technologies.length}
-                            </div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                                Backend Technologies
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card style={{ borderTop: '4px solid #f59e0b', textAlign: 'center' }}>
-                        <CardContent style={{ padding: '1.5rem' }}>
-                            <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#f59e0b' }}>
-                                {techCategories[2].technologies.length}
-                            </div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                                Database Technologies
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card style={{ borderTop: '4px solid #ef4444', textAlign: 'center' }}>
-                        <CardContent style={{ padding: '1.5rem' }}>
-                            <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#ef4444' }}>
-                                {techCategories[3].technologies.length}
-                            </div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                                External Services
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card style={{ borderTop: '4px solid #8b5cf6', textAlign: 'center' }}>
-                        <CardContent style={{ padding: '1.5rem' }}>
-                            <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#8b5cf6' }}>
-                                {techCategories[4].technologies.length}
-                            </div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                                Development Tools
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            </ScrollAnimation>
-
-            {/* Tech Categories */}
-            {techCategories.map((cat, idx) => (
-                <ScrollAnimation key={cat.category} animation="fade-up" delay={200 + (idx * 100)}>
-                    <Card style={{ marginBottom: '2rem' }}>
-                        <CardHeader style={{ borderBottom: '2px solid #f3f4f6' }}>
-                            <CardTitle style={{ fontSize: '1.75rem', color: cat.color }}>
-                                {cat.category}
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent style={{ padding: '1.5rem' }}>
-                            <div style={{ display: 'grid', gap: '1rem' }}>
-                                {cat.technologies.map((tech) => (
-                                    <div
-                                        key={tech.name}
-                                        style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            padding: '1rem',
-                                            backgroundColor: '#f9fafb',
-                                            borderRadius: '0.5rem',
-                                            borderLeft: `4px solid ${cat.color}`,
-                                            transition: 'all 0.2s'
-                                        }}
-                                        className="hover:shadow-md"
-                                    >
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '0.25rem' }}>
-                                                <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#1f2937' }}>
+            {/* Tech Categories Grid - Better layout for Thai descriptions */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr)),', gap: '1.5rem', marginBottom: '4rem' }}>
+                {techCategories.map((cat, idx) => (
+                    <ScrollAnimation key={cat.category} animation="fade-up" delay={100 + (idx * 50)}>
+                        <Card style={{ height: '100%', display: 'flex', flexDirection: 'column', borderTop: `4px solid ${cat.color}`, transition: 'transform 0.2s', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }} className="hover:shadow-lg hover:-translate-y-1">
+                            <CardHeader style={{ paddingBottom: '1rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
+                                    {cat.icon}
+                                    <CardTitle style={{ fontSize: '1.4rem', color: '#1f2937' }}>
+                                        {cat.category}
+                                    </CardTitle>
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: cat.color, fontWeight: '500', paddingLeft: '2.25rem' }}>
+                                    {cat.subtitle}
+                                </div>
+                            </CardHeader>
+                            <CardContent style={{ flexGrow: 1, paddingTop: '0' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                                    {cat.technologies.map((tech) => (
+                                        <div key={tech.name} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span style={{ fontSize: '1.1rem', fontWeight: '600', color: '#374151' }}>
                                                     {tech.name}
                                                 </span>
-                                                <span style={{
-                                                    fontSize: '0.75rem',
-                                                    color: 'white',
-                                                    backgroundColor: cat.color,
-                                                    padding: '0.125rem 0.5rem',
-                                                    borderRadius: '0.25rem',
-                                                    fontWeight: 600
-                                                }}>
-                                                    v{tech.version}
-                                                </span>
+                                                {tech.version !== '-' && (
+                                                    <span style={{
+                                                        fontSize: '0.75rem',
+                                                        color: cat.color,
+                                                        backgroundColor: `${cat.color}15`,
+                                                        padding: '0.125rem 0.5rem',
+                                                        borderRadius: '1rem',
+                                                        fontWeight: 600
+                                                    }}>
+                                                        {tech.version}
+                                                    </span>
+                                                )}
                                             </div>
-                                            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                                            <div style={{ fontSize: '1rem', color: '#4b5563', lineHeight: '1.5' }}>
                                                 {tech.description}
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </ScrollAnimation>
-            ))}
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </ScrollAnimation>
+                ))}
+            </div>
 
-            {/* Deployment & DevOps */}
-            <ScrollAnimation animation="fade-up" delay={850}>
-                <Card style={{ marginTop: '2rem', backgroundColor: '#eff6ff' }}>
-                    <CardHeader>
-                        <CardTitle style={{ color: '#1e40af' }}>🚀 Deployment & DevOps</CardTitle>
-                    </CardHeader>
-                    <CardContent style={{ lineHeight: '1.8' }}>
-                        <ul style={{ color: '#374151', paddingLeft: '1.5rem' }}>
-                            <li><strong>Production:</strong> Vercel Platform</li>
-                            <li><strong>Database:</strong> MySQL Hosting</li>
-                            <li><strong>File Deployment:</strong> FTP Upload Scripts</li>
-                            <li><strong>Environment:</strong> Production & Development configs</li>
-                            <li><strong>Build Process:</strong> Prisma Generate + Next.js Build</li>
-                            <li><strong>Code Quality:</strong> ESLint configuration</li>
-                        </ul>
-                    </CardContent>
-                </Card>
-            </ScrollAnimation>
-
-            {/* Architecture Overview */}
-            <ScrollAnimation animation="fade-up" delay={800}>
-                <Card style={{ marginTop: '2rem', backgroundColor: '#f0fdf4' }}>
-                    <CardHeader>
-                        <CardTitle style={{ color: '#166534' }}>🏗️ สถาปัตยกรรมระบบ</CardTitle>
-                    </CardHeader>
-                    <CardContent style={{ lineHeight: '1.8' }}>
-                        <ul style={{ color: '#374151', paddingLeft: '1.5rem' }}>
-                            <li><strong>Architecture:</strong> Full-Stack Application with Next.js 16.1.6</li>
-                            <li><strong>Rendering:</strong> Server-Side Rendering (SSR) + Client-Side Rendering (CSR)</li>
-                            <li><strong>API:</strong> RESTful API with Next.js API Routes</li>
-                            <li><strong>Authentication:</strong> Custom Auth with JWT & Bcrypt.js</li>
-                            <li><strong>State Management:</strong> React Context API</li>
-                            <li><strong>Styling:</strong> Vanilla CSS with Custom Components</li>
-                            <li><strong>Database:</strong> MySQL with Prisma ORM 6.19.2</li>
-                            <li><strong>Email:</strong> Transactional emails via SendGrid & Resend</li>
-                            <li><strong>File Transfer:</strong> FTP Support for deployment</li>
-                            <li><strong>Type Safety:</strong> Full TypeScript implementation</li>
-                            <li><strong>Automated Testing:</strong> End-to-End with Playwright & Unit Testing with Jest</li>
-                            <li><strong>Validation:</strong> Zod schema validation</li>
-                        </ul>
-                    </CardContent>
-                </Card>
-            </ScrollAnimation>
-
-            {/* Project Info */}
-            <ScrollAnimation animation="fade-up" delay={900}>
-                <Card style={{ marginTop: '2rem', backgroundColor: '#fef3c7' }}>
-                    <CardContent style={{ padding: '1.5rem', textAlign: 'center' }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#92400e', marginBottom: '0.5rem' }}>
-                            📦 Khun Daeng Garden v0.1.0
+            {/* Project Info Footer */}
+            <ScrollAnimation animation="fade-up" delay={500}>
+                <Card style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '1rem' }}>
+                    <CardContent style={{ padding: '2rem', textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.35rem', fontWeight: 'bold', color: '#166534', marginBottom: '0.75rem' }}>
+                            🌱 Khun Daeng Garden System
                         </div>
-                        <div style={{ fontSize: '0.875rem', color: '#78350f', marginBottom: '1rem' }}>
-                            พัฒนาด้วย ❤️ โดยใช้เทคโนโลยีสมัยใหม่
+                        <div style={{ fontSize: '1.1rem', color: '#15803d', marginBottom: '1rem' }}>
+                            พัฒนาระบบด้วยเทคโนโลยีสมัยใหม่ เพื่อประสบการณ์ใช้งานที่ดีที่สุดของคุณลูกค้าและทีมงาน
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#92400e' }}>
-                            Last Updated: {new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
-                        </div>
-                    </CardContent>
-                </Card>
-            </ScrollAnimation>
-
-            {/* Performance Metrics */}
-            <ScrollAnimation animation="fade-up" delay={950}>
-                <Card style={{ marginTop: '2rem', backgroundColor: '#f3e8ff' }}>
-                    <CardHeader>
-                        <CardTitle style={{ color: '#6b21a8' }}>📊 Performance & Features</CardTitle>
-                    </CardHeader>
-                    <CardContent style={{ lineHeight: '1.8' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                            <div style={{ textAlign: 'center', padding: '1rem' }}>
-                                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#6b21a8' }}>
-                                    {techCategories.reduce((acc, cat) => acc + cat.technologies.length, 0)}
-                                </div>
-                                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                    Total Technologies
-                                </div>
-                            </div>
-                            <div style={{ textAlign: 'center', padding: '1rem' }}>
-                                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#6b21a8' }}>
-                                    {techCategories.length}
-                                </div>
-                                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                    Tech Categories
-                                </div>
-                            </div>
-                            <div style={{ textAlign: 'center', padding: '1rem' }}>
-                                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#6b21a8' }}>
-                                    100%
-                                </div>
-                                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                    TypeScript Coverage
-                                </div>
-                            </div>
+                        <div style={{ fontSize: '0.85rem', color: '#166534', opacity: 0.8 }}>
+                            อัปเดตข้อมูลล่าสุด: {new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
                         </div>
                     </CardContent>
                 </Card>
