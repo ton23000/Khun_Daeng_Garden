@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useAuth } from '@/lib/AuthContext';
 import { Button } from './ui/Button';
 import StarRating from './StarRating';
 import ImageUpload from './ImageUpload';
@@ -13,6 +14,7 @@ interface ReviewFormProps {
 }
 
 export default function ReviewForm({ bookingId, treeId, treeName, onSubmitSuccess }: ReviewFormProps) {
+    const { user } = useAuth();
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
     const [images, setImages] = useState<string[]>([]);
@@ -28,20 +30,18 @@ export default function ReviewForm({ bookingId, treeId, treeName, onSubmitSucces
             return;
         }
 
+        if (!user) {
+            setError('กรุณาเข้าสู่ระบบ');
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
-            const userId = localStorage.getItem('userId');
-            if (!userId) {
-                setError('กรุณาเข้าสู่ระบบ');
-                return;
-            }
-
             const res = await fetch('/api/reviews', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-user-id': userId
                 },
                 body: JSON.stringify({
                     bookingId,

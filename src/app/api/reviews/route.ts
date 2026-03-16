@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
             try {
                 const verified = await jwtVerify(token, getJwtSecretKey());
                 currentUserId = verified.payload.id as string;
-            } catch (_err) {
+            } catch {
                 // Ignore invalid tokens for GET requests, just treat as anonymous
             }
         }
@@ -98,13 +98,14 @@ export async function POST(req: NextRequest) {
             try {
                 const verified = await jwtVerify(token, getJwtSecretKey());
                 userId = verified.payload.id as string;
-            } catch (_err) {
-                return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
+            } catch {
+                // Token is invalid or expired — tell user to login again
+                return NextResponse.json({ error: 'เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่' }, { status: 401 });
             }
         }
 
         if (!userId) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            return NextResponse.json({ error: 'กรุณาเข้าสู่ระบบ' }, { status: 401 });
         }
 
         const body = await req.json();

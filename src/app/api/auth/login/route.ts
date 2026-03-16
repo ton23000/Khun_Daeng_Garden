@@ -37,7 +37,7 @@ export async function POST(request: Request) {
             const token = await new SignJWT({ ...adminUser })
                 .setProtectedHeader({ alg: 'HS256' })
                 .setIssuedAt()
-                .setExpirationTime('24h')
+                .setExpirationTime('7d')
                 .sign(getJwtSecretKey());
 
             const response = NextResponse.json({
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
         const token = await new SignJWT({ ...userData })
             .setProtectedHeader({ alg: 'HS256' })
             .setIssuedAt()
-            .setExpirationTime('24h')
+            .setExpirationTime('7d')
             .sign(getJwtSecretKey());
 
         const response = NextResponse.json({

@@ -43,7 +43,7 @@ export async function POST(request: Request) {
         const authToken = await new SignJWT(authData)
             .setProtectedHeader({ alg: 'HS256' })
             .setIssuedAt()
-            .setExpirationTime('24h')
+            .setExpirationTime('7d')
             .sign(getJwtSecretKey());
 
         const response = NextResponse.json({
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
             httpOnly: true,
             path: '/',
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 24 // 1 day
+            maxAge: 60 * 60 * 24 * 7 // 7 days
         });
 
         return response;
