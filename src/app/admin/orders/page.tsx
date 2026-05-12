@@ -671,7 +671,8 @@ export default function OrdersPage() {
 
             <SlipViewer
                 isOpen={!!viewingSlip}
-                slipUrl={viewingSlip}
+                slipUrls={(() => { try { const p = JSON.parse(viewingSlip || '[]'); return Array.isArray(p) ? p : [viewingSlip!]; } catch { return viewingSlip ? [viewingSlip] : []; } })()}
+                startIndex={0}
                 onClose={() => setViewingSlip(null)}
             />
         </div>

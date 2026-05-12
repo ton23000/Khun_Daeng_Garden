@@ -437,7 +437,8 @@ export default function StaffOrdersPage() {
                 </div>
             </div>
 
-            <SlipViewer isOpen={!!viewingSlip} slipUrl={viewingSlip} onClose={() => setViewingSlip(null)} />
+            <SlipViewer isOpen={!!viewingSlip} slipUrls={(() => { try { const p = JSON.parse(viewingSlip || '[]'); return Array.isArray(p) ? p : [viewingSlip!]; } catch { return viewingSlip ? [viewingSlip] : []; } })()} startIndex={0} onClose={() => setViewingSlip(null)} />
+
         </div>
     );
 }
