@@ -42,12 +42,13 @@ export default function SlipViewer({
 
     const url = slipUrls[current];
     const total = slipUrls.length;
+    const TOPBAR_H = 56;
+    const BOTTOMBAR_H = total > 1 ? 72 : 0;
 
     const handleDelete = () => {
         if (!onDelete) return;
         if (!confirm(`ลบสลีปรูปที่ ${current + 1} ออก?`)) return;
         onDelete(current);
-        // ถ้าลบรูปสุดท้าย ให้เลื่อนกลับ
         if (current >= total - 1) {
             if (total - 1 === 0) {
                 onClose();
@@ -58,43 +59,36 @@ export default function SlipViewer({
     };
 
     return (
-        <div
-            onClick={onClose}
-            style={{
-                position: 'fixed',
-                inset: 0,
-                width: '100vw',
-                height: '100vh',
-                backgroundColor: 'rgba(0,0,0,0.92)',
-                zIndex: 99999,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-            }}
-        >
+        <>
+            {/* ── Backdrop ── */}
+            <div
+                onClick={onClose}
+                style={{
+                    position: 'fixed',
+                    inset: 0,
+                    backgroundColor: 'rgba(0,0,0,0.92)',
+                    zIndex: 99999,
+                }}
+            />
+
             {/* ── Top bar ── */}
             <div
-                onClick={e => e.stopPropagation()}
                 style={{
                     position: 'fixed',
                     top: 0, left: 0, right: 0,
+                    height: TOPBAR_H,
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: '0.75rem 1.25rem',
-                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.7), transparent)',
-                    zIndex: 10,
+                    padding: '0 1.25rem',
+                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.75), transparent)',
+                    zIndex: 100001,
                 }}
             >
-                {/* ตัวนับ */}
                 <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', fontWeight: 600 }}>
                     สลีป {current + 1} / {total}
                 </span>
-
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    {/* ปุ่มลบ */}
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                     {onDelete && (
                         <button
                             onClick={handleDelete}
@@ -115,14 +109,13 @@ export default function SlipViewer({
                             🗑️ ลบรูปนี้
                         </button>
                     )}
-                    {/* ปุ่มปิด */}
                     <button
                         onClick={onClose}
                         style={{
                             width: 36, height: 36,
                             borderRadius: '50%',
                             border: 'none',
-                            backgroundColor: 'rgba(255,255,255,0.15)',
+                            backgroundColor: 'rgba(255,255,255,0.2)',
                             color: 'white',
                             fontSize: '1.1rem',
                             cursor: 'pointer',
@@ -134,15 +127,18 @@ export default function SlipViewer({
 
             {/* ── รูปหลัก ── */}
             <div
-                onClick={e => e.stopPropagation()}
                 style={{
+                    position: 'fixed',
+                    top: TOPBAR_H,
+                    left: 0,
+                    right: 0,
+                    bottom: BOTTOMBAR_H,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '100%',
-                    height: '100vh',
-                    padding: '4.5rem 4rem',
+                    padding: '1rem 4rem',
                     boxSizing: 'border-box',
+                    zIndex: 100000,
                 }}
             >
                 {/* ลูกศรซ้าย */}
@@ -151,16 +147,17 @@ export default function SlipViewer({
                         onClick={() => setCurrent(c => Math.max(0, c - 1))}
                         disabled={current === 0}
                         style={{
-                            position: 'fixed', left: '0.75rem',
+                            position: 'absolute', left: '0.75rem',
                             top: '50%', transform: 'translateY(-50%)',
                             width: 44, height: 44,
                             borderRadius: '50%',
                             border: 'none',
-                            backgroundColor: current === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.25)',
-                            color: 'white', fontSize: '1.3rem',
+                            backgroundColor: current === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)',
+                            color: 'white', fontSize: '1.5rem',
                             cursor: current === 0 ? 'not-allowed' : 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'background 0.2s',
+                            zIndex: 2,
                         }}
                     >‹</button>
                 )}
@@ -179,6 +176,7 @@ export default function SlipViewer({
                         boxShadow: '0 8px 40px rgba(0,0,0,0.6)',
                         animation: 'slipFadeIn 0.2s ease',
                         display: 'block',
+                        userSelect: 'none',
                     }}
                 />
 
@@ -188,16 +186,17 @@ export default function SlipViewer({
                         onClick={() => setCurrent(c => Math.min(total - 1, c + 1))}
                         disabled={current === total - 1}
                         style={{
-                            position: 'fixed', right: '0.75rem',
+                            position: 'absolute', right: '0.75rem',
                             top: '50%', transform: 'translateY(-50%)',
                             width: 44, height: 44,
                             borderRadius: '50%',
                             border: 'none',
-                            backgroundColor: current === total - 1 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.25)',
-                            color: 'white', fontSize: '1.3rem',
+                            backgroundColor: current === total - 1 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)',
+                            color: 'white', fontSize: '1.5rem',
                             cursor: current === total - 1 ? 'not-allowed' : 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'background 0.2s',
+                            zIndex: 2,
                         }}
                     >›</button>
                 )}
@@ -206,16 +205,19 @@ export default function SlipViewer({
             {/* ── Thumbnail bar ── */}
             {total > 1 && (
                 <div
-                    onClick={e => e.stopPropagation()}
                     style={{
                         position: 'fixed',
-                        bottom: '1rem',
-                        left: '50%', transform: 'translateX(-50%)',
-                        display: 'flex', gap: '0.5rem',
-                        padding: '0.5rem 0.75rem',
+                        bottom: 0,
+                        left: 0, right: 0,
+                        height: BOTTOMBAR_H,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        padding: '0 0.75rem',
                         backgroundColor: 'rgba(0,0,0,0.55)',
-                        borderRadius: '9999px',
                         backdropFilter: 'blur(6px)',
+                        zIndex: 100001,
                     }}
                 >
                     {slipUrls.map((u, i) => (
@@ -225,11 +227,11 @@ export default function SlipViewer({
                             alt={`thumb ${i + 1}`}
                             onClick={() => setCurrent(i)}
                             style={{
-                                width: 46, height: 46,
+                                width: 52, height: 52,
                                 objectFit: 'cover',
                                 borderRadius: '0.375rem',
                                 cursor: 'pointer',
-                                border: i === current ? '2px solid white' : '2px solid transparent',
+                                border: i === current ? '2.5px solid white' : '2px solid transparent',
                                 opacity: i === current ? 1 : 0.55,
                                 transition: 'all 0.2s',
                             }}
@@ -244,6 +246,6 @@ export default function SlipViewer({
                     to   { opacity: 1; transform: scale(1); }
                 }
             `}</style>
-        </div>
+        </>
     );
 }
