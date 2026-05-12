@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import * as XLSX from 'xlsx';
 
 interface Booking {
     id: string;
@@ -130,14 +131,114 @@ export default function ReportsPage() {
         }
     };
 
+    const downloadReport = () => {
+        const wb = XLSX.utils.book_new();
+
+        // ---- Sheet 1: สรุปรายงาน ----
+        const summaryData = [
+            ['รายงานการเงิน - สวนคุณแดง'],
+            ['ช่วงเวลา:', getFilterLabel()],
+            ['วันที่ดาวน์โหลด:', new Date().toLocaleString('th-TH')],
+            [],
+            ['รายการ', 'ค่า'],
+            ['ยอดขายรวม (บาท)', totalSales],
+            ['เงินมัดจำรวม (บาท)', totalDeposits],
+            ['จำนวนออเดอร์ทั้งหมด', totalOrders],
+            ['ออเดอร์รอดำเนินการ', pendingOrders],
+            ['ออเดอร์เสร็จสิ้น', completedOrders],
+            ['ต้นไม้ที่ขายได้ (ต้น)', totalTreesSold],
+        ];
+        const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+        wsSummary['!cols'] = [{ wch: 30 }, { wch: 20 }];
+        XLSX.utils.book_append_sheet(wb, wsSummary, 'สรุปรายงาน');
+
+        // ---- Sheet 2: รายการออเดอร์ ----
+        const orderHeaders = ['รหัสอ้างอิง', 'วันที่สั่ง', 'สถานะ', 'จำนวนรายการ', 'เงินมัดจำ (บาท)', 'ราคารวม (บาท)'];
+        const orderRows = filteredBookings.map(b => [
+            b.refCode,
+            new Date(b.createdAt).toLocaleString('th-TH'),
+            b.status,
+            b.items.reduce((acc, item) => acc + item.quantity, 0),
+            b.deposit,
+            b.totalPrice,
+        ]);
+        const wsOrders = XLSX.utils.aoa_to_sheet([orderHeaders, ...orderRows]);
+        wsOrders['!cols'] = [{ wch: 18 }, { wch: 22 }, { wch: 20 }, { wch: 14 }, { wch: 18 }, { wch: 18 }];
+        XLSX.utils.book_append_sheet(wb, wsOrders, 'รายการออเดอร์');
+
+        // ---- Sheet 3: รายการสินค้า (ต้นไม้) ----
+        const itemHeaders = ['รหัสอ้างอิง', 'วันที่สั่ง', 'ชื่อต้นไม้', 'จำนวน (ต้น)', 'ราคาต่อต้น (บาท)', 'ราคารวม (บาท)'];
+        const itemRows: (string | number)[][] = [];
+        filteredBookings.forEach(b => {
+            b.items.forEach(item => {
+                itemRows.push([
+                    b.refCode,
+                    new Date(b.createdAt).toLocaleString('th-TH'),
+                    item.tree.name,
+                    item.quantity,
+                    item.price,
+                    item.price * item.quantity,
+                ]);
+            });
+        });
+        const wsItems = XLSX.utils.aoa_to_sheet([itemHeaders, ...itemRows]);
+        wsItems['!cols'] = [{ wch: 18 }, { wch: 22 }, { wch: 30 }, { wch: 14 }, { wch: 18 }, { wch: 18 }];
+        XLSX.utils.book_append_sheet(wb, wsItems, 'รายการสินค้า');
+
+        // ---- Sheet 4: สินค้าขายดี ----
+        const bsHeaders = ['อันดับ', 'ชื่อต้นไม้', 'จำนวนที่ขาย (ต้น)', 'รายได้รวม (บาท)'];
+        const bsRows = sortedTrees.map((item, idx) => [
+            idx + 1,
+            item.name,
+            item.count,
+            item.revenue,
+        ]);
+        const wsBestSellers = XLSX.utils.aoa_to_sheet([bsHeaders, ...bsRows]);
+        wsBestSellers['!cols'] = [{ wch: 8 }, { wch: 30 }, { wch: 20 }, { wch: 20 }];
+        XLSX.utils.book_append_sheet(wb, wsBestSellers, 'สินค้าขายดี');
+
+        // ---- ดาวน์โหลด ----
+        const filterStr = dateFilter === 'all' ? 'ทั้งหมด' : selectedDate.substring(0, 10);
+        XLSX.writeFile(wb, `รายงานการเงิน_${filterStr}.xlsx`);
+    };
+
     if (isAuthLoading || isLoading) {
         return <div className="flex justify-center items-center min-h-screen">กำลังโหลด...</div>;
     }
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>รายงานภาพรวม (Reports)</h1>
+                <button
+                    onClick={downloadReport}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        padding: '0.625rem 1.25rem',
+                        backgroundColor: '#166534',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '0.5rem',
+                        fontWeight: 600,
+                        fontSize: '0.9rem',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 6px rgba(22,101,52,0.3)',
+                        transition: 'background-color 0.2s, transform 0.1s',
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#14532d';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#166534';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                    title={`ดาวน์โหลดรายงานการเงิน (${getFilterLabel()})`}
+                >
+                    📥 ดาวน์โหลดรายงาน Excel
+                </button>
             </div>
 
             {/* Date Filter */}
