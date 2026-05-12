@@ -63,12 +63,15 @@ export default function SlipViewer({
             style={{
                 position: 'fixed',
                 inset: 0,
+                width: '100vw',
+                height: '100vh',
                 backgroundColor: 'rgba(0,0,0,0.92)',
                 zIndex: 99999,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
+                overflow: 'hidden',
             }}
         >
             {/* ── Top bar ── */}
@@ -137,8 +140,8 @@ export default function SlipViewer({
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '100%',
-                    height: '100%',
-                    padding: '4rem 4.5rem',
+                    height: '100vh',
+                    padding: '4.5rem 4rem',
                     boxSizing: 'border-box',
                 }}
             >
@@ -169,10 +172,13 @@ export default function SlipViewer({
                     style={{
                         maxWidth: '100%',
                         maxHeight: '100%',
+                        width: 'auto',
+                        height: 'auto',
                         objectFit: 'contain',
                         borderRadius: '0.5rem',
                         boxShadow: '0 8px 40px rgba(0,0,0,0.6)',
                         animation: 'slipFadeIn 0.2s ease',
+                        display: 'block',
                     }}
                 />
 
