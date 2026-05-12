@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -510,35 +510,71 @@ export default function MyBookingsPage() {
                                                     try { slipUrls = JSON.parse(rawSlip); } catch { slipUrls = [rawSlip]; }
                                                     return (
                                                         <div>
-                                                            <p style={{ fontSize: '0.875rem', color: '#166534', marginBottom: '0.5rem' }}>✅ แนบสลิปแล้ว {slipUrls.length} รูป</p>
-                                                            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(slipUrls.length, 3)}, 1fr)`, gap: '0.5rem', marginBottom: '0.75rem' }}>
+                                                            <p style={{ fontSize: '0.875rem', color: '#166534', marginBottom: '0.75rem' }}>✅ แนบสลิปแล้ว {slipUrls.length} รูป</p>
+                                                            <div style={{ display: 'flex', gap: '0.625rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
                                                                 {slipUrls.map((url, i) => (
                                                                     <div
                                                                         key={i}
                                                                         onClick={() => setViewingSlip({ bookingId: booking.id, urls: slipUrls, index: i })}
-                                                                        style={{ position: 'relative', borderRadius: '0.375rem', overflow: 'hidden', cursor: 'zoom-in' }}
+                                                                        title="คลิกเพื่อดูรูปเต็ม"
+                                                                        style={{
+                                                                            position: 'relative',
+                                                                            width: 90,
+                                                                            height: 110,
+                                                                            borderRadius: '0.5rem',
+                                                                            overflow: 'hidden',
+                                                                            cursor: 'zoom-in',
+                                                                            backgroundColor: '#f8fafc',
+                                                                            border: '1.5px solid #bbf7d0',
+                                                                            boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            flexShrink: 0,
+                                                                        }}
                                                                     >
                                                                         <img
                                                                             src={url}
                                                                             alt={`สลิป ${i + 1}`}
-                                                                            style={{ width: '100%', height: '90px', objectFit: 'cover', display: 'block', border: '1px solid #bbf7d0' }}
+                                                                            style={{
+                                                                                maxWidth: '100%',
+                                                                                maxHeight: '100%',
+                                                                                width: 'auto',
+                                                                                height: 'auto',
+                                                                                objectFit: 'contain',
+                                                                                display: 'block',
+                                                                                padding: '4px',
+                                                                            }}
                                                                         />
+                                                                        {/* Zoom overlay */}
+                                                                        <div style={{
+                                                                            position: 'absolute', inset: 0,
+                                                                            background: 'rgba(0,0,0,0)',
+                                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                            transition: 'background 0.18s',
+                                                                        }}
+                                                                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.25)')}
+                                                                            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,0,0,0)')}
+                                                                        >
+                                                                            <span style={{ fontSize: '1.4rem', opacity: 0, transition: 'opacity 0.18s' }}
+                                                                                onMouseEnter={e => { (e.currentTarget.style.opacity = '1'); }}
+                                                                                onMouseLeave={e => { (e.currentTarget.style.opacity = '0'); }}
+                                                                            >🔍</span>
+                                                                        </div>
                                                                         {canUploadSlip(booking.status) && (
                                                                             <button
                                                                                 onClick={e => { e.stopPropagation(); handleDeleteSlip(booking.id, slipUrls, i); }}
                                                                                 title="ลบสลิปรูปนี้"
                                                                                 style={{
-                                                                                    position: 'absolute', top: 4, right: 4,
-                                                                                    width: 22, height: 22, borderRadius: '50%',
+                                                                                    position: 'absolute', top: 3, right: 3,
+                                                                                    width: 20, height: 20, borderRadius: '50%',
                                                                                     border: 'none', backgroundColor: 'rgba(239,68,68,0.9)',
-                                                                                    color: 'white', fontSize: '0.65rem', fontWeight: 'bold',
+                                                                                    color: 'white', fontSize: '0.6rem', fontWeight: 'bold',
                                                                                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                                    zIndex: 2,
                                                                                 }}
                                                                             >✕</button>
                                                                         )}
-                                                                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.38)', color: 'white', fontSize: '0.6rem', textAlign: 'center', padding: '2px 0' }}>
-                                                                            🔍 ดูเต็มจอ
-                                                                        </div>
                                                                     </div>
                                                                 ))}
                                                             </div>
