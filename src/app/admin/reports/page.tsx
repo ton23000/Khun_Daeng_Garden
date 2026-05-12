@@ -301,33 +301,66 @@ export default function ReportsPage() {
                             </button>
                         </div>
                         {dateFilter !== 'all' && (
-                            <input
-                                type={dateFilter === 'year' ? 'number' : dateFilter === 'month' ? 'month' : 'date'}
-                                value={
-                                    dateFilter === 'year'
-                                        ? new Date(selectedDate).getFullYear().toString()
-                                        : dateFilter === 'month'
-                                            ? selectedDate.substring(0, 7)
-                                            : selectedDate
-                                }
-                                onChange={(e) => {
-                                    if (dateFilter === 'year') {
-                                        setSelectedDate(`${e.target.value}-01-01`);
-                                    } else if (dateFilter === 'month') {
-                                        setSelectedDate(`${e.target.value}-01`);
-                                    } else {
-                                        setSelectedDate(e.target.value);
-                                    }
-                                }}
-                                min={dateFilter === 'year' ? '2020' : undefined}
-                                max={dateFilter === 'year' ? new Date().getFullYear().toString() : undefined}
-                                style={{
-                                    padding: '0.5rem',
-                                    borderRadius: '0.375rem',
-                                    border: '1px solid #d1d5db',
-                                    width: dateFilter === 'year' ? '120px' : 'auto'
-                                }}
-                            />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                {dateFilter === 'year' ? (
+                                    // ---- ปี: แสดง พ.ศ. (CE + 543) ----
+                                    <input
+                                        type="number"
+                                        value={(new Date(selectedDate).getFullYear() + 543).toString()}
+                                        onChange={(e) => {
+                                            const beParsed = parseInt(e.target.value);
+                                            if (!isNaN(beParsed)) {
+                                                const ceYear = beParsed - 543;
+                                                setSelectedDate(`${ceYear}-01-01`);
+                                            }
+                                        }}
+                                        min={2563}
+                                        max={new Date().getFullYear() + 543}
+                                        style={{
+                                            padding: '0.5rem',
+                                            borderRadius: '0.375rem',
+                                            border: '1px solid #d1d5db',
+                                            width: '110px'
+                                        }}
+                                    />
+                                ) : (
+                                    // ---- วัน / เดือน: input ปกติ + badge พ.ศ. ----
+                                    <>
+                                        <input
+                                            type={dateFilter === 'month' ? 'month' : 'date'}
+                                            value={
+                                                dateFilter === 'month'
+                                                    ? selectedDate.substring(0, 7)
+                                                    : selectedDate
+                                            }
+                                            onChange={(e) => {
+                                                if (dateFilter === 'month') {
+                                                    setSelectedDate(`${e.target.value}-01`);
+                                                } else {
+                                                    setSelectedDate(e.target.value);
+                                                }
+                                            }}
+                                            style={{
+                                                padding: '0.5rem',
+                                                borderRadius: '0.375rem',
+                                                border: '1px solid #d1d5db',
+                                            }}
+                                        />
+                                        <span style={{
+                                            padding: '0.25rem 0.625rem',
+                                            backgroundColor: '#dcfce7',
+                                            color: '#166534',
+                                            borderRadius: '0.375rem',
+                                            fontSize: '0.8rem',
+                                            fontWeight: 600,
+                                            border: '1px solid #bbf7d0',
+                                            whiteSpace: 'nowrap',
+                                        }}>
+                                            พ.ศ. {new Date(selectedDate).getFullYear() + 543}
+                                        </span>
+                                    </>
+                                )}
+                            </div>
                         )}
                         <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
                             แสดงข้อมูล: <strong>{getFilterLabel()}</strong>
