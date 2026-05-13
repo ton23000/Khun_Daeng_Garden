@@ -8,16 +8,19 @@ export const formatThaiDate = (date: string | Date, options?: Intl.DateTimeForma
         const d = typeof date === 'string' ? new Date(date) : date;
         if (isNaN(d.getTime())) return '-';
         
-        // If options are provided, use the Intl API (best effort)
-        if (options) {
-            return d.toLocaleDateString('th-TH-u-ca-buddhist', options);
-        }
-
-        // Manual formatting for the default long format to ENSURE BE year
-        // This avoids issues with browsers that don't support u-ca-buddhist correctly
         const day = d.getDate();
         const month = THAI_MONTHS[d.getMonth()];
         const yearBE = d.getFullYear() + 543;
+
+        // Handle common option combinations manually for reliability
+        if (options) {
+            if (options.month === 'long' && options.year === 'numeric' && !options.day) {
+                return `${month} ${yearBE}`;
+            }
+            if (options.year === 'numeric' && !options.month && !options.day) {
+                return `${yearBE}`;
+            }
+        }
 
         return `${day} ${month} ${yearBE}`;
     } catch (e) {
@@ -55,13 +58,13 @@ export const formatThaiDateTime = (date: string | Date) => {
         const d = typeof date === 'string' ? new Date(date) : date;
         if (isNaN(d.getTime())) return '-';
         
-        return d.toLocaleString('th-TH-u-ca-buddhist', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
+        const day = d.getDate();
+        const month = THAI_MONTHS[d.getMonth()];
+        const yearBE = d.getFullYear() + 543;
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        
+        return `${day} ${month} ${yearBE} ${hours}:${minutes}`;
     } catch (e) {
         return '-';
     }
