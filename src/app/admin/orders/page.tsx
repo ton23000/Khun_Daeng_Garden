@@ -11,6 +11,7 @@ import ThaiDatePicker from '@/components/ThaiDatePicker';
 
 import { SearchBar } from '@/components/admin/SearchBar';
 import { SortableTableHeader } from '@/components/admin/SortableTableHeader';
+import SlipViewer from '@/components/SlipViewer';
 
 interface BookingItem {
     id: string;
