@@ -8,7 +8,7 @@ interface ThaiDatePickerProps {
     value: string; // YYYY-MM-DD
     onChange: (value: string) => void;
     label?: string;
-    mode?: 'day' | 'month';
+    mode?: 'day' | 'month' | 'year';
     min?: string; // YYYY-MM-DD
     max?: string; // YYYY-MM-DD
 }
@@ -145,8 +145,12 @@ export default function ThaiDatePicker({ value, onChange, label, mode = 'day', m
             >
                 <CalendarIcon size={18} color="#6b7280" />
                 <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    {value ? (mode === 'month' ? formatThaiDate(value, { month: 'long', year: 'numeric' }) : formatThaiDate(value)) : 'เลือกวันที่'}
-                    {value && (
+                    {value ? (
+                        mode === 'year' ? `ปี พ.ศ. ${getBEYear(value)}` :
+                        mode === 'month' ? formatThaiDate(value, { month: 'long', year: 'numeric' }) : 
+                        formatThaiDate(value)
+                    ) : 'เลือกวันที่'}
+                    {value && mode !== 'year' && (
                         <span style={{ 
                             fontSize: '0.7rem', 
                             backgroundColor: '#dcfce7', 
@@ -182,32 +186,41 @@ export default function ThaiDatePicker({ value, onChange, label, mode = 'day', m
                         </button>
                         
                         <div style={{ display: 'flex', gap: '0.25rem', fontWeight: 'bold', fontSize: '1rem', alignItems: 'center' }}>
-                            {mode === 'month' ? (
-                                <select 
-                                    value={viewDate.getMonth()} 
-                                    onChange={(e) => {
-                                        const m = parseInt(e.target.value);
-                                        const newDate = new Date(viewDate.getFullYear(), m, 1);
-                                        const yyyy = newDate.getFullYear();
-                                        const mm = String(newDate.getMonth() + 1).padStart(2, '0');
-                                        onChange(`${yyyy}-${mm}-01`);
-                                        setViewDate(newDate);
-                                        setIsOpen(false);
-                                    }}
-                                    style={{ border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', background: 'none' }}
-                                >
-                                    {THAI_MONTHS.map((m, idx) => (
-                                        <option key={m} value={idx}>{m}</option>
-                                    ))}
-                                </select>
-                            ) : (
-                                <span>{THAI_MONTHS[viewDate.getMonth()]}</span>
+                            {mode !== 'year' && (
+                                mode === 'month' ? (
+                                    <select 
+                                        value={viewDate.getMonth()} 
+                                        onChange={(e) => {
+                                            const m = parseInt(e.target.value);
+                                            const newDate = new Date(viewDate.getFullYear(), m, 1);
+                                            const yyyy = newDate.getFullYear();
+                                            const mm = String(newDate.getMonth() + 1).padStart(2, '0');
+                                            onChange(`${yyyy}-${mm}-01`);
+                                            setViewDate(newDate);
+                                            setIsOpen(false);
+                                        }}
+                                        style={{ border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', background: 'none' }}
+                                    >
+                                        {THAI_MONTHS.map((m, idx) => (
+                                            <option key={m} value={idx}>{m}</option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <span>{THAI_MONTHS[viewDate.getMonth()]}</span>
+                                )
                             )}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                                 <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>พ.ศ.</span>
                                 <select 
                                     value={getBEYear(viewDate)} 
-                                    onChange={(e) => changeYear(parseInt(e.target.value))}
+                                    onChange={(e) => {
+                                        const y = parseInt(e.target.value);
+                                        changeYear(y);
+                                        if (mode === 'year') {
+                                            onChange(`${y - 543}-01-01`);
+                                            setIsOpen(false);
+                                        }
+                                    }}
                                     style={{ border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', background: 'none' }}
                                 >
                                     {Array.from({ length: 21 }, (_, i) => getBEYear() - 10 + i).map(y => (

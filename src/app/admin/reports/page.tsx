@@ -307,33 +307,11 @@ export default function ReportsPage() {
                         </div>
                         {dateFilter !== 'all' && (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                {dateFilter === 'year' ? (
-                                    <input
-                                        type="number"
-                                        value={getBEYear(selectedDate).toString()}
-                                        onChange={(e) => {
-                                            const beParsed = parseInt(e.target.value);
-                                            if (!isNaN(beParsed)) {
-                                                const ceYear = beParsed - 543;
-                                                setSelectedDate(`${ceYear}-01-01`);
-                                            }
-                                        }}
-                                        min={2563}
-                                        max={getBEYear()}
-                                        style={{
-                                            padding: '0.5rem',
-                                            borderRadius: '0.375rem',
-                                            border: '1px solid #d1d5db',
-                                            width: '110px'
-                                        }}
-                                    />
-                                ) : (
-                                    <ThaiDatePicker
-                                        value={selectedDate}
-                                        onChange={(val) => setSelectedDate(val)}
-                                        mode={dateFilter === 'month' ? 'month' : 'day'}
-                                    />
-                                )}
+                                <ThaiDatePicker
+                                    value={selectedDate}
+                                    onChange={(val) => setSelectedDate(val)}
+                                    mode={dateFilter}
+                                />
                             </div>
                         )}
                         <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
