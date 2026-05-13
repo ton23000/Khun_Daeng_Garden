@@ -270,6 +270,7 @@ export default function AdminTreesPage() {
             const res = await fetch(`/api/trees/${id}`, { method: 'DELETE' });
             if (res.ok) {
                 fetchTrees();
+                setIsModalOpen(false);
             } else {
                 const errorData = await res.json();
                 alert(errorData.error || 'ไม่สามารถลบต้นไม้ได้');
@@ -502,7 +503,6 @@ export default function AdminTreesPage() {
                                         <td style={{ padding: '1rem' }}>
                                             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                                                 <Button size="sm" variant="outline" onClick={() => openEdit(tree)}>แก้ไข</Button>
-                                                <Button size="sm" variant="outline" onClick={() => handleDelete(tree.id)} style={{ borderColor: '#ef4444', color: '#ef4444' }}>ลบ</Button>
                                             </div>
                                         </td>
                                     </tr>
@@ -848,9 +848,14 @@ export default function AdminTreesPage() {
                                     )}
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
-                                    <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>ยกเลิก</Button>
-                                    <Button type="submit" variant="primary">บันทึก</Button>
+                                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'space-between', marginTop: '1rem' }}>
+                                    {editingTree ? (
+                                        <Button type="button" variant="outline" onClick={() => handleDelete(editingTree.id)} style={{ borderColor: '#ef4444', color: '#ef4444' }}>ลบ</Button>
+                                    ) : <div></div>}
+                                    <div style={{ display: 'flex', gap: '1rem' }}>
+                                        <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>ยกเลิก</Button>
+                                        <Button type="submit" variant="primary">บันทึก</Button>
+                                    </div>
                                 </div>
                             </form>
                         </CardContent>
