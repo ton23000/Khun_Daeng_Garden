@@ -94,14 +94,7 @@ export default function SalesOverviewPage() {
 
     const averageOrderValue = confirmedBookings.length > 0 ? totalSales / confirmedBookings.length : 0;
 
-    const getFilterLabel = () => {
-        switch (dateFilter) {
-            case 'day': return `วันที่ ${formatThaiDate(selectedDate)}`;
-            case 'month': return `เดือน ${formatThaiDate(selectedDate, { month: 'long', year: 'numeric' })}`;
-            case 'year': return `ปี ${formatThaiDate(selectedDate, { year: 'numeric' })}`;
-            default: return 'ทั้งหมด';
-        }
-    };
+
 
     if (isAuthLoading || isLoading) {
         return <div className="flex justify-center items-center min-h-screen">กำลังโหลด...</div>;
@@ -187,9 +180,7 @@ export default function SalesOverviewPage() {
                                 />
                             </div>
                         )}
-                        <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                            แสดงข้อมูล: <strong>{getFilterLabel()}</strong>
-                        </span>
+
                     </div>
                 </CardContent>
             </Card>

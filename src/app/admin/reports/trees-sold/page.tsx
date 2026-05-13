@@ -98,14 +98,7 @@ export default function TreesSoldPage() {
     const topTrees = Object.values(treeCounts).sort((a, b) => b.count - a.count).slice(0, 10);
     const mostPopularTree = topTrees[0] || { name: '-', count: 0 };
 
-    const getFilterLabel = () => {
-        switch (dateFilter) {
-            case 'day': return `วันที่ ${formatThaiDate(selectedDate)}`;
-            case 'month': return `เดือน ${formatThaiDate(selectedDate, { month: 'long', year: 'numeric' })}`;
-            case 'year': return `ปี ${formatThaiDate(selectedDate, { year: 'numeric' })}`;
-            default: return 'ทั้งหมด';
-        }
-    };
+
 
     if (isAuthLoading || isLoading) {
         return <div className="flex justify-center items-center min-h-screen">กำลังโหลด...</div>;
@@ -155,9 +148,7 @@ export default function TreesSoldPage() {
                                 />
                             </div>
                         )}
-                        <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                            แสดงข้อมูล: <strong>{getFilterLabel()}</strong>
-                        </span>
+
                     </div>
                 </CardContent>
             </Card>

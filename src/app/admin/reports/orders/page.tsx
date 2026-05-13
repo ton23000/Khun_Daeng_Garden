@@ -98,14 +98,7 @@ export default function OrdersOverviewPage() {
 
     const conversionRate = totalOrders > 0 ? (completedOrders / totalOrders) * 100 : 0;
 
-    const getFilterLabel = () => {
-        switch (dateFilter) {
-            case 'day': return `วันที่ ${formatThaiDate(selectedDate)}`;
-            case 'month': return `เดือน ${formatThaiDate(selectedDate, { month: 'long', year: 'numeric' })}`;
-            case 'year': return `ปี ${formatThaiDate(selectedDate, { year: 'numeric' })}`;
-            default: return 'ทั้งหมด';
-        }
-    };
+
 
     const getStatusColor = (status: string) => {
         const colors: Record<string, string> = {
@@ -185,9 +178,7 @@ export default function OrdersOverviewPage() {
                                 />
                             </div>
                         )}
-                        <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                            แสดงข้อมูล: <strong>{getFilterLabel()}</strong>
-                        </span>
+
                     </div>
                 </CardContent>
             </Card>
