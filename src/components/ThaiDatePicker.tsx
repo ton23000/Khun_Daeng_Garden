@@ -94,7 +94,7 @@ export default function ThaiDatePicker({ value, onChange, label, mode = 'day', m
                 <button
                     key={d}
                     onClick={() => !isOutOfRange && handleDateClick(d)}
-                    disabled={isOutOfRange}
+                    disabled={!!isOutOfRange}
                     style={{
                         width: '40px',
                         height: '40px',

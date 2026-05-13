@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
-import { formatThaiDate, getYearLabel, getBEYear } from '@/lib/dateUtils';
+import { formatThaiDate, getYearLabel, getBEYear, formatThaiDateTime } from '@/lib/dateUtils';
 
 
 import Link from 'next/link';
