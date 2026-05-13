@@ -673,7 +673,15 @@ export default function OrdersPage() {
 
             <SlipViewer
                 isOpen={!!viewingSlip}
-                slipUrls={(() => { try { const p = JSON.parse(viewingSlip || '[]'); return Array.isArray(p) ? p : [viewingSlip!]; } catch { return viewingSlip ? [viewingSlip] : []; } })()}
+                slipUrls={(() => {
+                    if (!viewingSlip) return [];
+                    try {
+                        const parsed = JSON.parse(viewingSlip);
+                        return Array.isArray(parsed) ? parsed : [viewingSlip];
+                    } catch {
+                        return [viewingSlip];
+                    }
+                })()}
                 startIndex={0}
                 onClose={() => setViewingSlip(null)}
             />
