@@ -5,7 +5,11 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/lib/AuthContext';
+import { formatThaiDate } from '@/lib/dateUtils';
+import ThaiDatePicker from '@/components/ThaiDatePicker';
+
 import { useRouter } from 'next/navigation';
+
 import SlipViewer from '@/components/SlipViewer';
 import { SearchBar } from '@/components/admin/SearchBar';
 import { SortableTableHeader } from '@/components/admin/SortableTableHeader';
@@ -392,7 +396,7 @@ export default function StaffOrdersPage() {
                                                     {booking.slipUrl ? <Button size="sm" variant="outline" style={{ borderColor: '#bfdbfe', color: '#1d4ed8', whiteSpace: 'nowrap' }} onClick={() => setViewingSlip(booking.slipUrl)}>📎 ดูสลิป</Button> : <span style={{ color: '#9ca3af' }}>-</span>}
                                                 </td>
                                                 <td style={{ padding: '1rem' }}>
-                                                    {editingId === booking.id ? <Input type="date" value={editForm.pickupDate} onChange={(e) => setEditForm({ ...editForm, pickupDate: e.target.value })} /> : new Date(booking.pickupDate).toLocaleDateString('th-TH')}
+                                                    {editingId === booking.id ? <ThaiDatePicker value={editForm.pickupDate} onChange={(val) => setEditForm({ ...editForm, pickupDate: val })} /> : formatThaiDate(booking.pickupDate)}
                                                 </td>
                                                 <td style={{ padding: '1rem' }}>
                                                     {editingId === booking.id ? (

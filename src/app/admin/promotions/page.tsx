@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
+import ThaiDatePicker from '@/components/ThaiDatePicker';
+
 
 interface Tree {
     id: string;
@@ -651,16 +653,9 @@ export default function AdminPromotionsPage() {
                                 {/* End Date */}
                                 <div>
                                     <label style={{ display: 'block', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.5rem' }}>วันหมดอายุโปร (ไม่บังคับ)</label>
-                                    <input
-                                        type="date"
+                                    <ThaiDatePicker
                                         value={promoEndDate}
-                                        onChange={e => setPromoEndDate(e.target.value)}
-                                        style={{
-                                            width: '100%',
-                                            padding: '0.75rem',
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '0.5rem'
-                                        }}
+                                        onChange={setPromoEndDate}
                                     />
                                 </div>
                             </div>

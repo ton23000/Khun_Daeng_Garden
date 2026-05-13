@@ -4,8 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
+import { formatThaiDate, getYearLabel, getBEYear } from '@/lib/dateUtils';
+
+
 import Link from 'next/link';
 import * as XLSX from 'xlsx';
+import ThaiDatePicker from '@/components/ThaiDatePicker';
+
 
 interface Booking {
     id: string;
@@ -124,9 +129,9 @@ export default function ReportsPage() {
 
     const getFilterLabel = () => {
         switch (dateFilter) {
-            case 'day': return `วันที่ ${new Date(selectedDate).toLocaleDateString('th-TH')}`;
-            case 'month': return `เดือน ${new Date(selectedDate).toLocaleDateString('th-TH', { month: 'long', year: 'numeric' })}`;
-            case 'year': return `ปี ${new Date(selectedDate).toLocaleDateString('th-TH', { year: 'numeric' })}`;
+            case 'day': return `วันที่ ${formatThaiDate(selectedDate)}`;
+            case 'month': return `เดือน ${formatThaiDate(selectedDate, { month: 'long', year: 'numeric' })}`;
+            case 'year': return `ปี ${formatThaiDate(selectedDate, { year: 'numeric' })}`;
             default: return 'ทั้งหมด';
         }
     };
@@ -303,10 +308,9 @@ export default function ReportsPage() {
                         {dateFilter !== 'all' && (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 {dateFilter === 'year' ? (
-                                    // ---- ปี: แสดง พ.ศ. (CE + 543) ----
                                     <input
                                         type="number"
-                                        value={(new Date(selectedDate).getFullYear() + 543).toString()}
+                                        value={getBEYear(selectedDate).toString()}
                                         onChange={(e) => {
                                             const beParsed = parseInt(e.target.value);
                                             if (!isNaN(beParsed)) {
@@ -315,7 +319,7 @@ export default function ReportsPage() {
                                             }
                                         }}
                                         min={2563}
-                                        max={new Date().getFullYear() + 543}
+                                        max={getBEYear()}
                                         style={{
                                             padding: '0.5rem',
                                             borderRadius: '0.375rem',
@@ -324,41 +328,11 @@ export default function ReportsPage() {
                                         }}
                                     />
                                 ) : (
-                                    // ---- วัน / เดือน: input ปกติ + badge พ.ศ. ----
-                                    <>
-                                        <input
-                                            type={dateFilter === 'month' ? 'month' : 'date'}
-                                            value={
-                                                dateFilter === 'month'
-                                                    ? selectedDate.substring(0, 7)
-                                                    : selectedDate
-                                            }
-                                            onChange={(e) => {
-                                                if (dateFilter === 'month') {
-                                                    setSelectedDate(`${e.target.value}-01`);
-                                                } else {
-                                                    setSelectedDate(e.target.value);
-                                                }
-                                            }}
-                                            style={{
-                                                padding: '0.5rem',
-                                                borderRadius: '0.375rem',
-                                                border: '1px solid #d1d5db',
-                                            }}
-                                        />
-                                        <span style={{
-                                            padding: '0.25rem 0.625rem',
-                                            backgroundColor: '#dcfce7',
-                                            color: '#166534',
-                                            borderRadius: '0.375rem',
-                                            fontSize: '0.8rem',
-                                            fontWeight: 600,
-                                            border: '1px solid #bbf7d0',
-                                            whiteSpace: 'nowrap',
-                                        }}>
-                                            พ.ศ. {new Date(selectedDate).getFullYear() + 543}
-                                        </span>
-                                    </>
+                                    <ThaiDatePicker
+                                        value={selectedDate}
+                                        onChange={(val) => setSelectedDate(val)}
+                                        mode={dateFilter === 'month' ? 'month' : 'day'}
+                                    />
                                 )}
                             </div>
                         )}

@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
+import { formatThaiDate } from '@/lib/dateUtils';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import SlipViewer from '@/components/SlipViewer';
@@ -253,9 +255,7 @@ export default function MyBookingsPage() {
                                     <div className="booking-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
                                             <CardTitle style={{ wordBreak: 'break-all' }}>รหัสการจอง: {booking.refCode}</CardTitle>
-                                            <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
-                                                วันที่สั่ง: {new Date(booking.createdAt).toLocaleDateString('th-TH')}
-                                            </p>
+                                            <p style={{ fontSize: '0.85rem', color: '#6b7280', marginTop: '0.2rem' }}>วันที่จอง: {formatThaiDate(booking.createdAt)}</p>
                                         </div>
                                         <div style={{ textAlign: 'right' }}>
                                             <div style={getStatusBadge(booking.status)}>
@@ -365,13 +365,13 @@ export default function MyBookingsPage() {
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.125rem', marginTop: '0.75rem' }}>
                                                     <span>วันรับของ:</span>
                                                     <span style={{ color: 'var(--secondary)' }}>
-                                                        {new Date(booking.pickupDate).toLocaleDateString('th-TH')}
+                                                        {formatThaiDate(booking.pickupDate)}
                                                     </span>
                                                 </div>
                                             </div>
 
                                             {/* PromptPay QR Code - Show for PENDING and PAID orders */}
-                                             {(booking.status === 'PENDING' || booking.status === 'PAID') && (
+                                            {(booking.status === 'PENDING' || booking.status === 'PAID') && (
                                                 <div style={{
                                                     marginTop: '1rem',
                                                     padding: '1rem',
@@ -457,26 +457,26 @@ export default function MyBookingsPage() {
                                                     </div>
 
                                                     {/* Bank Transfer Details */}
-                                                     <div style={{ fontSize: '0.875rem', color: '#78350f' }}>
-                                                         <p style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.75rem', textAlign: 'center' }}>
-                                                             หรือโอนเงินผ่านบัญชีธนาคาร
-                                                         </p>
-                                                         <p style={{ marginBottom: '0.25rem' }}>ธนาคาร: <strong>ธนาคารกรุงเทพ (BBL)</strong></p>
-                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                                             <span>เลขที่บัญชี: <strong style={{ fontFamily: 'monospace' }}>499-082-3108</strong></span>
-                                                             <button
-                                                                 onClick={() => copyToClipboard('4990823108')}
-                                                                 title="คัดลอกเลขบัญชี"
-                                                                 style={{ padding: '0.2rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #0ea5e9', backgroundColor: 'white', color: '#0ea5e9', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}
-                                                             >
-                                                                 📋 ก็อป
-                                                             </button>
-                                                         </div>
-                                                         <p style={{ marginBottom: '0.25rem' }}>ชื่อบัญชี: <strong>สวนคุณแดง</strong></p>
-                                                         <p style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>
-                                                             ยอดที่ต้องชำระ: ฿{booking.deposit.toLocaleString()}
-                                                         </p>
-                                                     </div>
+                                                    <div style={{ fontSize: '0.875rem', color: '#78350f' }}>
+                                                        <p style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.75rem', textAlign: 'center' }}>
+                                                            หรือโอนเงินผ่านบัญชีธนาคาร
+                                                        </p>
+                                                        <p style={{ marginBottom: '0.25rem' }}>ธนาคาร: <strong>ธนาคารกรุงเทพ (BBL)</strong></p>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                                                            <span>เลขที่บัญชี: <strong style={{ fontFamily: 'monospace' }}>499-082-3108</strong></span>
+                                                            <button
+                                                                onClick={() => copyToClipboard('4990823108')}
+                                                                title="คัดลอกเลขบัญชี"
+                                                                style={{ padding: '0.2rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #0ea5e9', backgroundColor: 'white', color: '#0ea5e9', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                                                            >
+                                                                📋 ก็อป
+                                                            </button>
+                                                        </div>
+                                                        <p style={{ marginBottom: '0.25rem' }}>ชื่อบัญชี: <strong>สวนคุณแดง</strong></p>
+                                                        <p style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>
+                                                            ยอดที่ต้องชำระ: ฿{booking.deposit.toLocaleString()}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             )}
 
@@ -646,7 +646,7 @@ export default function MyBookingsPage() {
                 slipUrls={viewingSlip?.urls ?? []}
                 startIndex={viewingSlip?.index ?? 0}
                 onClose={() => setViewingSlip(null)}
-                onDelete={viewingSlip && canUploadSlip(bookings.find(b => b.id === viewingSlip.bookingId)?.status ?? '') 
+                onDelete={viewingSlip && canUploadSlip(bookings.find(b => b.id === viewingSlip.bookingId)?.status ?? '')
                     ? (idx) => handleDeleteSlip(viewingSlip.bookingId, viewingSlip.urls, idx)
                     : undefined
                 }

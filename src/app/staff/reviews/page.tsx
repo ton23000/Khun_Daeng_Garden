@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { formatThaiDate } from '@/lib/dateUtils';
+
 
 interface Review {
     id: string;
@@ -141,7 +143,7 @@ export default function StaffReviewsPage() {
                                                 {review.hidden && <span style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '0.125rem 0.5rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 'bold' }}>ซ่อนอยู่</span>}
                                                 {review.isFeatured && <span style={{ backgroundColor: '#fef3c7', color: '#d97706', padding: '0.125rem 0.5rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 'bold' }}>⭐ โชว์หน้าแรก</span>}
                                             </div>
-                                            <p style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.5rem' }}>ต้นไม้: {review.tree.name} | {new Date(review.createdAt).toLocaleDateString('th-TH')}</p>
+                                            <p style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.5rem' }}>ต้นไม้: {review.tree.name} | {formatThaiDate(review.createdAt)}</p>
                                             {review.comment && <p style={{ color: '#374151', marginBottom: '0.5rem' }}>{review.comment}</p>}
                                             {review.images && (() => { try { const imgs = JSON.parse(review.images); return <div style={{ display: 'flex', gap: '0.5rem' }}>{imgs.map((img: string, i: number) => <img key={i} src={img} alt="" style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '0.25rem' }} />)}</div>; } catch { return null; } })()}
                                             <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.25rem' }}>👍 {review.helpful} คนเห็นว่ามีประโยชน์</p>

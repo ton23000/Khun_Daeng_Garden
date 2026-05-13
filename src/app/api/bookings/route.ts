@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { sendEmail, orderConfirmationEmail } from '@/lib/email';
+import { formatThaiDate } from '@/lib/dateUtils';
+
 
 const BookingItemSchema = z.object({
     treeId: z.string(),
@@ -192,7 +194,7 @@ export async function POST(req: NextRequest) {
                     quantity: item.quantity,
                     price: item.price
                 }));
-                const formattedDate = new Date(booking.pickupDate).toLocaleDateString('th-TH', {
+                const formattedDate = formatThaiDate(booking.pickupDate, {
                     year: 'numeric', month: 'long', day: 'numeric'
                 });
 

@@ -8,7 +8,9 @@ import { useNotification } from '@/lib/NotificationContext';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+import ThaiDatePicker from '@/components/ThaiDatePicker';
 import Link from 'next/link';
+
 import { useRouter } from 'next/navigation';
 import { getFirstImageUrl } from '@/lib/imageUtils';
 
@@ -201,12 +203,10 @@ export default function CartPage() {
                                                     * สินค้าพรีออเดอร์ ต้องรอการเติบโตประมาณ {item.growthTime || '2 อาทิตย์'}
                                                 </div>
                                             )}
-                                            <Input
-                                                type="date"
-                                                min={minItemDateString}
-                                                required
+                                            <ThaiDatePicker
                                                 value={item.pickupDate}
-                                                onChange={(e) => updateDate(item.instanceId, e.target.value)}
+                                                onChange={(val) => updateDate(item.instanceId, val)}
+                                                min={minItemDateString}
                                             />
                                             {!item.pickupDate && (
                                                 <p style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '0.25rem' }}>

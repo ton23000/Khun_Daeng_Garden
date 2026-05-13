@@ -10,6 +10,8 @@ import ImageGallery from './ImageGallery';
 import StarRating from './StarRating';
 import ReviewList from './ReviewList';
 import FavoriteButton from './FavoriteButton';
+import { formatThaiDate } from '@/lib/dateUtils';
+
 
 interface Tree {
     id: string;
@@ -118,7 +120,7 @@ export default function ProductDetail({ tree }: { tree: Tree }) {
                                 )}
                                 {tree.promotionEndDate && (
                                     <p style={{ fontSize: '0.75rem', color: '#dc2626', marginTop: '0.25rem' }}>
-                                        ⏰ หมดเขต {new Date(tree.promotionEndDate).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                        ⏰ หมดเขต {formatThaiDate(tree.promotionEndDate, { day: 'numeric', month: 'long', year: 'numeric' })}
                                     </p>
                                 )}
                             </>

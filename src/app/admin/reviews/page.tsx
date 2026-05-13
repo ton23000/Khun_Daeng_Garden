@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { formatThaiDate } from '@/lib/dateUtils';
+
 
 interface Review {
     id: string;
@@ -201,7 +203,7 @@ export default function AdminReviewsPage() {
                                                 )}
                                             </div>
                                             <p style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.5rem' }}>
-                                                ต้นไม้: {review.tree.name} | {new Date(review.createdAt).toLocaleDateString('th-TH')}
+                                                ต้นไม้: {review.tree.name} | {formatThaiDate(review.createdAt)}
                                             </p>
                                             {review.comment && (
                                                 <p style={{ color: '#374151', marginBottom: '0.5rem' }}>{review.comment}</p>

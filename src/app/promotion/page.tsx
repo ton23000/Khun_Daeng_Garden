@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import { formatThaiDate } from '@/lib/dateUtils';
+
 import CountdownTimer from '@/components/CountdownTimer';
 import InlineEdit from '@/components/InlineEdit';
 import { MOCK_TREES, MOCK_SITE_SETTINGS } from '@/lib/mock-data';
@@ -244,7 +246,7 @@ export default async function PromotionPage() {
                                                 marginTop: '0.5rem',
                                                 fontWeight: 500
                                             }}>
-                                                ⏰ หมดเขต {new Date(tree.promotionEndDate).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                                ⏰ หมดเขต {formatThaiDate(tree.promotionEndDate, { day: 'numeric', month: 'long', year: 'numeric' })}
                                             </p>
                                         )}
 

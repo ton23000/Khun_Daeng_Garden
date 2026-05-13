@@ -3,7 +3,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
+import { formatThaiDate } from '@/lib/dateUtils';
+
 import { useRouter } from 'next/navigation';
+import ThaiDatePicker from '@/components/ThaiDatePicker';
+import { getBEYear } from '@/lib/dateUtils';
+
 
 interface Booking {
     id: string;
@@ -107,9 +112,9 @@ export default function BestSellersPage() {
 
     const getFilterLabel = () => {
         switch (dateFilter) {
-            case 'day': return `วันที่ ${new Date(selectedDate).toLocaleDateString('th-TH')}`;
-            case 'month': return `เดือน ${new Date(selectedDate).toLocaleDateString('th-TH', { month: 'long', year: 'numeric' })}`;
-            case 'year': return `ปี ${new Date(selectedDate).toLocaleDateString('th-TH', { year: 'numeric' })}`;
+            case 'day': return `วันที่ ${formatThaiDate(selectedDate)}`;
+            case 'month': return `เดือน ${formatThaiDate(selectedDate, { month: 'long', year: 'numeric' })}`;
+            case 'year': return `ปี ${formatThaiDate(selectedDate, { year: 'numeric' })}`;
             default: return 'ทั้งหมด';
         }
     };
@@ -154,33 +159,35 @@ export default function BestSellersPage() {
                             ))}
                         </div>
                         {dateFilter !== 'all' && (
-                            <input
-                                type={dateFilter === 'year' ? 'number' : dateFilter === 'month' ? 'month' : 'date'}
-                                value={
-                                    dateFilter === 'year'
-                                        ? new Date(selectedDate).getFullYear().toString()
-                                        : dateFilter === 'month'
-                                            ? selectedDate.substring(0, 7)
-                                            : selectedDate
-                                }
-                                onChange={(e) => {
-                                    if (dateFilter === 'year') {
-                                        setSelectedDate(`${e.target.value}-01-01`);
-                                    } else if (dateFilter === 'month') {
-                                        setSelectedDate(`${e.target.value}-01`);
-                                    } else {
-                                        setSelectedDate(e.target.value);
-                                    }
-                                }}
-                                min={dateFilter === 'year' ? '2020' : undefined}
-                                max={dateFilter === 'year' ? new Date().getFullYear().toString() : undefined}
-                                style={{
-                                    padding: '0.5rem',
-                                    borderRadius: '0.375rem',
-                                    border: '1px solid #d1d5db',
-                                    width: dateFilter === 'year' ? '120px' : 'auto'
-                                }}
-                            />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                {dateFilter === 'year' ? (
+                                    <input
+                                        type="number"
+                                        value={getBEYear(selectedDate).toString()}
+                                        onChange={(e) => {
+                                            const beParsed = parseInt(e.target.value);
+                                            if (!isNaN(beParsed)) {
+                                                const ceYear = beParsed - 543;
+                                                setSelectedDate(`${ceYear}-01-01`);
+                                            }
+                                        }}
+                                        min={2563}
+                                        max={getBEYear()}
+                                        style={{
+                                            padding: '0.5rem',
+                                            borderRadius: '0.375rem',
+                                            border: '1px solid #d1d5db',
+                                            width: '110px'
+                                        }}
+                                    />
+                                ) : (
+                                    <ThaiDatePicker
+                                        value={selectedDate}
+                                        onChange={(val) => setSelectedDate(val)}
+                                        mode={dateFilter === 'month' ? 'month' : 'day'}
+                                    />
+                                )}
+                            </div>
                         )}
                         <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
                             แสดงข้อมูล: <strong>{getFilterLabel()}</strong>

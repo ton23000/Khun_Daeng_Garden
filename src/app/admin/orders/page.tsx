@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-// Actually, better to remove the line.
-import SlipViewer from '@/components/SlipViewer';
+import { formatThaiDate } from '@/lib/dateUtils';
+import ThaiDatePicker from '@/components/ThaiDatePicker';
+
 import { SearchBar } from '@/components/admin/SearchBar';
 import { SortableTableHeader } from '@/components/admin/SortableTableHeader';
 
@@ -386,7 +387,7 @@ export default function OrdersPage() {
                     <Button
                         variant={viewMode === 'all' && !statusFilter ? 'primary' : 'outline'}
                         onClick={() => { setViewMode('all'); setSelectedCustomer(null); setStatusFilter(null); }}
-                        style={{ 
+                        style={{
                             backgroundColor: viewMode === 'all' && !statusFilter ? '#e11d48' : 'transparent',
                             color: viewMode === 'all' && !statusFilter ? 'white' : '#374151',
                             borderColor: viewMode === 'all' && !statusFilter ? '#e11d48' : '#e5e7eb',
@@ -416,7 +417,7 @@ export default function OrdersPage() {
                     <Button
                         variant={viewMode === 'by-customer' ? 'primary' : 'outline'}
                         onClick={() => setViewMode('by-customer')}
-                        style={{ 
+                        style={{
                             backgroundColor: viewMode === 'by-customer' ? '#22c55e' : 'transparent',
                             borderColor: viewMode === 'by-customer' ? '#22c55e' : '#e5e7eb',
                             color: viewMode === 'by-customer' ? 'white' : '#374151',
@@ -503,7 +504,7 @@ export default function OrdersPage() {
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem' }}>
                                     <span>วันรับของ:</span>
-                                    <span>{new Date(booking.pickupDate).toLocaleDateString('th-TH')}</span>
+                                    <span>{formatThaiDate(booking.pickupDate)}</span>
                                 </div>
                                 {booking.slipUrl && (
                                     <Button
@@ -605,8 +606,8 @@ export default function OrdersPage() {
                                                 </td>
                                                 <td style={{ padding: '1rem' }}>
                                                     {editingId === booking.id ? (
-                                                        <Input type="date" value={editForm.pickupDate} onChange={(e) => setEditForm({ ...editForm, pickupDate: e.target.value })} />
-                                                    ) : new Date(booking.pickupDate).toLocaleDateString('th-TH')}
+                                                        <ThaiDatePicker value={editForm.pickupDate} onChange={(val) => setEditForm({ ...editForm, pickupDate: val })} />
+                                                    ) : formatThaiDate(booking.pickupDate)}
                                                 </td>
                                                 <td style={{ padding: '1rem' }}>
                                                     {editingId === booking.id ? (

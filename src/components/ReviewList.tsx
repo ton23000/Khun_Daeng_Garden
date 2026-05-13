@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import StarRating from './StarRating';
 import { Button } from './ui/Button';
 import ReviewModal from './ReviewModal';
+import { formatThaiDate } from '@/lib/dateUtils';
+
 
 interface Review {
     id: string;
@@ -217,7 +219,7 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                         }}
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 18L9 12L15 6" stroke="#111827" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M15 18L9 12L15 6" stroke="#111827" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </button>
                 )}
@@ -259,127 +261,127 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                         }}
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 18L15 12L9 6" stroke="#111827" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M9 18L15 12L9 6" stroke="#111827" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </button>
                 )}
 
-                <div 
-                    style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: 'repeat(2, 1fr)', 
+                <div
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(2, 1fr)',
                         gap: '1.5rem',
                         padding: '10px 40px' // Add padding so shadow of cards doesn't clip, and make room for arrows
                     }}>
                     {currentReviews.map((review) => {
-                    const reviewImages: string[] = (() => {
-                        if (!review.images) return [];
-                        try { return JSON.parse(review.images); } catch { return []; }
-                    })();
+                        const reviewImages: string[] = (() => {
+                            if (!review.images) return [];
+                            try { return JSON.parse(review.images); } catch { return []; }
+                        })();
 
-                    return (
-                        <div
-                            key={review.id}
-                            style={{
-                                backgroundColor: '#ffffff',
-                                padding: '1.5rem',
-                                borderRadius: '1rem', // Match more rounded style
-                                border: '1px solid #f3f4f6', // Lighter border
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.04)', // Subtle shadow
-                                display: 'flex',
-                                flexDirection: 'column',
-                                height: '100%' // Ensure equal height for both columns
-                            }}
-                        >
-                            {/* Header */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                                <div>
-                                    <p style={{ fontWeight: 600 }}>{review.user.firstName} {review.user.lastName}</p>
-                                    <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                                        {new Date(review.createdAt).toLocaleDateString('th-TH', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric'
-                                        })}
-                                    </p>
+                        return (
+                            <div
+                                key={review.id}
+                                style={{
+                                    backgroundColor: '#ffffff',
+                                    padding: '1.5rem',
+                                    borderRadius: '1rem', // Match more rounded style
+                                    border: '1px solid #f3f4f6', // Lighter border
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)', // Subtle shadow
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    height: '100%' // Ensure equal height for both columns
+                                }}
+                            >
+                                {/* Header */}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                                    <div>
+                                        <p style={{ fontWeight: 600 }}>{review.user.firstName} {review.user.lastName}</p>
+                                        <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                                            {formatThaiDate(review.createdAt, {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}
+                                        </p>
+                                    </div>
+                                    {currentUserId === review.user.id && (
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <Button variant="outline" size="sm" onClick={() => setEditingReview(review)}>
+                                                แก้ไข
+                                            </Button>
+                                            <Button variant="outline" size="sm" onClick={() => handleDelete(review.id)}>
+                                                ลบ
+                                            </Button>
+                                        </div>
+                                    )}
                                 </div>
-                                {currentUserId === review.user.id && (
-                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                        <Button variant="outline" size="sm" onClick={() => setEditingReview(review)}>
-                                            แก้ไข
-                                        </Button>
-                                        <Button variant="outline" size="sm" onClick={() => handleDelete(review.id)}>
-                                            ลบ
-                                        </Button>
+
+                                {/* Rating */}
+                                <StarRating rating={review.rating} readonly size="sm" />
+
+                                {/* Comment */}
+                                {review.comment && (
+                                    <p style={{ marginTop: '0.75rem', lineHeight: '1.6', color: '#374151' }}>
+                                        {review.comment}
+                                    </p>
+                                )}
+
+                                {/* Images */}
+                                {reviewImages.length > 0 && (
+                                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', overflowX: 'auto' }}>
+                                        {reviewImages.map((img: string, idx: number) => (
+                                            <img
+                                                key={idx}
+                                                src={img}
+                                                alt={`Review image ${idx + 1}`}
+                                                style={{
+                                                    width: '100px',
+                                                    height: '100px',
+                                                    objectFit: 'cover',
+                                                    borderRadius: '0.5rem',
+                                                    cursor: 'pointer'
+                                                }}
+                                                onClick={() => window.open(img, '_blank')}
+                                            />
+                                        ))}
                                     </div>
                                 )}
-                            </div>
 
-                            {/* Rating */}
-                            <StarRating rating={review.rating} readonly size="sm" />
-
-                            {/* Comment */}
-                            {review.comment && (
-                                <p style={{ marginTop: '0.75rem', lineHeight: '1.6', color: '#374151' }}>
-                                    {review.comment}
-                                </p>
-                            )}
-
-                            {/* Images */}
-                            {reviewImages.length > 0 && (
-                                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', overflowX: 'auto' }}>
-                                    {reviewImages.map((img: string, idx: number) => (
-                                        <img
-                                            key={idx}
-                                            src={img}
-                                            alt={`Review image ${idx + 1}`}
-                                            style={{
-                                                width: '100px',
-                                                height: '100px',
-                                                objectFit: 'cover',
-                                                borderRadius: '0.5rem',
-                                                cursor: 'pointer'
-                                            }}
-                                            onClick={() => window.open(img, '_blank')}
-                                        />
-                                    ))}
+                                {/* Helpful Button (Pushed to bottom) */}
+                                <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
+                                    <button
+                                        onClick={() => handleHelpful(review.id)}
+                                        style={{
+                                            fontSize: '0.875rem',
+                                            color: review.isHelpful ? 'white' : '#6b7280',
+                                            backgroundColor: review.isHelpful ? 'var(--primary)' : 'transparent',
+                                            border: review.isHelpful ? '1px solid var(--primary)' : '1px solid #d1d5db',
+                                            borderRadius: '9999px',
+                                            padding: '0.35rem 1rem', // Slightly larger padding
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.35rem'
+                                        }}
+                                        className={review.isHelpful ? '' : 'hover:bg-gray-100'}
+                                    >
+                                        <span>👍</span> มีประโยชน์ ({review.helpful})
+                                    </button>
                                 </div>
-                            )}
-
-                            {/* Helpful Button (Pushed to bottom) */}
-                            <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
-                                <button
-                                    onClick={() => handleHelpful(review.id)}
-                                    style={{
-                                        fontSize: '0.875rem',
-                                        color: review.isHelpful ? 'white' : '#6b7280',
-                                        backgroundColor: review.isHelpful ? 'var(--primary)' : 'transparent',
-                                        border: review.isHelpful ? '1px solid var(--primary)' : '1px solid #d1d5db',
-                                        borderRadius: '9999px',
-                                        padding: '0.35rem 1rem', // Slightly larger padding
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.35rem'
-                                    }}
-                                    className={review.isHelpful ? '' : 'hover:bg-gray-100'}
-                                >
-                                    <span>👍</span> มีประโยชน์ ({review.helpful})
-                                </button>
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
                 </div>
             </div>
-            
+
             {/* Pagination Indicators (Optional, good for UX) */}
             {totalPages > 1 && (
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.5rem' }}>
                     {Array.from({ length: totalPages }).map((_, i) => (
-                        <div 
-                            key={i} 
+                        <div
+                            key={i}
                             onClick={() => setCurrentPage(i)}
                             style={{
                                 width: '8px',
@@ -393,7 +395,7 @@ export default function ReviewList({ treeId, currentUserId, treeName = 'ต้�
                     ))}
                 </div>
             )}
-            
+
             {editingReview && currentUserId && (
                 <ReviewModal
                     treeId={treeId}

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { Card, CardContent } from '@/components/ui/Card';
 import { SearchBar } from '@/components/admin/SearchBar';
+import { formatThaiDate } from '@/lib/dateUtils';
+
 import { SortableTableHeader } from '@/components/admin/SortableTableHeader';
 
 interface User {
@@ -240,7 +242,7 @@ export default function AdminUsersPage() {
                                                 {user.role === 'admin' && <option value="admin">admin</option>}
                                             </select>
                                         </td>
-                                        <td style={{ padding: '1rem' }}>{new Date(user.createdAt).toLocaleDateString('th-TH')}</td>
+                                        <td style={{ padding: '1rem' }}>{formatThaiDate(user.createdAt)}</td>
                                         <td style={{ padding: '1rem' }}>
                                             <button
                                                 onClick={() => handleUserClick(user)}
@@ -362,7 +364,7 @@ export default function AdminUsersPage() {
                                         {selectedUser.firstName} {selectedUser.lastName}
                                     </h2>
                                     <p style={{ color: '#9ca3af', fontSize: '0.8rem', marginTop: '0.2rem' }}>
-                                        สมาชิกตั้งแต่ {new Date(selectedUser.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                        สมาชิกตั้งแต่ {formatThaiDate(selectedUser.createdAt, { year: 'numeric', month: 'long', day: 'numeric' })}
                                     </p>
                                 </div>
                                 <span style={{
@@ -433,7 +435,7 @@ export default function AdminUsersPage() {
                                                     <tr key={b.id} style={{ borderTop: '1px solid #e5e7eb', backgroundColor: i % 2 === 0 ? 'white' : '#fafafa' }}>
                                                         <td style={{ padding: '0.65rem 1rem', fontWeight: 600, fontSize: '0.875rem', color: '#111827' }}>{b.refCode}</td>
                                                         <td style={{ padding: '0.65rem 1rem', fontSize: '0.85rem', color: '#6b7280' }}>
-                                                            {new Date(b.createdAt).toLocaleDateString('th-TH')}
+                                                            {formatThaiDate(b.createdAt)}
                                                         </td>
                                                         <td style={{ padding: '0.65rem 1rem', fontWeight: 600, color: '#14532d', fontSize: '0.875rem' }}>
                                                             ฿{b.totalPrice.toLocaleString()}

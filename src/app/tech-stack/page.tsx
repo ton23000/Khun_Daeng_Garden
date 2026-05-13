@@ -1,4 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { formatThaiDate } from '@/lib/dateUtils';
+
 import { ScrollAnimation } from '@/components/ScrollAnimation';
 import Link from 'next/link';
 import { Code2, Database, ShieldCheck, Mail, Wrench, FileSearch, Server, Layout } from 'lucide-react';
@@ -48,14 +50,14 @@ export default function TechStackPage() {
             ]
         },
         {
-             category: '📧 ระบบแจ้งเตือนทางอีเมล',
-             subtitle: 'Email Services',
-             color: '#ef4444',
-             icon: <Mail className="w-6 h-6" style={{ color: '#ef4444' }} />,
-             technologies: [
-                 { name: 'Resend / SendGrid', version: '-', description: 'บริการส่งอีเมลอัตโนมัติ ติดต่อลูกค้า หรือส่งลิงก์ตั้งรหัสผ่านใหม่ทางอีเมล (Forgot Password)' },
-                 { name: 'Nodemailer', version: '8.0.2', description: 'เครื่องมือจัดการระบบส่งมอบอีเมลที่อยู่เบื้องหลัง' },
-             ]
+            category: '📧 ระบบแจ้งเตือนทางอีเมล',
+            subtitle: 'Email Services',
+            color: '#ef4444',
+            icon: <Mail className="w-6 h-6" style={{ color: '#ef4444' }} />,
+            technologies: [
+                { name: 'Resend / SendGrid', version: '-', description: 'บริการส่งอีเมลอัตโนมัติ ติดต่อลูกค้า หรือส่งลิงก์ตั้งรหัสผ่านใหม่ทางอีเมล (Forgot Password)' },
+                { name: 'Nodemailer', version: '8.0.2', description: 'เครื่องมือจัดการระบบส่งมอบอีเมลที่อยู่เบื้องหลัง' },
+            ]
         },
         {
             category: '🛠️ ตัวช่วยทำงานข้อมูล',
@@ -165,7 +167,7 @@ export default function TechStackPage() {
                             พัฒนาระบบด้วยเทคโนโลยีสมัยใหม่ เพื่อประสบการณ์ใช้งานที่ดีที่สุดของคุณลูกค้าและทีมงาน
                         </div>
                         <div style={{ fontSize: '0.85rem', color: '#166534', opacity: 0.8 }}>
-                            อัปเดตข้อมูลล่าสุด: {new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
+                            อัปเดตข้อมูลล่าสุด: {formatThaiDate(new Date(), { year: 'numeric', month: 'long', day: 'numeric' })}
                         </div>
                     </CardContent>
                 </Card>

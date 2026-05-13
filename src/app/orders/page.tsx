@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
+import { formatThaiDate } from '@/lib/dateUtils';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
@@ -221,7 +223,7 @@ export default function MyOrdersPage() {
                                         <div>
                                             <CardTitle>รหัสออเดอร์: {booking.refCode}</CardTitle>
                                             <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
-                                                วันที่สั่ง: {new Date(booking.createdAt).toLocaleDateString('th-TH')}
+                                                วันที่สั่ง: {formatThaiDate(booking.createdAt)}
                                             </p>
                                         </div>
                                         <div style={{ textAlign: 'right' }}>
@@ -276,7 +278,7 @@ export default function MyOrdersPage() {
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.125rem', marginTop: '0.75rem' }}>
                                                     <span>วันรับของ:</span>
                                                     <span style={{ color: 'var(--secondary)' }}>
-                                                        {new Date(booking.pickupDate).toLocaleDateString('th-TH')}
+                                                        {formatThaiDate(booking.pickupDate)}
                                                     </span>
                                                 </div>
                                             </div>

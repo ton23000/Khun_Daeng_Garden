@@ -6,6 +6,8 @@ import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+import ThaiDatePicker from '@/components/ThaiDatePicker';
+
 import { TagInput } from '@/components/TagInput';
 import { SearchBar } from '@/components/admin/SearchBar';
 import { SortableTableHeader } from '@/components/admin/SortableTableHeader';
@@ -836,12 +838,10 @@ export default function AdminTreesPage() {
                                             </div>
 
                                             <div>
-                                                <Input
-                                                    label="วันหมดอายุโปร (ไม่บังคับ)"
-                                                    type="date"
+                                                <label style={{ display: 'block', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '0.5rem' }}>วันหมดอายุโปร (ไม่บังคับ)</label>
+                                                <ThaiDatePicker
                                                     value={formData.promotionEndDate}
-                                                    onChange={e => setFormData({ ...formData, promotionEndDate: e.target.value })}
-                                                    style={{ backgroundColor: 'white' }}
+                                                    onChange={val => setFormData({ ...formData, promotionEndDate: val })}
                                                 />
                                             </div>
                                         </div>
