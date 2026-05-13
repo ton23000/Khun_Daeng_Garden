@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+import { formatThaiDateTime } from '@/lib/dateUtils';
 
 interface BookingItem {
     id: string;
@@ -184,7 +185,7 @@ export default function AdminActivitiesPage() {
                                     {/* Date & Price */}
                                     <div>
                                         <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                            {new Date(booking.createdAt).toLocaleString('th-TH')}
+                                            {formatThaiDateTime(booking.createdAt)}
                                         </p>
                                         <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#166534' }}>
                                             ฿{booking.totalPrice.toLocaleString()}

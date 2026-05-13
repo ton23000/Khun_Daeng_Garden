@@ -144,7 +144,21 @@ export default function ThaiDatePicker({ value, onChange, label, mode = 'day', m
                 }}
             >
                 <CalendarIcon size={18} color="#6b7280" />
-                <span>{value ? (mode === 'month' ? formatThaiDate(value, { month: 'long', year: 'numeric' }) : formatThaiDate(value)) : 'เลือกวันที่'}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {value ? (mode === 'month' ? formatThaiDate(value, { month: 'long', year: 'numeric' }) : formatThaiDate(value)) : 'เลือกวันที่'}
+                    {value && (
+                        <span style={{ 
+                            fontSize: '0.7rem', 
+                            backgroundColor: '#dcfce7', 
+                            color: '#166534', 
+                            padding: '0.1rem 0.4rem', 
+                            borderRadius: '0.25rem',
+                            fontWeight: 600
+                        }}>
+                            พ.ศ. {getBEYear(value)}
+                        </span>
+                    )}
+                </span>
             </button>
 
             {isOpen && (
@@ -189,15 +203,18 @@ export default function ThaiDatePicker({ value, onChange, label, mode = 'day', m
                             ) : (
                                 <span>{THAI_MONTHS[viewDate.getMonth()]}</span>
                             )}
-                            <select 
-                                value={getBEYear(viewDate)} 
-                                onChange={(e) => changeYear(parseInt(e.target.value))}
-                                style={{ border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', background: 'none' }}
-                            >
-                                {Array.from({ length: 21 }, (_, i) => getBEYear() - 10 + i).map(y => (
-                                    <option key={y} value={y}>{y}</option>
-                                ))}
-                            </select>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>พ.ศ.</span>
+                                <select 
+                                    value={getBEYear(viewDate)} 
+                                    onChange={(e) => changeYear(parseInt(e.target.value))}
+                                    style={{ border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', background: 'none' }}
+                                >
+                                    {Array.from({ length: 21 }, (_, i) => getBEYear() - 10 + i).map(y => (
+                                        <option key={y} value={y}>{y}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
 
                         <button onClick={() => changeMonth(1)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem' }}>

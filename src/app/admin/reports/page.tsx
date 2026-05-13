@@ -143,7 +143,7 @@ export default function ReportsPage() {
         const summaryData = [
             ['รายงานการเงิน - สวนคุณแดง'],
             ['ช่วงเวลา:', getFilterLabel()],
-            ['วันที่ดาวน์โหลด:', new Date().toLocaleString('th-TH')],
+            ['วันที่ดาวน์โหลด:', formatThaiDateTime(new Date())],
             [],
             ['รายการ', 'ค่า'],
             ['ยอดขายรวม (บาท)', totalSales],
@@ -161,7 +161,7 @@ export default function ReportsPage() {
         const orderHeaders = ['รหัสอ้างอิง', 'วันที่สั่ง', 'สถานะ', 'จำนวนรายการ', 'เงินมัดจำ (บาท)', 'ราคารวม (บาท)'];
         const orderRows = filteredBookings.map(b => [
             b.refCode,
-            new Date(b.createdAt).toLocaleString('th-TH'),
+            formatThaiDateTime(b.createdAt),
             b.status,
             b.items.reduce((acc, item) => acc + item.quantity, 0),
             b.deposit,
@@ -178,7 +178,7 @@ export default function ReportsPage() {
             b.items.forEach(item => {
                 itemRows.push([
                     b.refCode,
-                    new Date(b.createdAt).toLocaleString('th-TH'),
+                    formatThaiDateTime(b.createdAt),
                     item.tree.name,
                     item.quantity,
                     item.price,
@@ -584,7 +584,7 @@ export default function ReportsPage() {
                                         <span> - {b.items.length} รายการ</span>
                                     </p>
                                     <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                                        {new Date(b.createdAt).toLocaleString('th-TH')}
+                                        {formatThaiDateTime(b.createdAt)}
                                     </p>
                                     <p style={{ fontSize: '0.75rem', fontWeight: 600, color: '#166534' }}>
                                         ฿{b.totalPrice.toLocaleString()}
