@@ -150,18 +150,6 @@ export default function ThaiDatePicker({ value, onChange, label, mode = 'day', m
                         mode === 'month' ? formatThaiDate(value, { month: 'long', year: 'numeric' }) : 
                         formatThaiDate(value)
                     ) : 'เลือกวันที่'}
-                    {value && mode !== 'year' && (
-                        <span style={{ 
-                            fontSize: '0.7rem', 
-                            backgroundColor: '#dcfce7', 
-                            color: '#166534', 
-                            padding: '0.1rem 0.4rem', 
-                            borderRadius: '0.25rem',
-                            fontWeight: 600
-                        }}>
-                            พ.ศ. {getBEYear(value)}
-                        </span>
-                    )}
                 </span>
             </button>
 
