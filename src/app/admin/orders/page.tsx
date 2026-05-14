@@ -493,9 +493,21 @@ export default function OrdersPage() {
                             <CardContent style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ fontWeight: 'bold' }}>{booking.refCode}</span>
-                                    <span style={{ ...getStatusBadge(booking.status), whiteSpace: 'nowrap' }}>
-                                        {getStatusText(booking.status)}
-                                    </span>
+                                    {editingId === booking.id ? (
+                                        <select value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} style={{ padding: '0.25rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', fontSize: '0.875rem', maxWidth: '150px' }}>
+                                            <option value="PENDING_APPROVAL">รอการอนุมัติ</option>
+                                            <option value="PENDING">รอชำระเงิน</option>
+                                            <option value="PAID">รอตรวจสอบ</option>
+                                            <option value="PREPARING">กำลังเตรียม</option>
+                                            <option value="READY">พร้อมรับ</option>
+                                            <option value="COMPLETED">เสร็จสิ้น</option>
+                                            <option value="CANCELLED">ยกเลิก</option>
+                                        </select>
+                                    ) : (
+                                        <span style={{ ...getStatusBadge(booking.status), whiteSpace: 'nowrap' }}>
+                                            {getStatusText(booking.status)}
+                                        </span>
+                                    )}
                                 </div>
                                 <div style={{ borderBottom: '1px solid #e5e7eb', paddingBottom: '0.75rem' }}>
                                     <div style={{ fontWeight: 500 }}>{booking.user.firstName} {booking.user.lastName}</div>
@@ -512,7 +524,13 @@ export default function OrdersPage() {
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem' }}>
                                     <span>วันรับของ:</span>
-                                    <span>{formatThaiDate(booking.pickupDate)}</span>
+                                    {editingId === booking.id ? (
+                                        <div style={{ width: '150px' }}>
+                                            <ThaiDatePicker value={editForm.pickupDate} onChange={(val) => setEditForm({ ...editForm, pickupDate: val })} />
+                                        </div>
+                                    ) : (
+                                        <span>{formatThaiDate(booking.pickupDate)}</span>
+                                    )}
                                 </div>
                                 {booking.slipUrl && (
                                     <Button
@@ -525,7 +543,12 @@ export default function OrdersPage() {
                                     </Button>
                                 )}
                                 <div style={{ paddingTop: '0.5rem', borderTop: '1px solid #e5e7eb' }}>
-                                    {['PENDING_APPROVAL', 'PRE_ORDER'].includes(booking.status) ? (
+                                    {editingId === booking.id ? (
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <Button size="sm" onClick={() => handleUpdate(booking.id)} style={{ flex: 1, backgroundColor: '#1d4ed8', color: 'white', borderColor: '#1d4ed8' }}>บันทึก</Button>
+                                            <Button size="sm" variant="outline" onClick={() => setEditingId(null)} style={{ flex: 1 }}>ยกเลิก</Button>
+                                        </div>
+                                    ) : ['PENDING_APPROVAL', 'PRE_ORDER'].includes(booking.status) ? (
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                             <Button
                                                 size="sm"
