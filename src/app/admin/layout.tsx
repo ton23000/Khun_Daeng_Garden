@@ -63,8 +63,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     
                     /* Desktop Default (Sticky) */
                     position: sticky;
-                    top: 64px;
-                    height: calc(100vh - 64px);
+                    top: 140px;
+                    height: calc(100vh - 140px);
                     z-index: 40;
                     margin-left: 0;
                     transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -92,7 +92,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     background-color: white;
                     border-bottom: 1px solid #e5e7eb;
                     position: sticky;
-                    top: 64px; /* Default global navbar height */
+                    top: 140px; /* Account for global navbar height */
                     z-index: 30;
                 }
                 

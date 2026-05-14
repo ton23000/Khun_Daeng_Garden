@@ -378,57 +378,56 @@ export default function OrdersPage() {
             {/* Order Management Section */}
             <div style={{ marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#e11d48' }}>จัดการออเดอร์</h2>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <div style={{ width: '250px' }}>
+                <div className="actions-wrapper">
+                    <div className="search-container">
                         <SearchBar
                             placeholder="ค้นหาชื่อลูกค้า, เบอร์โทร, รหัส"
                             onSearch={setSearchQuery}
                         />
                     </div>
-                    <Button
-                        variant={viewMode === 'all' && !statusFilter ? 'primary' : 'outline'}
-                        onClick={() => { setViewMode('all'); setSelectedCustomer(null); setStatusFilter(null); }}
-                        style={{
-                            backgroundColor: viewMode === 'all' && !statusFilter ? '#e11d48' : 'transparent',
-                            color: viewMode === 'all' && !statusFilter ? 'white' : '#374151',
-                            borderColor: viewMode === 'all' && !statusFilter ? '#e11d48' : '#e5e7eb',
-                            minWidth: '80px',
-                            display: 'flex',
-                            justifyContent: 'center'
-                        }}
-                    >
-                        ทั้งหมด
-                    </Button>
-                    <Button
-                        variant={statusFilter === 'PENDING_APPROVAL' ? 'primary' : 'outline'}
-                        onClick={() => handleStatusClick('PENDING_APPROVAL')}
-                        style={{
-                            backgroundColor: statusFilter === 'PENDING_APPROVAL' ? '#fef3c7' : 'transparent',
-                            borderColor: statusFilter === 'PENDING_APPROVAL' ? '#f59e0b' : '#e5e7eb',
-                            color: '#d97706',
-                            minWidth: '130px',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            gap: '0.25rem'
-                        }}
-                    >
-                        <span>⚠️</span> รอการอนุมัติ
-                    </Button>
-                    <Button
-                        variant={viewMode === 'by-customer' ? 'primary' : 'outline'}
-                        onClick={() => setViewMode('by-customer')}
-                        style={{
-                            backgroundColor: viewMode === 'by-customer' ? '#22c55e' : 'transparent',
-                            borderColor: viewMode === 'by-customer' ? '#22c55e' : '#e5e7eb',
-                            color: viewMode === 'by-customer' ? 'white' : '#374151',
-                            minWidth: '120px',
-                            display: 'flex',
-                            justifyContent: 'center'
-                        }}
-                    >
-                        แยกตามลูกค้า
-                    </Button>
+                    <div className="filter-buttons">
+                        <Button
+                            variant={viewMode === 'all' && !statusFilter ? 'primary' : 'outline'}
+                            onClick={() => { setViewMode('all'); setSelectedCustomer(null); setStatusFilter(null); }}
+                            style={{
+                                backgroundColor: viewMode === 'all' && !statusFilter ? '#e11d48' : 'transparent',
+                                color: viewMode === 'all' && !statusFilter ? 'white' : '#374151',
+                                borderColor: viewMode === 'all' && !statusFilter ? '#e11d48' : '#e5e7eb',
+                                display: 'flex',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            ทั้งหมด
+                        </Button>
+                        <Button
+                            variant={statusFilter === 'PENDING_APPROVAL' ? 'primary' : 'outline'}
+                            onClick={() => handleStatusClick('PENDING_APPROVAL')}
+                            style={{
+                                backgroundColor: statusFilter === 'PENDING_APPROVAL' ? '#fef3c7' : 'transparent',
+                                borderColor: statusFilter === 'PENDING_APPROVAL' ? '#f59e0b' : '#e5e7eb',
+                                color: '#d97706',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: '0.25rem'
+                            }}
+                        >
+                            <span>⚠️</span> รอการอนุมัติ
+                        </Button>
+                        <Button
+                            variant={viewMode === 'by-customer' ? 'primary' : 'outline'}
+                            onClick={() => setViewMode('by-customer')}
+                            style={{
+                                backgroundColor: viewMode === 'by-customer' ? '#22c55e' : 'transparent',
+                                borderColor: viewMode === 'by-customer' ? '#22c55e' : '#e5e7eb',
+                                color: viewMode === 'by-customer' ? 'white' : '#374151',
+                                display: 'flex',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            แยกตามลูกค้า
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -470,9 +469,17 @@ export default function OrdersPage() {
                 __html: `
                 .desktop-table-view { display: none; }
                 .mobile-card-view { display: flex; flex-direction: column; gap: 1rem; padding-bottom: 2rem; }
+                .actions-wrapper { display: flex; gap: 0.5rem; flex-wrap: wrap; width: 100%; align-items: center; }
+                .search-container { width: 100%; }
+                .filter-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; width: 100%; }
+                .filter-buttons > button { flex: 1; min-width: 100px; padding: 0.5rem 0.25rem; font-size: 0.875rem; }
                 @media (min-width: 768px) {
                     .desktop-table-view { display: block; }
                     .mobile-card-view { display: none; }
+                    .actions-wrapper { width: auto; }
+                    .search-container { width: 250px; }
+                    .filter-buttons { width: auto; }
+                    .filter-buttons > button { flex: none; min-width: 80px; padding: 0.5rem 1rem; font-size: 1rem; }
                 }
             `}} />
 
