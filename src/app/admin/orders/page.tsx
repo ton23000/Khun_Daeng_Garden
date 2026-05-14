@@ -68,7 +68,7 @@ export default function OrdersPage() {
 
     const fetchBookings = useCallback(async () => {
         try {
-            const res = await fetch('/api/bookings');
+            const res = await fetch('/api/bookings', { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 setBookings(data);
@@ -80,7 +80,7 @@ export default function OrdersPage() {
 
     const fetchTrees = useCallback(async () => {
         try {
-            const res = await fetch('/api/trees');
+            const res = await fetch('/api/trees', { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 setTrees(data);

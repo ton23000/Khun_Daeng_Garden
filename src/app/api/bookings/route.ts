@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { sendEmail, orderConfirmationEmail } from '@/lib/email';
 import { formatThaiDate } from '@/lib/dateUtils';
 
+export const dynamic = 'force-dynamic';
 
 const BookingItemSchema = z.object({
     treeId: z.string(),
