@@ -362,7 +362,7 @@ export default function StaffOrdersPage() {
             {/* Desktop View */}
             <div className="desktop-table-view">
                 <div style={{ overflowX: 'auto', paddingBottom: '1rem' }}>
-                    <Card style={{ minWidth: '800px', border: '1px solid #e5e7eb' }}>
+                    <Card style={{ minWidth: '1100px', border: '1px solid #e5e7eb' }}>
                         <CardContent style={{ padding: 0 }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                                 <thead style={{ backgroundColor: '#eff6ff', borderBottom: '2px solid #bfdbfe', whiteSpace: 'nowrap' }}>
@@ -371,10 +371,10 @@ export default function StaffOrdersPage() {
                                         <SortableTableHeader label="ลูกค้า" sortKey="customer" currentSort={sortConfig} onSort={handleSort} style={{ width: '15%' }} />
                                         <th style={{ padding: '1rem', width: '25%' }}>รายการ</th>
                                         <SortableTableHeader label="ยอดรวม" sortKey="price" currentSort={sortConfig} onSort={handleSort} style={{ width: '10%' }} />
-                                        <th style={{ padding: '1rem', width: '10%' }}>สลิป</th>
-                                        <SortableTableHeader label="วันรับของ" sortKey="date" currentSort={sortConfig} onSort={handleSort} style={{ width: '10%' }} />
-                                        <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} style={{ width: '15%' }} />
-                                        <th style={{ padding: '1rem', width: '15%', position: 'sticky', right: 0, backgroundColor: '#eff6ff', zIndex: 10, borderLeft: '1px solid #bfdbfe', boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>จัดการ</th>
+                                        <th style={{ padding: '1rem', position: 'sticky', right: '450px', backgroundColor: '#eff6ff', zIndex: 10, width: '100px', minWidth: '100px', borderLeft: '1px solid #bfdbfe' }}>สลิป</th>
+                                        <SortableTableHeader label="วันรับของ" sortKey="date" currentSort={sortConfig} onSort={handleSort} style={{ position: 'sticky', right: '280px', backgroundColor: '#eff6ff', zIndex: 10, width: '170px', minWidth: '170px' }} />
+                                        <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} style={{ position: 'sticky', right: '140px', backgroundColor: '#eff6ff', zIndex: 10, width: '140px', minWidth: '140px' }} />
+                                        <th style={{ padding: '1rem', position: 'sticky', right: 0, backgroundColor: '#eff6ff', zIndex: 10, width: '140px', minWidth: '140px', boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -392,15 +392,15 @@ export default function StaffOrdersPage() {
                                                     {booking.items.map((item, idx) => (<div key={idx} style={{ fontSize: '0.875rem' }}>{item.tree.name} x{item.quantity}</div>))}
                                                 </td>
                                                 <td style={{ padding: '1rem' }}>฿{booking.totalPrice.toLocaleString()}</td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '1rem', position: 'sticky', right: '450px', backgroundColor: 'white', zIndex: 5, width: '100px', minWidth: '100px', borderLeft: '1px solid #e5e7eb' }}>
                                                     {booking.slipUrl ? <Button size="sm" variant="outline" style={{ borderColor: '#bfdbfe', color: '#1d4ed8', whiteSpace: 'nowrap' }} onClick={() => setViewingSlip(booking.slipUrl)}>📎 ดูสลิป</Button> : <span style={{ color: '#9ca3af' }}>-</span>}
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '1rem', position: 'sticky', right: '280px', backgroundColor: 'white', zIndex: 5, width: '170px', minWidth: '170px' }}>
                                                     {editingId === booking.id ? <ThaiDatePicker value={editForm.pickupDate} onChange={(val) => setEditForm({ ...editForm, pickupDate: val })} /> : formatThaiDate(booking.pickupDate)}
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '1rem', position: 'sticky', right: '140px', backgroundColor: 'white', zIndex: 5, width: '140px', minWidth: '140px' }}>
                                                     {editingId === booking.id ? (
-                                                        <select value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} style={{ padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db' }}>
+                                                        <select value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} style={{ padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', width: '100%' }}>
                                                             <option value="PENDING_APPROVAL">รอการอนุมัติ</option>
                                                             <option value="PENDING">รอชำระเงิน</option>
                                                             <option value="PAID">รอตรวจสอบ</option>
@@ -411,7 +411,7 @@ export default function StaffOrdersPage() {
                                                         </select>
                                                     ) : <span style={{ ...getStatusBadge(booking.status), whiteSpace: 'nowrap' }}>{getStatusText(booking.status)}</span>}
                                                 </td>
-                                                <td style={{ padding: '1rem', position: 'sticky', right: 0, backgroundColor: 'white', zIndex: 5, borderLeft: '1px solid #e5e7eb', boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                                                <td style={{ padding: '1rem', position: 'sticky', right: 0, backgroundColor: 'white', zIndex: 5, width: '140px', minWidth: '140px', boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>
                                                     {editingId === booking.id ? (
                                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                             <Button size="sm" onClick={() => handleUpdate(booking.id)} style={{ backgroundColor: '#1d4ed8', borderColor: '#1d4ed8', color: 'white' }}>บันทึก</Button>

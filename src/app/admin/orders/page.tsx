@@ -596,7 +596,7 @@ export default function OrdersPage() {
             {/* Desktop View (Table) */}
             <div className="desktop-table-view">
                 <div style={{ maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '1rem' }}>
-                    <div style={{ minWidth: '800px', backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)' }}>
+                    <div style={{ minWidth: '1100px', backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)' }}>
                         <div style={{ padding: 0 }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                                 <thead style={{ borderBottom: '1px solid #e5e7eb' }}>
@@ -605,10 +605,10 @@ export default function OrdersPage() {
                                         <SortableTableHeader label="ลูกค้า" sortKey="customer" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem' }} />
                                         <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem' }}>รายการ</th>
                                         <SortableTableHeader label="ยอดรวม" sortKey="price" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem' }} />
-                                        <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem' }}>สลิป</th>
-                                        <SortableTableHeader label="วันรับของ" sortKey="date" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem' }} />
-                                        <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem' }} />
-                                        <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem', position: 'sticky', right: 0, backgroundColor: 'white', zIndex: 10, boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>จัดการ</th>
+                                        <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem', position: 'sticky', right: '450px', backgroundColor: 'white', zIndex: 10, width: '100px', minWidth: '100px', borderLeft: '1px solid #e5e7eb' }}>สลิป</th>
+                                        <SortableTableHeader label="วันรับของ" sortKey="date" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem', position: 'sticky', right: '280px', backgroundColor: 'white', zIndex: 10, width: '170px', minWidth: '170px' }} />
+                                        <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem', position: 'sticky', right: '140px', backgroundColor: 'white', zIndex: 10, width: '140px', minWidth: '140px' }} />
+                                        <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem', position: 'sticky', right: 0, backgroundColor: 'white', zIndex: 10, width: '140px', minWidth: '140px', boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -628,21 +628,21 @@ export default function OrdersPage() {
                                                     ))}
                                                 </td>
                                                 <td style={{ padding: '1rem' }}>฿{booking.totalPrice.toLocaleString()}</td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '1rem', position: 'sticky', right: '450px', backgroundColor: 'white', zIndex: 5, width: '100px', minWidth: '100px', borderLeft: '1px solid #e5e7eb' }}>
                                                     {booking.slipUrl ? (
                                                         <Button size="sm" variant="outline" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', borderColor: '#bbf7d0', color: '#166534', whiteSpace: 'nowrap' }} onClick={() => setViewingSlip(booking.slipUrl)}>
                                                             📎 ดูสลิป
                                                         </Button>
                                                     ) : <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>-</span>}
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '1rem', position: 'sticky', right: '280px', backgroundColor: 'white', zIndex: 5, width: '170px', minWidth: '170px' }}>
                                                     {editingId === booking.id ? (
                                                         <ThaiDatePicker value={editForm.pickupDate} onChange={(val) => setEditForm({ ...editForm, pickupDate: val })} />
                                                     ) : formatThaiDate(booking.pickupDate)}
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '1rem', position: 'sticky', right: '140px', backgroundColor: 'white', zIndex: 5, width: '140px', minWidth: '140px' }}>
                                                     {editingId === booking.id ? (
-                                                        <select value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} style={{ padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db' }}>
+                                                        <select value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} style={{ padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', width: '100%' }}>
                                                             <option value="PENDING_APPROVAL">รอการอนุมัติ</option>
                                                             <option value="PENDING">รอชำระเงิน</option>
                                                             <option value="PAID">รอตรวจสอบ</option>
@@ -655,7 +655,7 @@ export default function OrdersPage() {
                                                         <span style={{ ...getStatusBadge(booking.status), whiteSpace: 'nowrap' }}>{getStatusText(booking.status)}</span>
                                                     )}
                                                 </td>
-                                                <td style={{ padding: '1rem', position: 'sticky', right: 0, backgroundColor: 'white', zIndex: 5, borderLeft: '1px solid #e5e7eb', boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                                                <td style={{ padding: '1rem', position: 'sticky', right: 0, backgroundColor: 'white', zIndex: 5, width: '140px', minWidth: '140px', boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>
                                                     {editingId === booking.id ? (
                                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                             <Button size="sm" onClick={() => handleUpdate(booking.id)}>บันทึก</Button>
