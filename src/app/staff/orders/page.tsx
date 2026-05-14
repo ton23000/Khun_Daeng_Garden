@@ -374,7 +374,7 @@ export default function StaffOrdersPage() {
                                         <th style={{ padding: '1rem', width: '10%' }}>สลิป</th>
                                         <SortableTableHeader label="วันรับของ" sortKey="date" currentSort={sortConfig} onSort={handleSort} style={{ width: '10%' }} />
                                         <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} style={{ width: '15%' }} />
-                                        <th style={{ padding: '1rem', width: '15%' }}>จัดการ</th>
+                                        <th style={{ padding: '1rem', width: '15%', position: 'sticky', right: 0, backgroundColor: '#eff6ff', zIndex: 10, borderLeft: '1px solid #bfdbfe', boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -411,7 +411,7 @@ export default function StaffOrdersPage() {
                                                         </select>
                                                     ) : <span style={{ ...getStatusBadge(booking.status), whiteSpace: 'nowrap' }}>{getStatusText(booking.status)}</span>}
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '1rem', position: 'sticky', right: 0, backgroundColor: 'white', zIndex: 5, borderLeft: '1px solid #e5e7eb', boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>
                                                     {editingId === booking.id ? (
                                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                             <Button size="sm" onClick={() => handleUpdate(booking.id)} style={{ backgroundColor: '#1d4ed8', borderColor: '#1d4ed8', color: 'white' }}>บันทึก</Button>

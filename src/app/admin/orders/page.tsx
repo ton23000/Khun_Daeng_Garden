@@ -608,7 +608,7 @@ export default function OrdersPage() {
                                         <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem' }}>สลิป</th>
                                         <SortableTableHeader label="วันรับของ" sortKey="date" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem' }} />
                                         <SortableTableHeader label="สถานะ" sortKey="status" currentSort={sortConfig} onSort={handleSort} style={{ color: '#374151', fontWeight: 600, fontSize: '0.875rem' }} />
-                                        <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem' }}>จัดการ</th>
+                                        <th style={{ padding: '1rem', color: '#374151', fontWeight: 600, fontSize: '0.875rem', position: 'sticky', right: 0, backgroundColor: 'white', zIndex: 10, boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -655,7 +655,7 @@ export default function OrdersPage() {
                                                         <span style={{ ...getStatusBadge(booking.status), whiteSpace: 'nowrap' }}>{getStatusText(booking.status)}</span>
                                                     )}
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
+                                                <td style={{ padding: '1rem', position: 'sticky', right: 0, backgroundColor: 'white', zIndex: 5, borderLeft: '1px solid #e5e7eb', boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.05)' }}>
                                                     {editingId === booking.id ? (
                                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                             <Button size="sm" onClick={() => handleUpdate(booking.id)}>บันทึก</Button>
