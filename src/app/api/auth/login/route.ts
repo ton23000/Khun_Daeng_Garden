@@ -20,46 +20,6 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { identifier, password } = loginSchema.parse(body);
 
-        // Admin emails stored in env as comma-separated list e.g. "a@b.com,c@d.com"
-        const allowedAdminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
-        const adminPassword = process.env.ADMIN_PASSWORD || '';
-        // Admin check: Only allow specific emails with expected admin password
-        if (adminPassword && password === adminPassword && allowedAdminEmails.includes(identifier)) {
-            const adminUser = {
-                id: 'admin',
-                firstName: 'Admin',
-                lastName: '',
-                phone: '0000000000',
-                role: 'admin',
-                email: identifier
-            };
-
-            const token = await new SignJWT({ ...adminUser })
-                .setProtectedHeader({ alg: 'HS256' })
-                .setIssuedAt()
-                .setExpirationTime('7d')
-                .sign(getJwtSecretKey());
-
-            const response = NextResponse.json({
-                success: true,
-                user: adminUser
-            });
-
-            response.cookies.set({
-                name: 'khun_daeng_token',
-                value: token,
-                httpOnly: true,
-                path: '/',
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 60 * 60 * 24 * 7 // 7 days
-            });
-
-            return response;
-        }
-
-
-
         // Find user by identifier only
         const user = await prisma.user.findFirst({
             where: {
