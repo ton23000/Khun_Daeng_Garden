@@ -13,6 +13,8 @@ import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { generatePromptPayPayload } from "@/lib/promptpay";
 
+import { compressImage } from "@/lib/imageUtils";
+
 interface BookingItem {
   id: string;
   treeId: string;
@@ -144,15 +146,9 @@ export default function MyBookingsPage() {
     if (files.length === 0) return;
     setUploadingId(bookingId);
     try {
-      const formData = new FormData();
-      files.forEach((f) => formData.append("file", f));
-      const uploadRes = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      if (!uploadRes.ok) throw new Error("Failed to upload file");
-      const uploadData = await uploadRes.json();
-      const newUrls: string[] = uploadData.urls || [];
+      const compressPromises = files.map(file => compressImage(file, 800, 0.7));
+      const newUrls = await Promise.all(compressPromises);
+      
       if (newUrls.length === 0) throw new Error("No URL returned from upload");
       const slipUrl = JSON.stringify(newUrls);
       const updateRes = await fetch(`/api/bookings/${bookingId}`, {

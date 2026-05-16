@@ -6,6 +6,7 @@ import Link from "next/link";
 import PaymentModal from "@/components/PaymentModal";
 import { QRCodeSVG } from "qrcode.react";
 import { generatePromptPayPayload } from "@/lib/promptpay";
+import { compressImage } from "@/lib/imageUtils";
 import "./styles.css";
 
 export default function BookingSuccessPage() {
@@ -42,19 +43,9 @@ export default function BookingSuccessPage() {
     if (!booking) return;
 
     try {
-      // Upload all files at once
-      const formData = new FormData();
-      files.forEach((f) => formData.append("file", f));
-
-      const uploadRes = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!uploadRes.ok) throw new Error("Failed to upload file");
-
-      const uploadData = await uploadRes.json();
-      const newUrls: string[] = uploadData.urls || [];
+      // Compress all files first
+      const compressPromises = files.map(file => compressImage(file, 800, 0.7));
+      const newUrls = await Promise.all(compressPromises);
 
       // Store as JSON array string
       const slipUrl = JSON.stringify(newUrls);
