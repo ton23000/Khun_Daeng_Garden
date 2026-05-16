@@ -3,12 +3,14 @@
 ## 📋 รายการที่ต้องทดสอบก่อนสอบ
 
 ### ✅ สถานะเว็บไซต์
+
 - [ ] Dev server รันได้ (http://localhost:3000)
 - [ ] Production site ใช้ได้ (https://khundaenggarden.vercel.app)
 - [ ] Database เชื่อมต่อได้
 - [ ] ไม่มี console errors
 
 ### 👤 ทดสอบ User Flow
+
 1. **หน้าแรก**
    - [ ] Hero section แสดงผลถูกต้อง
    - [ ] Navigation menu ทำงาน
@@ -46,6 +48,7 @@
    - [ ] รีวิวต้นไม้ได้
 
 ### 👨‍💼 ทดสอบ Admin Flow
+
 1. **Admin Login**
    - [ ] Login ด้วย khundaenggarden@gmail.com / admin1234
    - [ ] เข้าถึง admin panel ได้
@@ -64,18 +67,21 @@
 ## 🚨 ประเด็นที่อาจถูกถาม
 
 ### 1. Performance
+
 - **Response Times**: API responses < 500ms
 - **Page Load**: หน้าแรกโหลด < 3s
 - **Database Queries**: ใช้ indexes อย่างเหมาะสม
 - **Caching**: มี cache headers สำหรับ static assets
 
 ### 2. Security
+
 - **Authentication**: JWT + httpOnly cookies
 - **Input Validation**: Zod schemas ทุก API
 - **SQL Injection**: Prisma ORM ป้องกันอัตโนมัติ
 - **XSS Protection**: Sanitize user inputs
 
 ### 3. Scalability
+
 - **Database**: รองรับ concurrent connections
 - **File Storage**: FTP approach มีข้อจำกัด
 - **Rate Limiting**: ยังไม่มี (ควรพิจารณา)
@@ -84,23 +90,27 @@
 ## 🎯 Demo Flow แนะนำ
 
 ### Step 1: แนะนำโปรเจค (2-3 นาที)
+
 - เริ่มจากหน้าแรก แสดง UI ที่สวยงาม
 - พูดถึง business model ของร้านต้นไม้
 - แสดง responsive design บน mobile
 
 ### Step 2: แสดง User Features (3-4 นาที)
+
 - สมัครสมาชิกใหม่
 - ค้นหาและเลือกต้นไม้
 - ใส่ตะกร้าและจอง
 - อัปโหลดสลิปการโอน
 
 ### Step 3: แสดง Admin Features (2-3 นาที)
+
 - Login admin
 - ดูรายการออเดอร์
 - จัดการสถานะ
 - ระบบ notifications
 
 ### Step 4: ทดสอบ Edge Cases (2-3 นาที)
+
 - จองต้นไม้ที่หมด stock
 - อัปโหลดไฟล์ที่ไม่ใช่รูป
 - ใส่ข้อมูลผิด format
@@ -109,7 +119,9 @@
 ## 🔧 การเตรียมตัว
 
 ### ก่อนสอบ 1 วัน
+
 1. **Check Environment**
+
    ```bash
    npm run dev  # ตรวจสอบว่ารันได้
    npm run lint  # ตรวจสอบ code quality
@@ -117,6 +129,7 @@
    ```
 
 2. **Test All APIs**
+
    ```bash
    node test-all-apis.js  # ถ้ามี test script
    ```
@@ -132,6 +145,7 @@
    - มี bookings ที่หลากสถานะ
 
 ### วันสอบ
+
 1. **Warm Up** (15 นาทีก่อน)
    - Start dev server
    - เปิด tabs ที่จำเป็น
@@ -142,6 +156,7 @@
    - สำรองข้อมูลสำคัญ
 
 ## 📱 อุปกรณ์ที่ควรมี
+
 - **Laptop** - สำหรับ demo หลัก
 - **Phone** - ทดสอบ responsive
 - **Internet** - สำหรับ production demo
@@ -150,16 +165,19 @@
 ## 🚨 แผนสำรอง
 
 ### ถ้าเว็บล่ม
+
 1. แสดง screenshots ที่เตรียมไว้
 2. พูดถึง architecture และ code
 3. แสดง local development ถ้าเป็นไปได้
 
 ### ถ้า database ล่ม
+
 1. พูดถึง schema design
 2. แสดง Prisma models
 3. อธิบาย database relationships
 
 ### ถ้า API ล่ม
+
 1. แสดง API documentation
 2. พูดถึง error handling
 3. อธิบาย security measures
@@ -167,6 +185,7 @@
 ## 💸 ข้อมูลสำคัญที่ควรจำ
 
 ### Environment Variables
+
 ```
 DATABASE_URL=mysql://...
 JWT_SECRET=REPLACE_ME_WITH_STRONG_SECRET
@@ -176,14 +195,17 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
 ### Admin Credentials
+
 - **Email**: khundaenggarden@gmail.com
 - **Password**: admin1234
 
 ### Test User
+
 - **Phone**: 0991234567 (ถ้ามี)
 - **Password**: password123
 
 ### Key URLs
+
 - **Local**: http://localhost:3000
 - **Production**: https://khundaenggarden.vercel.app
 - **Admin**: http://localhost:3000/admin

@@ -1,26 +1,26 @@
-const fs = require('fs');
-const path = require('path');
-const basicFtp = require('basic-ftp');
+const fs = require("fs");
+const path = require("path");
+const basicFtp = require("basic-ftp");
 
 async function uploadToFTP() {
   const client = new basicFtp.Client();
   client.ftp.verbose = true;
 
   try {
-    console.log('Connecting to FTP...');
+    console.log("Connecting to FTP...");
     await client.access({
-      host: 'ftp.appviza.com',
+      host: "ftp.appviza.com",
       port: 2002,
-      user: 'suankhundaeng@appviza.com',
-      password: 'nQqV6c5s'
+      user: "suankhundaeng@appviza.com",
+      password: "nQqV6c5s",
     });
 
-    console.log('Connected! Uploading files...');
+    console.log("Connected! Uploading files...");
 
     // ฟังก์ชันสำหรับอัปโหลดโฟลเดอร์
     async function uploadDirectory(localDir, remoteDir) {
       const files = fs.readdirSync(localDir);
-      
+
       for (const file of files) {
         const localPath = path.join(localDir, file);
         const remotePath = path.posix.join(remoteDir, file);
@@ -38,23 +38,26 @@ async function uploadToFTP() {
     }
 
     // อัปโหลดไฟล์จาก .next/static
-    if (fs.existsSync('.next/static')) {
-      await uploadDirectory('.next/static', 'public_html/_next/static');
+    if (fs.existsSync(".next/static")) {
+      await uploadDirectory(".next/static", "public_html/_next/static");
     }
 
     // อัปโหลดไฟล์จาก public
-    if (fs.existsSync('public')) {
-      await uploadDirectory('public', 'public_html');
+    if (fs.existsSync("public")) {
+      await uploadDirectory("public", "public_html");
     }
 
     // อัปโหลดไฟล์จาก .next/server/app
-    if (fs.existsSync('.next/server/app')) {
-      await uploadDirectory('.next/server/app', 'public_html');
+    if (fs.existsSync(".next/server/app")) {
+      await uploadDirectory(".next/server/app", "public_html");
     }
 
     // อัปโหลด package.json และ package-lock.json
-    await client.uploadFrom('package.json', 'public_html/package.json');
-    await client.uploadFrom('package-lock.json', 'public_html/package-lock.json');
+    await client.uploadFrom("package.json", "public_html/package.json");
+    await client.uploadFrom(
+      "package-lock.json",
+      "public_html/package-lock.json",
+    );
 
     // สร้างไฟล์ server.js สำหรับรันบน server
     const serverContent = `
@@ -76,13 +79,15 @@ app.prepare().then(() => {
   });
 });
 `;
-    
-    await client.uploadFrom(Buffer.from(serverContent), 'public_html/server.js');
 
-    console.log('Upload completed successfully!');
-    
+    await client.uploadFrom(
+      Buffer.from(serverContent),
+      "public_html/server.js",
+    );
+
+    console.log("Upload completed successfully!");
   } catch (err) {
-    console.error('FTP Error:', err);
+    console.error("FTP Error:", err);
   } finally {
     client.close();
   }

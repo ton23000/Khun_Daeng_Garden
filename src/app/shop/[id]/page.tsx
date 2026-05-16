@@ -1,15 +1,19 @@
-import { prisma } from '@/lib/prisma';
-import { notFound } from 'next/navigation';
-import ProductDetail from '@/components/ProductDetail';
-import { getAllImageUrls } from '@/lib/imageUtils';
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import ProductDetail from "@/components/ProductDetail";
+import { getAllImageUrls } from "@/lib/imageUtils";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   const tree = await prisma.tree.findUnique({
-    where: { id }
+    where: { id },
   });
 
   if (!tree) {
@@ -18,7 +22,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
   const images = getAllImageUrls(tree.images);
 
-  const tags = tree.tags ? tree.tags.split(',').filter((t: string) => t) : [];
+  const tags = tree.tags ? tree.tags.split(",").filter((t: string) => t) : [];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const treeProps: any = {
@@ -27,7 +31,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     tags,
     createdAt: tree.createdAt.toISOString(),
     updatedAt: tree.updatedAt.toISOString(),
-    promotionEndDate: tree.promotionEndDate?.toISOString() || null
+    promotionEndDate: tree.promotionEndDate?.toISOString() || null,
   };
 
   return <ProductDetail tree={treeProps} />;

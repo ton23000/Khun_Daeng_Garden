@@ -75,32 +75,32 @@
   .pageContainer {
     padding: 1rem;
   }
-  
+
   .pageTitle {
     font-size: 1.75rem;
   }
-  
+
   .sectionTitle {
     font-size: 1.35rem;
   }
-  
+
   .addressText {
     font-size: 1rem;
     margin: 0.5rem 0 1.5rem;
   }
-  
+
   .bodyText {
     font-size: 1rem;
   }
-  
+
   .highlightSection {
     padding: 1.25rem;
   }
-  
+
   .highlightTitle {
     font-size: 1.35rem;
   }
-  
+
   .featureList {
     font-size: 1rem;
   }
@@ -108,7 +108,7 @@
   .imageGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .image {
     height: 200px;
   }

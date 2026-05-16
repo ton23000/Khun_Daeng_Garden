@@ -1,9 +1,11 @@
 # สวนคุณแดงการ์เด้น (Khun Daeng Garden) - โปรเจคสรุป
 
 ## 📋 ภาพรวมโปรเจค
+
 เว็บไซต์ E-commerce สำหรับขายต้นไม้พรีเมียม พัฒนาด้วย Next.js 16.1.6 + TypeScript + Prisma + MySQL
 
 ## 🏗️ สถาปัตยกรรมระบบ
+
 - **Frontend**: Next.js 16.1.6 (App Router), React 19.2.3, TypeScript
 - **Backend**: Next.js API Routes, Prisma ORM
 - **Database**: MySQL (Production) / SQLite (Development)
@@ -15,6 +17,7 @@
 ## 📦 ฟีเจอร์ทหลัก
 
 ### 👤 ผู้ใช้ (User Features)
+
 - ✅ สมัครสมาชิก / เข้าสู่ระบบ
 - ✅ ดูต้นไม้ทั้งหมด (Shop)
 - ✅ กรอง/ค้นหาต้นไม้
@@ -26,6 +29,7 @@
 - ✅ รับการแจ้งเตือน
 
 ### 👨‍💼 ผู้ดูแลระบบ (Admin Features)
+
 - ✅ เข้าสู่ระบบ Admin
 - ✅ ดูรายการออเดอร์ทั้งหมด
 - ✅ จัดการสถานะออเดอร์
@@ -35,6 +39,7 @@
 - ✅ จัดการการตั้งค่าเว็บไซต์
 
 ### 🌳 ระบบต้นไม้
+
 - ✅ แสดงรายละเอียดต้นไม้
 - ✅ ระบบคลังสินค้า (Stock)
 - ✅ ระบบ Pre-order
@@ -43,6 +48,7 @@
 - ✅ Tags สำหรับค้นหา
 
 ### 📱 อื่นๆ
+
 - ✅ รองรับ Mobile Responsive
 - ✅ SEO Optimization
 - ✅ ระบบการแจ้งเตือน
@@ -79,6 +85,7 @@ src/
 ## 🛢️ Database Schema
 
 ### Users
+
 ```sql
 - id, firstName, lastName, phone, email
 - password (hashed), role, verified
@@ -86,6 +93,7 @@ src/
 ```
 
 ### Trees
+
 ```sql
 - id, name, description, price, category
 - images (JSON), tags (string), growthTime
@@ -95,6 +103,7 @@ src/
 ```
 
 ### Bookings
+
 ```sql
 - id, userId, userName, totalPrice, deposit
 - paymentType, status, refCode
@@ -105,11 +114,13 @@ src/
 ## 🔐 ระบบความปลอดภัย
 
 ### Authentication
+
 - JWT Token หมดอายุ 24 ชั่วโมง
 - Password hashing ด้วย Bcrypt.js
 - Admin authentication แยกจาก user
 
 ### Security Measures
+
 - Input validation ด้วย Zod
 - SQL Injection protection (Prisma ORM)
 - XSS protection
@@ -117,18 +128,21 @@ src/
 - Rate limiting (ควรพิจารณา)
 
 ## 📊 ข้อมูลปัจจุบัน
+
 - 👥 Users: 13
 - 🌳 Trees: 13
 - 📦 Bookings: 14
 - 🔔 Notifications: 40
 
 ## 🚀 การ Deploy
+
 - **Production**: https://khundaenggarden.vercel.app
 - **Database**: MySQL Hosting
 - **File Upload**: FTP Scripts
 - **Environment**: Production configs
 
 ## 🧪 การทดสอบ
+
 - ✅ Unit tests สำหรับ API endpoints
 - ✅ Integration tests สำหรับการจอง
 - ✅ Security tests
@@ -158,12 +172,14 @@ npm run dev
 ```
 
 ## 📝 บันทึกการพัฒนา
+
 - เริ่มโปรเจค: มกราคม 2026
 - เวอร์ชั่นปัจจุบัน: v0.1.0
 - Framework: Next.js 16.1.6
 - Database: MySQL + Prisma 6.19.2
 
 ## 🎯 จุดเด่นของโปรเจค
+
 1. **Full-stack TypeScript** - Type safety ทั้งระบบ
 2. **Modern Architecture** - App Router, Server Components
 3. **Scalable Database** - Prisma ORM + MySQL
@@ -172,6 +188,7 @@ npm run dev
 6. **SEO Optimized** - พร้อมใช้งานจริง
 
 ## ⚠️ ข้อควรพิจารณา
+
 1. **Rate Limiting** - ควรเพิ่มสำหรับ production
 2. **Payment Gateway** - ปัจจุบันใช้ PromptPay เท่านั้น
 3. **Image CDN** - ควรพิจารณาสำหรับ performance

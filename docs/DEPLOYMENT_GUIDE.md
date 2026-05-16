@@ -28,6 +28,7 @@
 ## 🌐 สำหรับ Vercel Deployment:
 
 ### 1. Environment Variables ที่ต้องตั้ง:
+
 ```bash
 DATABASE_URL=mysql://...
 JWT_SECRET=strong_random_secret
@@ -38,11 +39,13 @@ SENDGRID_API_KEY=your_sendgrid_key
 ```
 
 ### 2. Build Command:
+
 ```bash
 npm run build
 ```
 
 ### 3. สิ่งอย่างที่ต้องมีใน Vercel:
+
 - ✅ Next.js 16.1.6
 - ✅ Node.js 18+
 - ✅ MySQL Database
@@ -51,18 +54,21 @@ npm run build
 ## 🔍 ตรวจสอบก่อน Deploy:
 
 ### 1. Local Build Test:
+
 ```bash
 npm run build
 npm run start:next
 ```
 
 ### 2. Environment Check:
+
 ```bash
 # ตรวจสอบว่ามี .env.local และมีค่าที่จำเป็น
 cat .env.local
 ```
 
 ### 3. Database Connection:
+
 ```bash
 npx prisma db push
 npx prisma generate
@@ -71,26 +77,31 @@ npx prisma generate
 ## 🚨 ปัญหาที่อาจเกิดใน Production:
 
 ### 1. Database Connection Timeout
+
 - **สาเหตุ**: Vercel อาจมีปัญหาเชื่อมต่อ database บางครั้ง
 - **แก้ไข**: ใช้ connection pooling หรือ increase timeout
 
 ### 2. Image Loading Issues
+
 - **สาเหตุ**: Remote images อาจโหลดช้า
 - **แก้ไข**: ใช้ CDN หรือ optimize images
 
 ### 3. Memory Issues
+
 - **สาเหตุ**: Large API responses
 - **แก้ไข**: ใช้ pagination และ caching
 
 ## 📊 Performance Optimizations:
 
 ### 1. ✅ ทำแล้ว:
+
 - Webpack optimization
 - Image optimization
 - API caching headers
 - Static generation
 
 ### 2. 🔄 ควรพิจารณา:
+
 - Redis caching
 - CDN for images
 - Database connection pooling
@@ -99,6 +110,7 @@ npx prisma generate
 ## 🎯 สำหรับการ Deploy ครั้งต่อไป:
 
 1. **Push to GitHub**:
+
    ```bash
    git add .
    git commit -m "fix: resolve build issues for deployment"
@@ -118,6 +130,7 @@ npx prisma generate
 ## 📱 ทดสอบหลัง Deploy:
 
 ### Critical Flows:
+
 1. **User Registration/Login**
 2. **Product Browsing**
 3. **Add to Cart**
@@ -125,6 +138,7 @@ npx prisma generate
 5. **Admin Panel Access**
 
 ### API Endpoints:
+
 - `/api/auth/login`
 - `/api/trees`
 - `/api/bookings`
@@ -133,11 +147,13 @@ npx prisma generate
 ## 🔄 หาก Build ล้มเหลวอีก:
 
 ### 1. ตรวจสอบ Vercel Logs:
+
 - ไปที่ Vercel Dashboard
 - ดู Functions tab
 - ตรวจสอบ error messages
 
 ### 2. Local Debug:
+
 ```bash
 # Build แบบ verbose
 npm run build --debug
@@ -147,6 +163,7 @@ npx next build --debug
 ```
 
 ### 3. Common Solutions:
+
 - ลด dependencies ใหม่: `rm -rf node_modules && npm install`
 - Clear Next.js cache: `rm -rf .next`
 - ตรวจสอบ environment variables
@@ -154,16 +171,19 @@ npx next build --debug
 ## 📈 Monitoring:
 
 ### 1. Vercel Analytics:
+
 - Page views
 - Performance metrics
 - Error rates
 
 ### 2. Database Monitoring:
+
 - Connection count
 - Query performance
 - Error logs
 
 ### 3. User Experience:
+
 - Load times
 - Error rates
 - Conversion funnels
