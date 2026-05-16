@@ -49,7 +49,9 @@ export default function BookingSuccessPage() {
 
     try {
       // Compress all files first
-      const compressPromises = files.map(file => compressImage(file, 800, 0.7));
+      const compressPromises = files.map((file) =>
+        compressImage(file, 800, 0.7),
+      );
       const newUrls = await Promise.all(compressPromises);
 
       // Store as JSON array string

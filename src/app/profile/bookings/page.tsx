@@ -146,9 +146,11 @@ export default function MyBookingsPage() {
     if (files.length === 0) return;
     setUploadingId(bookingId);
     try {
-      const compressPromises = files.map(file => compressImage(file, 800, 0.7));
+      const compressPromises = files.map((file) =>
+        compressImage(file, 800, 0.7),
+      );
       const newUrls = await Promise.all(compressPromises);
-      
+
       if (newUrls.length === 0) throw new Error("No URL returned from upload");
       const slipUrl = JSON.stringify(newUrls);
       const updateRes = await fetch(`/api/bookings/${bookingId}`, {
