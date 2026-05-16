@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import PaymentModal from "@/components/PaymentModal";
+import SlipViewer from "@/components/SlipViewer";
 import { QRCodeSVG } from "qrcode.react";
 import { generatePromptPayPayload } from "@/lib/promptpay";
 import { compressImage } from "@/lib/imageUtils";
@@ -14,6 +15,10 @@ export default function BookingSuccessPage() {
   const [booking, setBooking] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [viewingSlip, setViewingSlip] = useState<{
+    urls: string[];
+    index: number;
+  } | null>(null);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard
@@ -469,7 +474,9 @@ export default function BookingSuccessPage() {
                           border: "1px solid #e5e7eb",
                           cursor: "pointer",
                         }}
-                        onClick={() => window.open(url, "_blank")}
+                        onClick={() =>
+                          setViewingSlip({ urls: slipUrls, index: i })
+                        }
                       />
                     ))}
                   </div>
@@ -528,6 +535,13 @@ export default function BookingSuccessPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onUpload={handleUpload}
+      />
+
+      <SlipViewer
+        isOpen={!!viewingSlip}
+        onClose={() => setViewingSlip(null)}
+        slipUrls={viewingSlip?.urls || []}
+        startIndex={viewingSlip?.index || 0}
       />
     </div>
   );
