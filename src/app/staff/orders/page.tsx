@@ -31,6 +31,7 @@ interface Booking {
   status: string;
   totalPrice: number;
   deposit: number;
+  paymentType: string;
   pickupDate: string;
   note: string | null;
   createdAt: string;
@@ -662,10 +663,14 @@ export default function StaffOrdersPage() {
                     fontWeight: "bold",
                   }}
                 >
-                  <span>ยอดรวม:</span>
-                  <span style={{ color: "#1d4ed8" }}>
-                    ฿{booking.totalPrice.toLocaleString()}
-                  </span>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ color: "#1d4ed8" }}>
+                      ฿{booking.totalPrice.toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: "0.75rem", color: "#6b7280", fontWeight: "normal" }}>
+                      {booking.paymentType === "full" ? "จ่ายเต็มจำนวน" : `มัดจำ (฿${booking.deposit.toLocaleString()})`}
+                    </div>
+                  </div>
                 </div>
                 {booking.slipUrl && (
                   <Button
@@ -904,8 +909,11 @@ export default function StaffOrdersPage() {
                           ))}
                         </td>
                         <td style={{ padding: "1rem" }}>
-                          <div style={{ marginBottom: "0.5rem" }}>
+                          <div style={{ marginBottom: "0.25rem", fontWeight: 500 }}>
                             ฿{booking.totalPrice.toLocaleString()}
+                          </div>
+                          <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.5rem" }}>
+                            {booking.paymentType === "full" ? "จ่ายเต็มจำนวน" : `มัดจำ (฿${booking.deposit.toLocaleString()})`}
                           </div>
                           {booking.slipUrl ? (
                             <Button
@@ -1240,9 +1248,14 @@ export default function StaffOrdersPage() {
                     }}
                   >
                     <span>ยอดรวม:</span>
-                    <span style={{ color: "#166534" }}>
-                      ฿{booking.totalPrice.toLocaleString()}
-                    </span>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ color: "#166534" }}>
+                        ฿{booking.totalPrice.toLocaleString()}
+                      </div>
+                      <div style={{ fontSize: "0.75rem", color: "#6b7280", fontWeight: "normal" }}>
+                        {booking.paymentType === "full" ? "จ่ายเต็มจำนวน" : `มัดจำ (฿${booking.deposit.toLocaleString()})`}
+                      </div>
+                    </div>
                   </div>
                   <div
                     style={{
@@ -1396,8 +1409,11 @@ export default function StaffOrdersPage() {
                             ))}
                           </td>
                           <td style={{ padding: "1rem" }}>
-                            <div style={{ fontWeight: 500, marginBottom: "0.5rem" }}>
+                            <div style={{ fontWeight: 500, marginBottom: "0.25rem" }}>
                               ฿{booking.totalPrice.toLocaleString()}
+                            </div>
+                            <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.5rem" }}>
+                              {booking.paymentType === "full" ? "จ่ายเต็มจำนวน" : `มัดจำ (฿${booking.deposit.toLocaleString()})`}
                             </div>
                             {booking.slipUrl ? (
                               <Button
