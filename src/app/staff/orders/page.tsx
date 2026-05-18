@@ -139,6 +139,10 @@ export default function StaffOrdersPage() {
       } else {
         result = result.filter((b) => b.status === statusFilter);
       }
+    } else if (viewMode === "all" && !searchQuery) {
+      result = result.filter(
+        (b) => b.status !== "COMPLETED" && b.status !== "CANCELLED"
+      );
     }
     if (sortConfig) {
       result.sort((a, b) => {
@@ -295,6 +299,11 @@ export default function StaffOrdersPage() {
       totalSpent: cb.reduce((s, b) => s + b.deposit, 0),
     };
   };
+
+  const historyBookings = bookings
+    .filter((b) => b.status === "COMPLETED" || b.status === "CANCELLED")
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5);
 
   if (isLoading)
     return (
@@ -1197,6 +1206,301 @@ export default function StaffOrdersPage() {
           </Card>
         </div>
       </div>
+
+      {/* ประวัติออเดอร์ (ล่าสุด 5 รายการ) */}
+      {viewMode === "all" && !statusFilter && !searchQuery && historyBookings.length > 0 && (
+        <div style={{ marginTop: "3rem", marginBottom: "3rem" }}>
+          <h2
+            style={{
+              fontSize: "1.5rem",
+              fontWeight: "bold",
+              color: "#4b5563",
+              marginBottom: "1rem",
+            }}
+          >
+            ประวัติออเดอร์ (5 รายการล่าสุด)
+          </h2>
+
+          {/* History Mobile View */}
+          <div className="mobile-card-view">
+            {historyBookings.map((booking) => (
+              <Card
+                key={`history-${booking.id}`}
+                style={{ border: "1px solid #e5e7eb", marginBottom: "1rem" }}
+              >
+                <CardContent
+                  style={{
+                    padding: "1rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.75rem",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span style={{ fontWeight: "bold" }}>{booking.refCode}</span>
+                    <span
+                      style={{
+                        ...getStatusBadge(booking.status),
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {getStatusText(booking.status)}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      borderBottom: "1px solid #e5e7eb",
+                      paddingBottom: "0.75rem",
+                    }}
+                  >
+                    <div style={{ fontWeight: 500 }}>
+                      {booking.user.firstName} {booking.user.lastName}
+                    </div>
+                    <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+                      {booking.user.phone}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: "0.875rem" }}>
+                    {booking.items.map((item, idx) => (
+                      <div key={idx}>
+                        • {item.tree.name} x{item.quantity}
+                      </div>
+                    ))}
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <span>ยอดรวม:</span>
+                    <span style={{ color: "#166534" }}>
+                      ฿{booking.totalPrice.toLocaleString()}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    <span>วันรับของ:</span>
+                    <span>{formatThaiDate(booking.pickupDate)}</span>
+                  </div>
+                  {booking.slipUrl && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        borderColor: "#bbf7d0",
+                        color: "#166534",
+                        width: "100%",
+                      }}
+                      onClick={() => setViewingSlip(booking.slipUrl)}
+                    >
+                      📎 ดูสลิป
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* History Desktop View */}
+          <div className="desktop-table-view">
+            <div
+              style={{
+                maxWidth: "100%",
+                overflowX: "auto",
+                WebkitOverflowScrolling: "touch",
+                paddingBottom: "1rem",
+              }}
+            >
+              <div
+                style={{
+                  minWidth: "900px",
+                  backgroundColor: "white",
+                  borderRadius: "0.5rem",
+                  boxShadow:
+                    "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+                }}
+              >
+                <div style={{ padding: 0 }}>
+                  <table
+                    style={{
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      textAlign: "left",
+                    }}
+                  >
+                    <thead style={{ borderBottom: "1px solid #e5e7eb", backgroundColor: "#eff6ff" }}>
+                      <tr>
+                        <th
+                          style={{
+                            padding: "1rem",
+                            color: "#374151",
+                            fontWeight: 600,
+                            fontSize: "0.875rem",
+                          }}
+                        >
+                          รหัส
+                        </th>
+                        <th
+                          style={{
+                            padding: "1rem",
+                            color: "#374151",
+                            fontWeight: 600,
+                            fontSize: "0.875rem",
+                          }}
+                        >
+                          ลูกค้า
+                        </th>
+                        <th
+                          style={{
+                            padding: "1rem",
+                            color: "#374151",
+                            fontWeight: 600,
+                            fontSize: "0.875rem",
+                          }}
+                        >
+                          รายการ
+                        </th>
+                        <th
+                          style={{
+                            padding: "1rem",
+                            color: "#374151",
+                            fontWeight: 600,
+                            fontSize: "0.875rem",
+                          }}
+                        >
+                          ยอดรวม
+                        </th>
+                        <th
+                          style={{
+                            padding: "1rem",
+                            color: "#374151",
+                            fontWeight: 600,
+                            fontSize: "0.875rem",
+                          }}
+                        >
+                          สลิป
+                        </th>
+                        <th
+                          style={{
+                            padding: "1rem",
+                            color: "#374151",
+                            fontWeight: 600,
+                            fontSize: "0.875rem",
+                          }}
+                        >
+                          วันรับของ
+                        </th>
+                        <th
+                          style={{
+                            padding: "1rem",
+                            color: "#374151",
+                            fontWeight: 600,
+                            fontSize: "0.875rem",
+                          }}
+                        >
+                          สถานะ
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historyBookings.map((booking) => (
+                        <tr
+                          key={`history-${booking.id}`}
+                          style={{ borderBottom: "1px solid #e5e7eb" }}
+                        >
+                          <td style={{ padding: "1rem", fontWeight: 500 }}>
+                            {booking.refCode}
+                          </td>
+                          <td style={{ padding: "1rem" }}>
+                            <div>
+                              {booking.user.firstName} {booking.user.lastName}
+                            </div>
+                            <div
+                              style={{ fontSize: "0.75rem", color: "#6b7280" }}
+                            >
+                              {booking.user.phone}
+                            </div>
+                          </td>
+                          <td style={{ padding: "1rem" }}>
+                            {booking.items.map((item, idx) => (
+                              <div key={idx} style={{ fontSize: "0.875rem" }}>
+                                {item.tree.name} x{item.quantity}
+                              </div>
+                            ))}
+                          </td>
+                          <td style={{ padding: "1rem" }}>
+                            ฿{booking.totalPrice.toLocaleString()}
+                          </td>
+                          <td style={{ padding: "1rem" }}>
+                            {booking.slipUrl ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "0.25rem",
+                                  borderColor: "#bbf7d0",
+                                  color: "#166534",
+                                  whiteSpace: "nowrap",
+                                }}
+                                onClick={() => setViewingSlip(booking.slipUrl)}
+                              >
+                                📎 ดูสลิป
+                              </Button>
+                            ) : (
+                              <span
+                                style={{
+                                  color: "#9ca3af",
+                                  fontSize: "0.875rem",
+                                }}
+                              >
+                                -
+                              </span>
+                            )}
+                          </td>
+                          <td style={{ padding: "1rem" }}>
+                            {formatThaiDate(booking.pickupDate)}
+                          </td>
+                          <td style={{ padding: "1rem" }}>
+                            <span
+                              style={{
+                                ...getStatusBadge(booking.status),
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {getStatusText(booking.status)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <SlipViewer
         isOpen={!!viewingSlip}
