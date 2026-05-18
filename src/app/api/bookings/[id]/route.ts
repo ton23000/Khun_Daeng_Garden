@@ -382,29 +382,16 @@ export async function DELETE(
     const { id } = await params;
 
     // Check if booking exists
+    // Ensure the booking exists before deleting
     const booking = await prisma.booking.findUnique({
       where: { id },
       include: { items: true },
     });
 
     if (!booking) {
-      return NextResponse.json({ error: "Booking not found" }, { status: 404 });
-    }
-
-    // Prevent deletion of bookings in certain statuses
-    const unDeletableStatuses = [
-      "PENDING",
-      "PAID",
-      "VERIFYING_PAYMENT",
-      "CONFIRMED",
-      "PREPARING",
-      "READY",
-      "COMPLETED",
-    ];
-    if (unDeletableStatuses.includes(booking.status)) {
       return NextResponse.json(
-        { error: "ไม่สามารถลบออเดอร์ในสถานะนี้ได้" },
-        { status: 400 },
+        { error: "ไม่พบข้อมูลการจอง" },
+        { status: 404 }
       );
     }
 

@@ -1374,29 +1374,19 @@ export default function OrdersPage() {
                               >
                                 แก้ไข
                               </Button>
-                              {![
-                                "PENDING",
-                                "PAID",
-                                "VERIFYING_PAYMENT",
-                                "CONFIRMED",
-                                "PREPARING",
-                                "READY",
-                                "COMPLETED",
-                              ].includes(booking.status) && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() =>
-                                    handleDelete(booking.id, booking.refCode)
-                                  }
-                                  style={{
-                                    borderColor: "#ef4444",
-                                    color: "#ef4444",
-                                  }}
-                                >
-                                  ลบ
-                                </Button>
-                              )}
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  handleDelete(booking.id, booking.refCode)
+                                }
+                                style={{
+                                  borderColor: "#ef4444",
+                                  color: "#ef4444",
+                                }}
+                              >
+                                ลบ
+                              </Button>
                             </div>
                           )}
                         </td>

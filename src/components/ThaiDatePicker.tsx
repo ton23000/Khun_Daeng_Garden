@@ -204,18 +204,18 @@ export default function ThaiDatePicker({
       {isOpen && (
         <div
           style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            marginTop: "0.5rem",
+            position: "fixed",
+            top: containerRef.current ? containerRef.current.getBoundingClientRect().bottom + 8 : "50%",
+            left: containerRef.current ? containerRef.current.getBoundingClientRect().left : "50%",
             backgroundColor: "white",
             borderRadius: "1rem",
             boxShadow:
               "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
             border: "1px solid #e5e7eb",
             padding: "1rem",
-            zIndex: 1000,
+            zIndex: 99999,
             width: "320px",
+            transform: containerRef.current ? "none" : "translate(-50%, -50%)",
           }}
         >
           {/* Header */}
