@@ -1345,7 +1345,6 @@ export default function StaffOrdersPage() {
                             fontSize: "0.875rem",
                           }}
                         >
-                        >
                           ยอดรวม / สลิป
                         </th>
                         <th

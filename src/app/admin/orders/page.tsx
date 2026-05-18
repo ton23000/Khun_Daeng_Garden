@@ -1548,7 +1548,6 @@ export default function OrdersPage() {
                             fontSize: "0.875rem",
                           }}
                         >
-                        >
                           ยอดรวม / สลิป
                         </th>
                         <th
