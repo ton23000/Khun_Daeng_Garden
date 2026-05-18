@@ -434,6 +434,16 @@ export default function AdminTreesPage() {
     }));
   };
 
+  const setAsCover = (index: number) => {
+    if (index === 0) return;
+    setFormData((prev) => {
+      const newImages = [...prev.images];
+      const [coverImage] = newImages.splice(index, 1);
+      newImages.unshift(coverImage);
+      return { ...prev, images: newImages };
+    });
+  };
+
   // Show loading state while checking auth
   if (isAuthLoading) {
     return (
@@ -1068,13 +1078,14 @@ export default function AdminTreesPage() {
                           style={{
                             width: "100px",
                             height: "100px",
-                            border: "1px solid #e5e7eb",
+                            border: index === 0 ? "2px solid #10b981" : "1px solid #e5e7eb",
                             borderRadius: "0.5rem",
                             overflow: "hidden",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             backgroundColor: "#f9fafb",
+                            position: "relative"
                           }}
                         >
                           <img
@@ -1086,15 +1097,46 @@ export default function AdminTreesPage() {
                               objectFit: "contain",
                             }}
                           />
-                          <button
-                            type="button"
-                            onClick={() => removeImage(index)}
-                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                            title="ลบรูปนี้"
-                            style={{ cursor: "pointer" }}
-                          >
-                            ✕
-                          </button>
+                          
+                          {/* Cover badge */}
+                          {index === 0 && (
+                            <div style={{ 
+                              position: "absolute", 
+                              top: 0, 
+                              left: 0, 
+                              backgroundColor: "#10b981", 
+                              color: "white", 
+                              fontSize: "0.6rem", 
+                              padding: "0.15rem 0.4rem", 
+                              borderBottomRightRadius: "0.3rem", 
+                              fontWeight: "bold",
+                              zIndex: 10
+                            }}>
+                              หน้าปก
+                            </div>
+                          )}
+
+                          <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity gap-2">
+                            {index !== 0 && (
+                              <button
+                                type="button"
+                                onClick={() => setAsCover(index)}
+                                className="bg-white text-green-600 font-bold rounded shadow-sm hover:bg-gray-100 transition-colors"
+                                style={{ cursor: "pointer", fontSize: "0.6rem", padding: "0.2rem 0.5rem" }}
+                              >
+                                ตั้งเป็นหน้าปก
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors shadow-sm"
+                              title="ลบรูปนี้"
+                              style={{ cursor: "pointer", width: "1.5rem", height: "1.5rem", fontSize: "0.75rem" }}
+                            >
+                              ✕
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
