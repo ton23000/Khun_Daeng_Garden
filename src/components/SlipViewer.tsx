@@ -23,7 +23,10 @@ export default function SlipViewer({
 
   // ซิงค์ index เมื่อเปิดใหม่
   useEffect(() => {
-    if (isOpen) setCurrent(startIndex);
+    if (isOpen) {
+      const timeout = setTimeout(() => setCurrent(startIndex), 0);
+      return () => clearTimeout(timeout);
+    }
   }, [isOpen, startIndex]);
 
   // กด Esc ปิด / arrow ซ้าย-ขวา

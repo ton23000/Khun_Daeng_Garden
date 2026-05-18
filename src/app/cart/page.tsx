@@ -310,9 +310,9 @@ export default function CartPage() {
                 </label>
                 {(() => {
                   // Calculate min date based on stock and growth time
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const itemWithStock = item as unknown as { stock: number; reserved?: number };
                   const availableStock: number =
-                    (item as any).stock - ((item as any).reserved || 0); // CartItem doesn't directly type stock/reserved, assuming it's passed from Tree
+                    (itemWithStock.stock || 0) - (itemWithStock.reserved || 0); // CartItem doesn't directly type stock/reserved, assuming it's passed from Tree
 
                   const minItemDate = new Date();
                   let daysToAdd = 0;

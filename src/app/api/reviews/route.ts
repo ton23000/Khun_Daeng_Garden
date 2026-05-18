@@ -161,9 +161,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if tree is in booking
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const treeInBooking = booking.items.some(
-      (item: any) => item.treeId === treeId,
+      (item: { treeId: string }) => item.treeId === treeId,
     );
     if (!treeInBooking) {
       return NextResponse.json(
@@ -173,9 +172,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if review already exists for this tree in this booking
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const existingReview = booking.reviews.find(
-      (r: any) => r.treeId === treeId,
+      (r: { treeId: string }) => r.treeId === treeId,
     );
     if (existingReview) {
       return NextResponse.json(
