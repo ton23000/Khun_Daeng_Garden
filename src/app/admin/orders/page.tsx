@@ -1009,7 +1009,7 @@ export default function OrdersPage() {
                       รายการ
                     </th>
                     <SortableTableHeader
-                      label="ยอดรวม"
+                      label="ยอดรวม / สลิป"
                       sortKey="price"
                       currentSort={sortConfig}
                       onSort={handleSort}
@@ -1019,23 +1019,6 @@ export default function OrdersPage() {
                         fontSize: "0.875rem",
                       }}
                     />
-                    <th
-                      style={{
-                        padding: "1rem",
-                        color: "#374151",
-                        fontWeight: 600,
-                        fontSize: "0.875rem",
-                        position: "sticky",
-                        right: "450px",
-                        backgroundColor: "white",
-                        zIndex: 10,
-                        width: "100px",
-                        minWidth: "100px",
-                        borderLeft: "1px solid #e5e7eb",
-                      }}
-                    >
-                      สลิป
-                    </th>
                     <SortableTableHeader
                       label="วันรับของ"
                       sortKey="date"
@@ -1093,7 +1076,7 @@ export default function OrdersPage() {
                   {filteredBookings.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={8}
+                        colSpan={7}
                         style={{ padding: "2rem", textAlign: "center" }}
                       >
                         ไม่มีออเดอร์

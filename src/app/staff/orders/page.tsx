@@ -817,26 +817,12 @@ export default function StaffOrdersPage() {
                     />
                     <th style={{ padding: "1rem", width: "25%" }}>รายการ</th>
                     <SortableTableHeader
-                      label="ยอดรวม"
+                      label="ยอดรวม / สลิป"
                       sortKey="price"
                       currentSort={sortConfig}
                       onSort={handleSort}
                       style={{ width: "10%" }}
                     />
-                    <th
-                      style={{
-                        padding: "1rem",
-                        position: "sticky",
-                        right: "450px",
-                        backgroundColor: "#eff6ff",
-                        zIndex: 10,
-                        width: "100px",
-                        minWidth: "100px",
-                        borderLeft: "1px solid #bfdbfe",
-                      }}
-                    >
-                      สลิป
-                    </th>
                     <SortableTableHeader
                       label="วันรับของ"
                       sortKey="date"
@@ -885,7 +871,7 @@ export default function StaffOrdersPage() {
                   {filteredBookings.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={8}
+                        colSpan={7}
                         style={{ padding: "2rem", textAlign: "center" }}
                       >
                         ไม่มีออเดอร์
@@ -918,25 +904,17 @@ export default function StaffOrdersPage() {
                           ))}
                         </td>
                         <td style={{ padding: "1rem" }}>
-                          ฿{booking.totalPrice.toLocaleString()}
-                        </td>
-                        <td
-                          style={{
-                            padding: "1rem",
-                            position: "sticky",
-                            right: "450px",
-                            backgroundColor: "white",
-                            zIndex: 5,
-                            width: "100px",
-                            minWidth: "100px",
-                            borderLeft: "1px solid #e5e7eb",
-                          }}
-                        >
+                          <div style={{ marginBottom: "0.5rem" }}>
+                            ฿{booking.totalPrice.toLocaleString()}
+                          </div>
                           {booking.slipUrl ? (
                             <Button
                               size="sm"
                               variant="outline"
                               style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "0.5rem",
                                 borderColor: "#bfdbfe",
                                 color: "#1d4ed8",
                                 whiteSpace: "nowrap",
@@ -946,7 +924,7 @@ export default function StaffOrdersPage() {
                               📎 ดูสลิป
                             </Button>
                           ) : (
-                            <span style={{ color: "#9ca3af" }}>-</span>
+                            <span style={{ color: "#9ca3af", fontSize: "0.875rem" }}>- ไม่มีสลิป -</span>
                           )}
                         </td>
                         <td
