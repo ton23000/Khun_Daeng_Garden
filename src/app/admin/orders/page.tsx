@@ -1110,26 +1110,15 @@ export default function OrdersPage() {
                           ))}
                         </td>
                         <td style={{ padding: "1rem" }}>
-                          ฿{booking.totalPrice.toLocaleString()}
-                        </td>
-                        <td
-                          style={{
-                            padding: "1rem",
-                            position: "sticky",
-                            right: "450px",
-                            backgroundColor: "white",
-                            zIndex: 5,
-                            width: "100px",
-                            minWidth: "100px",
-                            borderLeft: "1px solid #e5e7eb",
-                          }}
-                        >
+                          <div style={{ fontWeight: 500, marginBottom: "0.5rem" }}>
+                            ฿{booking.totalPrice.toLocaleString()}
+                          </div>
                           {booking.slipUrl ? (
                             <Button
                               size="sm"
                               variant="outline"
                               style={{
-                                display: "flex",
+                                display: "inline-flex",
                                 alignItems: "center",
                                 gap: "0.25rem",
                                 borderColor: "#bbf7d0",
@@ -1141,11 +1130,7 @@ export default function OrdersPage() {
                               📎 ดูสลิป
                             </Button>
                           ) : (
-                            <span
-                              style={{ color: "#9ca3af", fontSize: "0.875rem" }}
-                            >
-                              -
-                            </span>
+                            <span style={{ color: "#9ca3af", fontSize: "0.8rem" }}>ไม่มีสลิป</span>
                           )}
                         </td>
                         <td
