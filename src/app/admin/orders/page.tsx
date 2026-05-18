@@ -955,7 +955,7 @@ export default function OrdersPage() {
             maxWidth: "100%",
             overflowX: "auto",
             WebkitOverflowScrolling: "touch",
-            paddingBottom: "1rem",
+            paddingBottom: "350px", // Increased padding to prevent date picker clipping
           }}
         >
           <div

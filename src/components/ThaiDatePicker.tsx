@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Calendar as CalendarIcon,
 } from "lucide-react";
+import { createPortal } from "react-dom";
 
 interface ThaiDatePickerProps {
   value: string; // YYYY-MM-DD
@@ -48,19 +49,44 @@ export default function ThaiDatePicker({
     return isNaN(d.getTime()) ? new Date() : d;
   });
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownCoords, setDropdownCoords] = useState({ top: 0, left: 0, width: 0 });
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+      const isOutsideContainer = containerRef.current && !containerRef.current.contains(event.target as Node);
+      const isOutsideDropdown = dropdownRef.current && !dropdownRef.current.contains(event.target as Node);
+      
+      if (isOutsideContainer && isOutsideDropdown) {
         setIsOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const updateDropdownPosition = () => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setDropdownCoords({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+        width: 320, // fixed width for the calendar
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      updateDropdownPosition();
+      window.addEventListener("scroll", updateDropdownPosition, true);
+      window.addEventListener("resize", updateDropdownPosition);
+      return () => {
+        window.removeEventListener("scroll", updateDropdownPosition, true);
+        window.removeEventListener("resize", updateDropdownPosition);
+      };
+    }
+  }, [isOpen]);
 
   // Sync viewDate when opening
   useEffect(() => {
@@ -201,12 +227,13 @@ export default function ThaiDatePicker({
         </span>
       </button>
 
-      {isOpen && (
+      {isOpen && typeof document !== "undefined" && createPortal(
         <div
+          ref={dropdownRef}
           style={{
-            position: "fixed",
-            top: containerRef.current ? containerRef.current.getBoundingClientRect().bottom + 8 : "50%",
-            left: containerRef.current ? containerRef.current.getBoundingClientRect().left : "50%",
+            position: "absolute",
+            top: dropdownCoords.top,
+            left: dropdownCoords.left,
             backgroundColor: "white",
             borderRadius: "1rem",
             boxShadow:
@@ -214,8 +241,7 @@ export default function ThaiDatePicker({
             border: "1px solid #e5e7eb",
             padding: "1rem",
             zIndex: 99999,
-            width: "320px",
-            transform: containerRef.current ? "none" : "translate(-50%, -50%)",
+            width: `${dropdownCoords.width}px`,
           }}
         >
           {/* Header */}
@@ -410,7 +436,8 @@ export default function ThaiDatePicker({
               วันนี้
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
