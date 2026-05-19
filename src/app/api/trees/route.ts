@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { verifyAdminOrStaff } from "@/lib/auth-server";
 
 const treeSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -20,6 +21,37 @@ const treeSchema = z.object({
 
 export async function GET() {
   try {
+    // Revert expired promotions
+    try {
+      const expiredPromotions = await prisma.tree.findMany({
+        where: {
+          isPromotion: true,
+          promotionEndDate: {
+            lt: new Date(),
+          },
+        },
+      });
+
+      if (expiredPromotions.length > 0) {
+        await prisma.$transaction(
+          expiredPromotions.map((tree) =>
+            prisma.tree.update({
+              where: { id: tree.id },
+              data: {
+                isPromotion: false,
+                price: tree.originalPrice || tree.price,
+                originalPrice: null,
+                promotionName: null,
+                promotionEndDate: null,
+              },
+            }),
+          ),
+        );
+      }
+    } catch (cleanupError) {
+      console.error("Error auto-reverting expired promotions:", cleanupError);
+    }
+
     // Add caching headers
     const headers = {
       "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
@@ -86,6 +118,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const user = await verifyAdminOrStaff(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const validated = treeSchema.parse(body);
 

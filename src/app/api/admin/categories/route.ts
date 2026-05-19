@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { verifyAdminOrStaff } from "@/lib/auth-server";
 
 const CategorySchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -22,6 +23,11 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await verifyAdminOrStaff(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const validated = CategorySchema.parse(body);
 

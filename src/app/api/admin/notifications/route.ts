@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyAdminOrStaff } from "@/lib/auth-server";
 
 // GET - Fetch all admin notifications
 export async function GET(req: NextRequest) {
   try {
+    const user = await verifyAdminOrStaff(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { searchParams } = new URL(req.url);
     const unreadOnly = searchParams.get("unreadOnly") === "true";
 
@@ -38,6 +43,10 @@ export async function GET(req: NextRequest) {
 // PATCH - Mark notification(s) as read
 export async function PATCH(req: NextRequest) {
   try {
+    const user = await verifyAdminOrStaff(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { notificationIds, markAllRead } = await req.json();
 
     if (markAllRead) {
@@ -74,8 +83,12 @@ export async function PATCH(req: NextRequest) {
 }
 
 // DELETE - Clear old read notifications
-export async function DELETE() {
+export async function DELETE(req: Request) {
   try {
+    const user = await verifyAdminOrStaff(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { verifyAdminOrStaff } from "@/lib/auth-server";
 
 const ActionSchema = z.object({
   action: z.enum(["approve", "reject"]),
@@ -13,6 +14,11 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const user = await verifyAdminOrStaff(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id: bookingId } = await params;
     const body = await req.json();
     const { action, note } = ActionSchema.parse(body);
