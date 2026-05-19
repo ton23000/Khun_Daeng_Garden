@@ -826,7 +826,7 @@ export default async function Home() {
                     color: "#1f2937",
                   }}
                 >
-                  ต้อนรับเทศกาล
+                  ต้อนรับเทศกาลol
                 </h2>
               </div>
               <Link
