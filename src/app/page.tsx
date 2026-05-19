@@ -865,7 +865,7 @@ export default async function Home() {
                 try {
                   const images = JSON.parse(tree.images);
                   if (images && images.length > 0) imageUrl = images[0];
-                } catch {}
+                } catch { }
                 return (
                   <ScrollAnimation
                     key={tree.id}
@@ -1065,7 +1065,7 @@ export default async function Home() {
                 try {
                   const images = JSON.parse(tree.images);
                   if (images && images.length > 0) imageUrl = images[0];
-                } catch {}
+                } catch { }
 
                 return (
                   <ScrollAnimation
@@ -1133,7 +1133,7 @@ export default async function Home() {
                                 {Math.round(
                                   ((tree.originalPrice - tree.price) /
                                     tree.originalPrice) *
-                                    100,
+                                  100,
                                 )}
                                 %
                               </div>
@@ -1774,7 +1774,7 @@ export default async function Home() {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Khun Daeng Garden Location"
+                  title="Khun Daeng Garden Location  ok"
                 />
               </div>
             </ScrollAnimation>
