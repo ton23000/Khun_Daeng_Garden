@@ -3,11 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { MOCK_TREES } from "@/lib/mock-data";
 
 export async function GET() {
-  const dev = process.env.NODE_ENV !== "production";
-  if (dev) {
-    return NextResponse.json(MOCK_TREES);
-  }
-
   try {
     // Get best-selling trees of all time based on completed bookings
     const bestSellingData = await prisma.bookingItem.groupBy({
@@ -48,10 +43,7 @@ export async function GET() {
 
     return NextResponse.json(sortedTrees);
   } catch (error) {
-    console.error("Error fetching overall best sellers:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch overall best sellers" },
-      { status: 500 },
-    );
+    console.error("Error fetching overall best sellers, using mock data:", error);
+    return NextResponse.json(MOCK_TREES);
   }
 }

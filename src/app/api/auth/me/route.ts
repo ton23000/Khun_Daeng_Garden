@@ -3,8 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { jwtVerify } from "jose";
 
 const getJwtSecretKey = () => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) return new TextEncoder().encode("fallback_for_build"); // Should use proper env handling
+  const secret =
+    process.env.JWT_SECRET || "fallback_secret_for_development_only_12345";
   return new TextEncoder().encode(secret);
 };
 
@@ -79,7 +79,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
+    return NextResponse.json({
+      user: {
+        ...user,
+        role: user.role.toLowerCase(),
+      },
+    });
   } catch (error) {
     console.error("Error fetching current user:", error);
     return NextResponse.json(

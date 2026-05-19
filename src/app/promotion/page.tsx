@@ -11,41 +11,34 @@ export const dynamic = "force-dynamic";
 export default async function PromotionPage() {
   let promotionTrees, settingsMap;
 
-  const dev = process.env.NODE_ENV !== "production";
+  try {
+    // Fetch trees marked as promotions
+    promotionTrees = await prisma.tree.findMany({
+      where: {
+        isPromotion: true,
+        // Only show active promotions (not expired)
+        OR: [
+          { promotionEndDate: null },
+          { promotionEndDate: { gte: new Date() } },
+        ],
+      },
+      orderBy: { updatedAt: "desc" },
+    });
 
-  if (dev) {
+    // Fetch Site Settings
+    const settings = await prisma.siteSetting.findMany();
+    settingsMap = settings.reduce(
+      (acc: Record<string, string>, curr: { key: string; value: string }) => {
+        acc[curr.key] = curr.value;
+        return acc;
+      },
+      {},
+    ) as Record<string, string>;
+  } catch (error) {
+    console.error("Database connection failed, using mock data:", error);
+    // Use Mock Data
     promotionTrees = MOCK_TREES.filter((t) => t.isPromotion);
     settingsMap = MOCK_SITE_SETTINGS as unknown as Record<string, string>;
-  } else {
-    try {
-      // Fetch trees marked as promotions
-      promotionTrees = await prisma.tree.findMany({
-        where: {
-          isPromotion: true,
-          // Only show active promotions (not expired)
-          OR: [
-            { promotionEndDate: null },
-            { promotionEndDate: { gte: new Date() } },
-          ],
-        },
-        orderBy: { updatedAt: "desc" },
-      });
-
-      // Fetch Site Settings
-      const settings = await prisma.siteSetting.findMany();
-      settingsMap = settings.reduce(
-        (acc: Record<string, string>, curr: { key: string; value: string }) => {
-          acc[curr.key] = curr.value;
-          return acc;
-        },
-        {},
-      ) as Record<string, string>;
-    } catch (error) {
-      console.error("Database connection failed, using mock data:", error);
-      // Use Mock Data
-      promotionTrees = MOCK_TREES.filter((t) => t.isPromotion);
-      settingsMap = MOCK_SITE_SETTINGS as unknown as Record<string, string>;
-    }
   }
 
   // Find the nearest end date for countdown

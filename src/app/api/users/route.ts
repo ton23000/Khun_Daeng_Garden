@@ -3,8 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { jwtVerify } from "jose";
 
 const getJwtSecretKey = () => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) return new TextEncoder().encode("fallback_for_build"); // Should use proper env handling
+  const secret =
+    process.env.JWT_SECRET || "fallback_secret_for_development_only_12345";
   return new TextEncoder().encode(secret);
 };
 

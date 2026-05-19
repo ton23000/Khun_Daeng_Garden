@@ -5,8 +5,8 @@ import { MOCK_SITE_SETTINGS } from "@/lib/mock-data";
 import { revalidatePath } from "next/cache";
 
 const getJwtSecretKey = () => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) return new TextEncoder().encode("fallback_for_build");
+  const secret =
+    process.env.JWT_SECRET || "fallback_secret_for_development_only_12345";
   return new TextEncoder().encode(secret);
 };
 
