@@ -415,7 +415,7 @@ export default function MyOrdersPage() {
                               }}
                             >
                               <img
-                                src={`https://promptpay.io/0616900908/${booking.deposit}.png`}
+                                src={`https://promptpay.io/0898762045/${booking.deposit}.png`}
                                 alt="PromptPay QR Code"
                                 style={{
                                   width: "200px",

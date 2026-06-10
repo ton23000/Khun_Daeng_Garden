@@ -25,14 +25,14 @@ function tlv(tag: string, value: string): string {
 
 /**
  * Generate PromptPay QR payload for a phone number and amount
- * @param phone Thai phone number e.g. "0616900908"
+ * @param phone Thai phone number e.g. "0898762045"
  * @param amount Amount in THB (e.g. 435)
  */
 export function generatePromptPayPayload(
   phone: string,
   amount: number,
 ): string {
-  // Format phone: 0616900908 -> 0066616900908
+  // Format phone: 0898762045 -> 0066898762045
   const normalized = phone.replace(/^0/, "").replace(/[^0-9]/g, "");
   const promptPayId = `0066${normalized}`;
 

@@ -261,7 +261,7 @@ export default function BookingSuccessPage() {
             >
               <QRCodeSVG
                 id="qr-svg-booking-success"
-                value={generatePromptPayPayload("0616900908", booking.deposit)}
+                value={generatePromptPayPayload("0898762045", booking.deposit)}
                 size={250}
                 level="M"
               />

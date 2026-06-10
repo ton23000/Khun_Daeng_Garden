@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>แบบแสดงภาษาเฉพาะทาง – การพัฒนาเว็บแอปพลิเคชันระบบจองต้นไม้ ร้านสวนคุณแดง</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* ─── Reset ─── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: #f8faf8;
+            color: #1c261e;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* ─── Cover Page ─── */
+        .cover {
+            background: linear-gradient(135deg, #2c5530 0%, #1a3820 100%);
+            color: #fff;
+            padding: 3.5rem 2rem 3rem;
+            text-align: center;
+            border-bottom: 6px solid #d9381e;
+        }
+
+        .cover-tag {
+            display: inline-block;
+            background: rgba(217, 56, 30, 0.85);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 0.35rem 1.2rem;
+            border-radius: 30px;
+            margin-bottom: 1.5rem;
+        }
+
+        .cover h1 {
+            font-size: clamp(1.4rem, 4vw, 2.2rem);
+            font-weight: 700;
+            line-height: 1.35;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .cover-sub {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 2rem;
+        }
+
+        .cover-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .cover-meta-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 0.6rem 1.4rem;
+            font-size: 0.85rem;
+            color: #fff;
+        }
+
+        .cover-meta-item span {
+            font-weight: 700;
+            color: #7fb069;
+        }
+
+        /* ─── Layout ─── */
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        /* ─── Section Title ─── */
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2c5530;
+            border-left: 4px solid #d9381e;
+            padding-left: 0.75rem;
+            margin: 3rem 0 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ─── Table ─── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(44, 85, 48, 0.07);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: #2c5530;
+            color: #fff;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e8f0e8;
+            vertical-align: top;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) td {
+            background: #f4f9f4;
+        }
+
+        .term {
+            font-weight: 700;
+            color: #2c5530;
+        }
+
+        .eng {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .def {
+            color: #374151;
+        }
+
+        /* ─── Code Block ─── */
+        .code-section {
+            background: #1e1e2e;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-header {
+            background: #2c2c3e;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-header .file-name {
+            font-size: 0.78rem;
+            color: #7fb069;
+            font-family: 'Fira Code', monospace;
+            font-weight: 500;
+        }
+
+        .code-header .lang-badge {
+            font-size: 0.68rem;
+            background: #d9381e;
+            color: #fff;
+            padding: 0.15rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .code-body {
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+        }
+
+        .code-body pre {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.82rem;
+            line-height: 1.75;
+            color: #e2e8f0;
+            white-space: pre;
+        }
+
+        /* Syntax colors */
+        .kw {
+            color: #c792ea;
+        }
+
+        .str {
+            color: #c3e88d;
+        }
+
+        .cmt {
+            color: #637777;
+            font-style: italic;
+        }
+
+        .prop {
+            color: #80cbc4;
+        }
+
+        .val {
+            color: #f78c6c;
+        }
+
+        .fn {
+            color: #82aaff;
+        }
+
+        .cls {
+            color: #ffcb6b;
+        }
+
+        /* ─── Annotation card ─── */
+        .annotation {
+            background: #fff;
+            border: 1px solid #e2e8e4;
+            border-left: 4px solid #2c5530;
+            border-radius: 0 8px 8px 0;
+            padding: 0.9rem 1.2rem;
+            margin-bottom: 1rem;
+            font-size: 0.88rem;
+            color: #374151;
+        }
+
+        .annotation strong {
+            color: #2c5530;
+        }
+
+        /* ─── Inline code ─── */
+        code {
+            background: #e8f5e9;
+            color: #2c5530;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.82rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        /* ─── Print ─── */
+        @media print {
+            .cover {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            thead {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .code-section {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            @page {
+                margin: 1.5cm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════════════════════════════════════
+     COVER PAGE
+════════════════════════════════════════════ -->
+    <div class="cover">
+        <div class="cover-tag">📄 แบบแสดงภาษาเฉพาะทาง</div>
+        <h1>การพัฒนาเว็บแอปพลิเคชันระบบจองต้นไม้<br>ร้านสวนคุณแดง</h1>
+        <p class="cover-sub">Khun Daeng Garden — Tree Booking Web Application</p>
+        <div class="cover-meta">
+            <div class="cover-meta-item">ภาษาหลัก: <span>TypeScript / TSX</span></div>
+            <div class="cover-meta-item">Framework: <span>Next.js 14 (App Router)</span></div>
+            <div class="cover-meta-item">CSS: <span>CSS Modules + Global CSS</span></div>
+            <div class="cover-meta-item">ฐานข้อมูล: <span>PostgreSQL (Prisma ORM)</span></div>
+            <div class="cover-meta-item">Hosting: <span>Vercel</span></div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════════ -->
+    <div class="page">
+
+        <!-- ────────────────────────────────────────
+       1. คำศัพท์ภาษาเฉพาะทางในโปรเจค
+  ──────────────────────────────────────────── -->
+        <div class="section-title">1. คำศัพท์ภาษาเฉพาะทาง (Domain-Specific Terminology)</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:20%">คำศัพท์</th>
+                    <th style="width:22%">ภาษาอังกฤษ</th>
+                    <th>ความหมายในโปรเจค</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="term">เว็บแอปพลิเคชัน</span></td>
+                    <td><span class="eng">Web Application</span></td>
+                    <td class="def">ระบบซอฟต์แวร์ที่ทำงานผ่านเบราว์เซอร์อินเทอร์เน็ต สร้างด้วย Next.js 14</td>
+                </tr>
+                <tr>
+                    <td><span class="term">คอมโพเนนต์</span></td>
+                    <td><span class="eng">Component</span></td>
+                    <td class="def">ชิ้นส่วนย่อยของ UI ที่สามารถนำกลับมาใช้ซ้ำได้ เช่น <code>Navbar</code>,
+                        <code>Footer</code>, <code>Button</code>, <code>Card</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="term">เอพีไอ</span></td>
+                    <td><span class="eng">API (Application Programming Interface)</span></td>
+                    <td class="def">ชุดคำสั่งสำหรับรับ-ส่งข้อมูลระหว่าง Client กับ Server อยู่ในโฟลเดอร์
+                        <code>src/app/api/</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="term">ฐานข้อมูล</span></td>
+                    <td><span class="eng">Database (PostgreSQL + Prisma ORM)</span></td>
+                    <td class="def">ระบบจัดเก็บข้อมูลต้นไม้ ผู้ใช้ และการจอง ใช้ Prisma เป็นตัวกลางสื่อสารกับ PostgreSQL
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="term">การจอง</span></td>
+                    <td><span class="eng">Booking</span></td>
+                    <td class="def">ข้อมูลการสั่งจองต้นไม้ล่วงหน้า มีสถานะ: <code>PENDING</code>,
+                        <code>CONFIRMED</code>, <code>COMPLETED</code>, <code>CANCELLED</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="term">มัดจำ</span></td>
+                    <td><span class="eng">Deposit</span></td>
+                    <td class="def">เงินจ่ายล่วงหน้าเพื่อยืนยันการจอง ลูกค้าอัปโหลดสลิปผ่าน <code>PaymentModal</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="term">สต็อก</span></td>
+                    <td><span class="eng">Stock</span></td>
+                    <td class="def">จำนวนต้นไม้คงเหลือในระบบ เก็บในฐานข้อมูล field <code>stock</code> ของ model
+                        <code>Tree</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="term">โปรโมชั่น</span></td>
+                    <td><span class="eng">Promotion</span></td>
+                    <td class="def">ต้นไม้ที่ลดราคาพิเศษ กำหนดด้วย field <code>isPromotion: true</code> และ
+                        <code>promotionEndDate</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="term">แอดมิน</span></td>
+                    <td><span class="eng">Admin</span></td>
+                    <td class="def">บทบาทผู้ดูแลระบบ มีสิทธิ์จัดการสินค้า ดูรายงาน และแก้ไขการตั้งค่า
+                        <code>user.role === "admin"</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="term">สลิป</span></td>
+                    <td><span class="eng">Payment Slip</span></td>
+                    <td class="def">รูปภาพหลักฐานการชำระเงิน ที่ลูกค้าอัปโหลดผ่านระบบเพื่อยืนยันมัดจำ</td>
+                </tr>
+                <tr>
+                    <td><span class="term">CSS Variables (ตัวแปร CSS)</span></td>
+                    <td><span class="eng">CSS Custom Properties</span></td>
+                    <td class="def">ตัวแปรสีและรูปแบบที่ใช้ร่วมกันทั้งระบบ เช่น <code>--primary</code>,
+                        <code>--secondary</code>, <code>--radius</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="term">กลาสมอร์ฟิซึม</span></td>
+                    <td><span class="eng">Glassmorphism</span></td>
+                    <td class="def">เอฟเฟกต์กระจกฝ้าของ Navbar ใช้ <code>backdrop-filter: blur(16px)</code> และ class
+                        <code>.glass</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="term">เลย์เอาต์</span></td>
+                    <td><span class="eng">Layout</span></td>
+                    <td class="def">โครงสร้างหน้าหลักของแอปใน <code>src/app/layout.tsx</code> ครอบคลุม Navbar, เนื้อหา,
+                        Footer</td>
+                </tr>
+                <tr>
+                    <td><span class="term">รูทเลย์เอาต์</span></td>
+                    <td><span class="eng">Root Layout</span></td>
+                    <td class="def">ไฟล์ <code>layout.tsx</code> ที่ Next.js ใช้เป็นแม่แบบให้กับทุกหน้า</td>
+                </tr>
+                <tr>
+                    <td><span class="term">อินไลน์เอดิต</span></td>
+                    <td><span class="eng">Inline Edit</span></td>
+                    <td class="def">คอมโพเนนต์ <code>InlineEdit</code> ที่ให้ Admin แก้ไขข้อความ/สีบนหน้าเว็บได้โดยตรง
+                        โดยบันทึกลงฐานข้อมูล <code>SiteSetting</code></td>
+                </tr>
+                <tr>
+                    <td><span class="term">ฟอนต์ Prompt</span></td>
+                    <td><span class="eng">Prompt Font (Google Fonts)</span></td>
+                    <td class="def">ฟอนต์ภาษาไทยหลักของโปรเจค โหลดผ่าน <code>next/font/google</code> กำหนดเป็น
+                        <code>--font-prompt</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ────────────────────────────────────────
+       2. CSS Design Tokens (จาก globals.css จริง)
+  ──────────────────────────────────────────── -->
+        <div class="section-title">2. CSS Design Tokens – สีและรูปแบบหลักของระบบ (globals.css)</div>
+
+        <div class="annotation">
+            <strong>ที่มาของโค้ด:</strong> ไฟล์ <code>src/app/globals.css</code> — กำหนด CSS Custom Properties
+            ที่ใช้ทั่วทั้งแอปพลิเคชัน
+        </div>
+
+        <div class="code-section">
+            <div class="code-header">
+                <span class="file-name">src/app/globals.css</span>
+                <span class="lang-badge">CSS</span>
+            </div>
+            <div class="code-body">
+                <pre>
+<span class="cls">:root</span> {
+  <span class="cmt">/* Khun Daeng Garden - Premium Nature Palette */</span>
+  <span class="prop">--primary</span>: <span class="str">#d9381e</span>;          <span class="cmt">/* สีแดงส้มสด - ปุ่ม CTA หลัก */</span>
+  <span class="prop">--primary-hover</span>: <span class="str">#bd2d14</span>;    <span class="cmt">/* สีเข้มขึ้นเมื่อ hover */</span>
+  <span class="prop">--primary-foreground</span>: <span class="str">#ffffff</span>;
+
+  <span class="prop">--secondary</span>: <span class="str">#2c5530</span>;         <span class="cmt">/* เขียวเข้ม Forest Green - หัวข้อ/เน้น */</span>
+  <span class="prop">--secondary-foreground</span>: <span class="str">#ffffff</span>;
+
+  <span class="prop">--accent</span>: <span class="str">#f4eae6</span>;            <span class="cmt">/* เบจธรรมชาติ - พื้นหลังเน้น */</span>
+  <span class="prop">--accent-foreground</span>: <span class="str">#2c5530</span>;
+
+  <span class="prop">--background</span>: <span class="str">#fdfaf6</span>;       <span class="cmt">/* ครีมอ่อน - พื้นหลังเว็บ */</span>
+  <span class="prop">--foreground</span>: <span class="str">#1c261e</span>;        <span class="cmt">/* สีข้อความหลัก (มีโทนเขียว) */</span>
+
+  <span class="prop">--card</span>: <span class="str">#ffffff</span>;
+  <span class="prop">--border</span>: <span class="str">#e2e8e4</span>;
+  <span class="prop">--ring</span>: <span class="str">#d9381e</span>;
+  <span class="prop">--radius</span>: <span class="str">12px</span>;              <span class="cmt">/* ความโค้งมุมมาตรฐาน */</span>
+
+  <span class="cmt">/* เงา (Shadows) */</span>
+  <span class="prop">--shadow-sm</span>: <span class="str">0 1px 3px rgba(0,0,0,0.05)</span>;
+  <span class="prop">--shadow</span>: <span class="str">0 4px 15px -3px rgba(0,0,0,0.05)</span>;
+  <span class="prop">--shadow-lg</span>: <span class="str">0 12px 28px -6px rgba(44,85,48,0.12)</span>;  <span class="cmt">/* เงาโทนเขียว */</span>
+  <span class="prop">--shadow-glass</span>: <span class="str">0 8px 32px 0 rgba(44,85,48,0.08)</span>;
+
+  <span class="cmt">/* Transition (ความลื่นไหลของ Animation) */</span>
+  <span class="prop">--transition-fast</span>: <span class="str">0.2s cubic-bezier(0.4, 0, 0.2, 1)</span>;
+  <span class="prop">--transition</span>: <span class="str">0.3s cubic-bezier(0.4, 0, 0.2, 1)</span>;
+}</pre>
+            </div>
+        </div>
+
+        <div class="code-section">
+            <div class="code-header">
+                <span class="file-name">src/app/globals.css — Glassmorphism & Hover Card</span>
+                <span class="lang-badge">CSS</span>
+            </div>
+            <div class="code-body">
+                <pre>
+<span class="cmt">/* Glassmorphism — เอฟเฟกต์กระจกฝ้าของ Navbar */</span>
+<span class="cls">.glass</span> {
+  <span class="prop">background</span>: <span class="str">rgba(255,255,255,0.85)</span>;
+  <span class="prop">backdrop-filter</span>: <span class="str">blur(16px)</span>;
+  <span class="prop">-webkit-backdrop-filter</span>: <span class="str">blur(16px)</span>;
+  <span class="prop">border-bottom</span>: <span class="str">1px solid rgba(255,255,255,0.4)</span>;
+  <span class="prop">box-shadow</span>: <span class="str">var(--shadow-glass)</span>;
+}
+
+<span class="cmt">/* Hover Card — การ์ดลอยขึ้นเมื่อ hover */</span>
+<span class="cls">.hover-card</span> {
+  <span class="prop">transition</span>: <span class="str">transform var(--transition), box-shadow var(--transition)</span>;
+}
+<span class="cls">.hover-card:hover</span> {
+  <span class="prop">transform</span>: <span class="str">translateY(-4px)</span>;
+  <span class="prop">box-shadow</span>: <span class="str">var(--shadow-lg)</span>;
+}
+
+<span class="cmt">/* fadeIn Animation — ใช้กับ ScrollAnimation Component */</span>
+<span class="kw">@keyframes</span> <span class="fn">fadeIn</span> {
+  <span class="kw">from</span> { <span class="prop">opacity</span>: <span class="val">0</span>; <span class="prop">transform</span>: <span class="str">translateY(10px)</span>; }
+  <span class="kw">to</span>   { <span class="prop">opacity</span>: <span class="val">1</span>; <span class="prop">transform</span>: <span class="str">translateY(0)</span>; }
+}
+<span class="cls">.animate-fade-in</span> {
+  <span class="prop">animation</span>: <span class="str">fadeIn 0.5s ease-out forwards</span>;
+}</pre>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────────────────
+       3. Layout (layout.tsx จริง)
+  ──────────────────────────────────────────── -->
+        <div class="section-title">3. Root Layout – โครงสร้างหลักของแอป (layout.tsx)</div>
+
+        <div class="annotation">
+            <strong>ที่มาของโค้ด:</strong> <code>src/app/layout.tsx</code> — กำหนดโครงสร้างหน้าหลัก โหลดฟอนต์ Prompt
+            และฝัง Navbar / Footer
+        </div>
+
+        <div class="code-section">
+            <div class="code-header">
+                <span class="file-name">src/app/layout.tsx</span>
+                <span class="lang-badge">TypeScript</span>
+            </div>
+            <div class="code-body">
+                <pre>
+<span class="kw">import</span> { <span class="fn">Prompt</span> } <span class="kw">from</span> <span class="str">"next/font/google"</span>;
+<span class="kw">import</span> <span class="str">"./globals.css"</span>;
+<span class="kw">import</span> { <span class="fn">Navbar</span> } <span class="kw">from</span> <span class="str">"@/components/Navbar"</span>;
+<span class="kw">import</span> { <span class="fn">Footer</span> } <span class="kw">from</span> <span class="str">"@/components/Footer"</span>;
+
+<span class="cmt">// โหลดฟอนต์ภาษาไทย "Prompt" จาก Google Fonts</span>
+<span class="kw">const</span> prompt = <span class="fn">Prompt</span>({
+  weight: [<span class="str">"300"</span>, <span class="str">"400"</span>, <span class="str">"500"</span>, <span class="str">"600"</span>, <span class="str">"700"</span>],
+  subsets: [<span class="str">"latin"</span>, <span class="str">"thai"</span>],
+  variable: <span class="str">"--font-prompt"</span>,
+  display: <span class="str">"swap"</span>,
+});
+
+<span class="cmt">// SEO Metadata — ข้อมูลสำหรับเครื่องมือค้นหา</span>
+<span class="kw">export const</span> metadata = {
+  title: <span class="str">"สวนคุณแดงการ์เด้น (Khun Daeng Garden) - ขายต้นไม้พรีเมียม"</span>,
+  description: <span class="str">"ศูนย์จำหน่ายต้นไม้มงคล ไม้ประดับ ตกแต่งบ้าน"</span>,
+  keywords: [<span class="str">"ขายต้นไม้"</span>, <span class="str">"ต้นไม้มงคล"</span>, <span class="str">"ร้านขายต้นไม้ ลำปาง"</span>],
+};
+
+<span class="kw">export default async function</span> <span class="fn">RootLayout</span>({ children }) {
+  <span class="cmt">// ดึงข้อความ Top Bar จากฐานข้อมูล SiteSetting</span>
+  <span class="kw">const</span> topBarSetting = <span class="kw">await</span> prisma.siteSetting.<span class="fn">findUnique</span>({
+    where: { key: <span class="str">"top_bar_text"</span> },
+  });
+
+  <span class="kw">return</span> (
+    &lt;<span class="cls">html</span> lang=<span class="str">"en"</span>&gt;
+      &lt;<span class="cls">body</span> className={`${prompt.variable} font-sans`}&gt;
+        &lt;<span class="cls">Providers</span>&gt;
+          &lt;<span class="cls">Navbar</span> topBarText={topBarText} /&gt;
+          {children}
+          &lt;<span class="cls">Footer</span> /&gt;
+        &lt;/<span class="cls">Providers</span>&gt;
+      &lt;/<span class="cls">body</span>&gt;
+    &lt;/<span class="cls">html</span>&gt;
+  );
+}</pre>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────────────────
+       4. Button Component (โค้ดจริง)
+  ──────────────────────────────────────────── -->
+        <div class="section-title">4. UI Components – Button (Button.tsx + Button.module.css)</div>
+
+        <div class="annotation">
+            <strong>ที่มาของโค้ด:</strong> <code>src/components/ui/Button.tsx</code> และ
+            <code>Button.module.css</code><br>
+            Button รองรับ 4 variant: <code>primary</code>, <code>secondary</code>, <code>outline</code>,
+            <code>ghost</code> และ 3 size: <code>sm</code>, <code>md</code>, <code>lg</code>
+        </div>
+
+        <div class="code-section">
+            <div class="code-header">
+                <span class="file-name">src/components/ui/Button.tsx</span>
+                <span class="lang-badge">TSX</span>
+            </div>
+            <div class="code-body">
+                <pre>
+<span class="kw">interface</span> <span class="cls">ButtonProps</span> <span class="kw">extends</span> React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt; {
+  variant?: <span class="str">"primary"</span> | <span class="str">"secondary"</span> | <span class="str">"outline"</span> | <span class="str">"ghost"</span>;
+  size?: <span class="str">"sm"</span> | <span class="str">"md"</span> | <span class="str">"lg"</span>;
+  fullWidth?: boolean;
+}
+
+<span class="kw">export const</span> Button = React.<span class="fn">forwardRef</span>&lt;HTMLButtonElement, ButtonProps&gt;(
+  ({ variant = <span class="str">"primary"</span>, size = <span class="str">"md"</span>, fullWidth = <span class="val">false</span>, children, ...props }, ref) =&gt; {
+    <span class="kw">const</span> classes = [
+      styles.button,
+      styles[variant],
+      styles[size],
+      fullWidth ? styles.fullWidth : <span class="str">""</span>,
+    ].<span class="fn">filter</span>(Boolean).<span class="fn">join</span>(<span class="str">" "</span>);
+
+    <span class="kw">return</span> &lt;<span class="cls">button</span> ref={ref} className={classes} {...props}&gt;{children}&lt;/<span class="cls">button</span>&gt;;
+  }
+);</pre>
+            </div>
+        </div>
+
+        <div class="code-section">
+            <div class="code-header">
+                <span class="file-name">src/components/ui/Button.module.css</span>
+                <span class="lang-badge">CSS</span>
+            </div>
+            <div class="code-body">
+                <pre>
+<span class="cls">.button</span> {
+  <span class="prop">display</span>: <span class="str">inline-flex</span>;
+  <span class="prop">align-items</span>: <span class="str">center</span>;
+  <span class="prop">border-radius</span>: <span class="str">var(--radius)</span>;      <span class="cmt">/* radius = 12px */</span>
+  <span class="prop">font-weight</span>: <span class="val">500</span>;
+  <span class="prop">transition</span>: <span class="str">all var(--transition-fast)</span>;
+}
+
+<span class="cmt">/* Variant: Primary — ปุ่มหลัก สีแดง */</span>
+<span class="cls">.primary</span> {
+  <span class="prop">background-color</span>: <span class="str">var(--primary)</span>;     <span class="cmt">/* #d9381e */</span>
+  <span class="prop">color</span>: <span class="str">var(--primary-foreground)</span>;
+  <span class="prop">box-shadow</span>: <span class="str">var(--shadow-sm)</span>;
+}
+<span class="cls">.primary:hover:not(:disabled)</span> {
+  <span class="prop">background-color</span>: <span class="str">var(--primary-hover)</span>;
+  <span class="prop">transform</span>: <span class="str">translateY(-2px)</span>;
+}
+
+<span class="cmt">/* Variant: Secondary — ปุ่มรอง สีเขียว */</span>
+<span class="cls">.secondary</span> {
+  <span class="prop">background-color</span>: <span class="str">var(--secondary)</span>;   <span class="cmt">/* #2c5530 */</span>
+  <span class="prop">color</span>: <span class="str">var(--secondary-foreground)</span>;
+}
+<span class="cls">.secondary:hover:not(:disabled)</span> {
+  <span class="prop">background-color</span>: <span class="str">#234526</span>;
+  <span class="prop">transform</span>: <span class="str">translateY(-2px)</span>;
+}
+
+<span class="cmt">/* Sizes */</span>
+<span class="cls">.sm</span>  { <span class="prop">padding</span>: <span class="str">0.25rem 0.75rem</span>; <span class="prop">font-size</span>: <span class="str">0.75rem</span>; }
+<span class="cls">.md</span>  { <span class="prop">padding</span>: <span class="str">0.5rem 1rem</span>;    <span class="prop">font-size</span>: <span class="str">0.875rem</span>; }
+<span class="cls">.lg</span>  { <span class="prop">padding</span>: <span class="str">0.75rem 1.5rem</span>; <span class="prop">font-size</span>: <span class="str">1rem</span>; }</pre>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────────────────
+       5. Navbar Component (โค้ดสำคัญจริง)
+  ──────────────────────────────────────────── -->
+        <div class="section-title">5. Navbar Component – แถบนำทาง (Navbar.tsx)</div>
+
+        <div class="annotation">
+            <strong>ที่มาของโค้ด:</strong> <code>src/components/Navbar.tsx</code><br>
+            Navbar มี 3 ระดับ: <strong>Top Bar</strong> (โปรโมชั่น/ติดต่อ), <strong>Middle Bar</strong>
+            (โลโก้/ค้นหา/ไอคอน) และ <strong>Bottom Bar</strong> (เมนูหลัก) รองรับ Mobile Bottom Navigation
+        </div>
+
+        <div class="code-section">
+            <div class="code-header">
+                <span class="file-name">src/components/Navbar.tsx — โครงสร้างหลัก</span>
+                <span class="lang-badge">TSX</span>
+            </div>
+            <div class="code-body">
+                <pre>
+<span class="str">"use client"</span>;  <span class="cmt">// Client Component — ใช้ useState, useRouter</span>
+
+<span class="kw">import</span> { <span class="fn">useCart</span> } <span class="kw">from</span> <span class="str">"@/lib/CartContext"</span>;    <span class="cmt">// Context จำนวนสินค้าในตะกร้า</span>
+<span class="kw">import</span> { <span class="fn">useAuth</span> } <span class="kw">from</span> <span class="str">"@/lib/AuthContext"</span>;    <span class="cmt">// Context ข้อมูลผู้ใช้ที่ล็อกอิน</span>
+<span class="kw">import</span> { <span class="fn">useNotification</span> } <span class="kw">from</span> <span class="str">"@/lib/NotificationContext"</span>;
+
+<span class="kw">export function</span> <span class="fn">Navbar</span>({ topBarText = <span class="str">"ฟรีปุ๋ยหมักเมื่อสั่งซื้อเกิน 1,000 บาท"</span> }) {
+  <span class="kw">const</span> { items } = <span class="fn">useCart</span>();
+  <span class="kw">const</span> { user } = <span class="fn">useAuth</span>();
+  <span class="kw">const</span> itemCount = items.<span class="fn">reduce</span>((sum, item) =&gt; sum + item.quantity, <span class="val">0</span>);
+
+  <span class="kw">return</span> (
+    &lt;&gt;
+      &lt;<span class="cls">header</span> className={`${styles.header} glass`}&gt;  <span class="cmt">{/* ใช้ class glass จาก globals.css */}</span>
+
+        <span class="cmt">{/* 1. Top Bar — แถบบนแสดงข้อความโปรโมชั่น */}</span>
+        &lt;<span class="cls">div</span> className={styles.topBar}&gt;...&lt;/<span class="cls">div</span>&gt;
+
+        <span class="cmt">{/* 2. Middle Bar — โลโก้, ช่องค้นหา, ไอคอน */}</span>
+        &lt;<span class="cls">div</span> className={styles.middleBar}&gt;
+          &lt;<span class="cls">Link</span> href=<span class="str">"/"</span> className={styles.logo}&gt;🌿 Khun Daeng Garden&lt;/<span class="cls">Link</span>&gt;
+          
+          <span class="cmt">{/* Search Bar — ค้นหาต้นไม้ */}</span>
+          &lt;<span class="cls">form</span> onSubmit={handleSearch}&gt;
+            &lt;<span class="cls">input</span> placeholder=<span class="str">"ค้นหาสินค้า..."</span> className={styles.searchInput} /&gt;
+            &lt;<span class="cls">button</span> type=<span class="str">"submit"</span>&gt;&lt;<span class="cls">Search</span> size={20} /&gt;&lt;/<span class="cls">button</span>&gt;
+          &lt;/<span class="cls">form</span>&gt;
+
+          <span class="cmt">{/* ปุ่มไอคอน: Cart Badge */}</span>
+          {itemCount &gt; <span class="val">0</span> &amp;&amp; (
+            &lt;<span class="cls">span</span> style={{ backgroundColor: <span class="str">"#ef4444"</span>, borderRadius: <span class="str">"50%"</span> }}&gt;
+              {itemCount}
+            &lt;/<span class="cls">span</span>&gt;
+          )}
+        &lt;/<span class="cls">div</span>&gt;
+
+        <span class="cmt">{/* 3. Bottom Bar — เมนูหลัก (ซ่อนบน Mobile) */}</span>
+        &lt;<span class="cls">div</span> className={styles.bottomBar}&gt;
+          &lt;<span class="cls">Link</span> href=<span class="str">"/"</span> className={styles.navLink}&gt;หน้าหลัก&lt;/<span class="cls">Link</span>&gt;
+          <span class="cmt">{/* Dropdown: ร้านค้า, บริการของเรา */}</span>
+          {user?.role === <span class="str">"admin"</span> &amp;&amp; (
+            &lt;<span class="cls">Link</span> href=<span class="str">"/admin"</span>&gt;Admin Panel&lt;/<span class="cls">Link</span>&gt;  <span class="cmt">{/* แสดงเฉพาะ Admin */}</span>
+          )}
+        &lt;/<span class="cls">div</span>&gt;
+      &lt;/<span class="cls">header</span>&gt;
+
+      <span class="cmt">{/* Mobile Bottom Navigation Bar — แสดงเฉพาะมือถือ */}</span>
+      &lt;<span class="cls">div</span> className={styles.mobileBottomNav}&gt;
+        &lt;<span class="cls">Link</span> href=<span class="str">"/"</span> className={styles.mobileNavLink}&gt;
+          &lt;<span class="cls">Home</span> size={24} /&gt;&lt;<span class="cls">span</span>&gt;หน้าแรก&lt;/<span class="cls">span</span>&gt;
+        &lt;/<span class="cls">Link</span>&gt;
+        <span class="cmt">{/* ... Shop, Cart, Notifications, Account */}</span>
+      &lt;/<span class="cls">div</span>&gt;
+    &lt;/&gt;
+  );
+}</pre>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────────────────
+       6. Navbar CSS Module
+  ──────────────────────────────────────────── -->
+        <div class="section-title">6. Navbar CSS Module – รูปแบบแถบนำทาง (navbar.module.css)</div>
+
+        <div class="code-section">
+            <div class="code-header">
+                <span class="file-name">src/components/navbar.module.css — ส่วนสำคัญ</span>
+                <span class="lang-badge">CSS</span>
+            </div>
+            <div class="code-body">
+                <pre>
+<span class="cmt">/* ─── Search Input — ช่องค้นหาต้นไม้ ─── */</span>
+<span class="cls">.searchInput</span> {
+  <span class="prop">width</span>: <span class="str">100%</span>;
+  <span class="prop">padding</span>: <span class="str">0.75rem 1rem</span>;
+  <span class="prop">padding-right</span>: <span class="str">3rem</span>;
+  <span class="prop">border-radius</span>: <span class="str">9999px</span>;           <span class="cmt">/* ทรงกลม pill */</span>
+  <span class="prop">border</span>: <span class="str">1px solid #d1fae5</span>;
+  <span class="prop">background-color</span>: <span class="str">#f0fdf4</span>;       <span class="cmt">/* เขียวอ่อนมาก */</span>
+}
+
+<span class="cmt">/* ─── Bottom Bar — พื้นหลังสีแดงจาง ─── */</span>
+<span class="cls">.bottomBar</span> {
+  <span class="prop">background-color</span>: <span class="str">rgba(217,56,30,0.05)</span>;
+  <span class="prop">border-bottom</span>: <span class="str">1px solid rgba(226,232,228,0.8)</span>;
+}
+
+<span class="cmt">/* ─── Mobile Bottom Navigation — Fixed bottom bar ─── */</span>
+<span class="cls">.mobileBottomNav</span> {
+  <span class="prop">display</span>: <span class="str">none</span>;
+  <span class="prop">position</span>: <span class="str">fixed</span>;
+  <span class="prop">bottom</span>: <span class="val">0</span>;
+  <span class="prop">width</span>: <span class="str">100%</span>;
+  <span class="prop">background-color</span>: <span class="str">white</span>;
+  <span class="prop">box-shadow</span>: <span class="str">0 -4px 6px -1px rgba(0,0,0,0.05)</span>;
+  <span class="prop">z-index</span>: <span class="val">1000</span>;
+  <span class="prop">padding-bottom</span>: <span class="str">env(safe-area-inset-bottom, 0.5rem)</span>;
+}
+<span class="kw">@media</span> (<span class="prop">max-width</span>: <span class="str">767.98px</span>) {
+  <span class="cls">.mobileBottomNav</span> { <span class="prop">display</span>: <span class="str">flex</span>; }  <span class="cmt">/* แสดงบนมือถือ */</span>
+}
+
+<span class="cmt">/* ─── Badge จำนวนในตะกร้า ─── */</span>
+<span class="cls">.mobileNavBadge</span> {
+  <span class="prop">position</span>: <span class="str">absolute</span>;
+  <span class="prop">background-color</span>: <span class="str">#ef4444</span>;
+  <span class="prop">color</span>: <span class="str">white</span>;
+  <span class="prop">border-radius</span>: <span class="str">50%</span>;
+  <span class="prop">width</span>: <span class="str">16px</span>; <span class="prop">height</span>: <span class="str">16px</span>;
+  <span class="prop">font-size</span>: <span class="str">10px</span>;
+  <span class="prop">font-weight</span>: <span class="str">bold</span>;
+}</pre>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────────────────
+       7. Home Page - Hero & Best Sellers
+  ──────────────────────────────────────────── -->
+        <div class="section-title">7. Homepage — Hero Section & Best Sellers (page.tsx)</div>
+
+        <div class="annotation">
+            <strong>ที่มาของโค้ด:</strong> <code>src/app/page.tsx</code> — ดึงข้อมูลจากฐานข้อมูลด้วย Prisma
+            และแสดงผลบนหน้าหลัก<br>
+            ใช้ Pattern: Server Component + Prisma ORM + Fallback ด้วย Mock Data
+        </div>
+
+        <div class="code-section">
+            <div class="code-header">
+                <span class="file-name">src/app/page.tsx — ดึงข้อมูลสินค้าขายดี</span>
+                <span class="lang-badge">TSX</span>
+            </div>
+            <div class="code-body">
+                <pre>
+<span class="kw">export const</span> dynamic = <span class="str">"force-dynamic"</span>;  <span class="cmt">// โหลดข้อมูลใหม่ทุกครั้ง</span>
+
+<span class="kw">export default async function</span> <span class="fn">Home</span>() {
+  <span class="kw">try</span> {
+    <span class="cmt">// ดึง Best Sellers — จาก BookingItem ที่ status = COMPLETED</span>
+    <span class="kw">const</span> bestSellingData = <span class="kw">await</span> prisma.bookingItem.<span class="fn">groupBy</span>({
+      by: [<span class="str">"treeId"</span>],
+      where: { booking: { status: <span class="str">"COMPLETED"</span> } },
+      _sum: { quantity: <span class="val">true</span> },
+      orderBy: { _sum: { quantity: <span class="str">"desc"</span> } },
+      take: <span class="val">5</span>,
+    });
+
+    <span class="cmt">// ดึง Promotional Trees — ต้นไม้โปรโมชั่น</span>
+    promotionalTrees = <span class="kw">await</span> prisma.tree.<span class="fn">findMany</span>({
+      where: {
+        isPromotion: <span class="val">true</span>,
+        OR: [
+          { promotionEndDate: <span class="val">null</span> },
+          { promotionEndDate: { gte: <span class="kw">new</span> <span class="fn">Date</span>() } },  <span class="cmt">// ยังไม่หมดอายุ</span>
+        ],
+      },
+      take: <span class="val">4</span>,
+    });
+
+    <span class="cmt">// ดึง Site Settings — ข้อความ/สีจากฐานข้อมูล</span>
+    <span class="kw">const</span> settings = <span class="kw">await</span> prisma.siteSetting.<span class="fn">findMany</span>();
+    settingsMap = settings.<span class="fn">reduce</span>((acc, curr) =&gt; {
+      acc[curr.key] = curr.value;
+      <span class="kw">return</span> acc;
+    }, {} <span class="kw">as</span> Record&lt;string, string&gt;);
+
+  } <span class="kw">catch</span> (error) {
+    <span class="cmt">// Fallback — ใช้ Mock Data เมื่อฐานข้อมูลไม่พร้อม</span>
+    featuredTrees = MOCK_TREES.<span class="fn">slice</span>(<span class="val">0</span>, <span class="val">4</span>);
+    heroTree = MOCK_TREES[<span class="val">0</span>];
+    settingsMap = MOCK_SITE_SETTINGS;
+  }
+
+  <span class="cmt">// ดึง hero_title จาก SiteSetting (ปรับได้โดย Admin)</span>
+  <span class="kw">const</span> heroTitle = settingsMap[<span class="str">"hero_title"</span>] || <span class="str">"สวนสวยเริ่มต้นที่ สวนคุณแดง"</span>;
+
+  <span class="kw">return</span> (
+    &lt;<span class="cls">main</span>&gt;
+      <span class="cmt">{/* Hero Section */}</span>
+      &lt;<span class="cls">section</span> style={{ backgroundColor: <span class="str">"#fefcf9"</span>, padding: <span class="str">"4rem 0 6rem"</span> }}&gt;
+        &lt;<span class="cls">ScrollAnimation</span> animation=<span class="str">"fade-up"</span>&gt;
+          &lt;<span class="cls">h1</span>&gt;{heroTitle}&lt;/<span class="cls">h1</span>&gt;
+          &lt;<span class="cls">Link</span> href=<span class="str">"/shop"</span>&gt;
+            &lt;<span class="cls">Button</span> size=<span class="str">"lg"</span> style={{ borderRadius: <span class="str">"50px"</span> }}&gt;
+              จองต้นไม้ →
+            &lt;/<span class="cls">Button</span>&gt;
+          &lt;/<span class="cls">Link</span>&gt;
+        &lt;/<span class="cls">ScrollAnimation</span>&gt;
+        
+        <span class="cmt">{/* Parallax Image ของต้นไม้ Hero */}</span>
+        &lt;<span class="cls">ParallaxSection</span> speed={<span class="val">0.3</span>}&gt;
+          <span class="cmt">...</span>
+        &lt;/<span class="cls">ParallaxSection</span>&gt;
+      &lt;/<span class="cls">section</span>&gt;
+
+      <span class="cmt">{/* Best Sellers Slider — ImageSlider Component */}</span>
+      &lt;<span class="cls">ImageSlider</span> trees={weeklyBestSellingTreesWithCount}
+        title=<span class="str">"ขายดีสัปดาห์นี้"</span>
+        subtitle=<span class="str">"Weekly Best Sellers"</span>
+      /&gt;
+    &lt;/<span class="cls">main</span>&gt;
+  );
+}</pre>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────────────────
+       8. Footer (โค้ดจริง)
+  ──────────────────────────────────────────── -->
+        <div class="section-title">8. Footer Component – ส่วนท้ายเว็บไซต์ (Footer.tsx)</div>
+
+        <div class="code-section">
+            <div class="code-header">
+                <span class="file-name">src/components/Footer.tsx — สีและสไตล์จริง</span>
+                <span class="lang-badge">TSX</span>
+            </div>
+            <div class="code-body">
+                <pre>
+<span class="kw">const</span> footerStyle: React.CSSProperties = {
+  backgroundColor: <span class="str">"#2d3e2d"</span>,  <span class="cmt">// เขียวเข้ม (Dark Green Footer)</span>
+  color: <span class="str">"#ffffff"</span>,
+  padding: <span class="str">"3rem 0 1rem"</span>,
+};
+
+<span class="kw">const</span> bottomBarStyle: React.CSSProperties = {
+  backgroundColor: <span class="str">"#7fb069"</span>,  <span class="cmt">// เขียวอ่อน (Light Green Bar)</span>
+  color: <span class="str">"#2d3e2d"</span>,
+  padding: <span class="str">"1rem 0"</span>,
+  marginTop: <span class="str">"2rem"</span>,
+};
+
+<span class="cmt">// Link สีเขียวใน Footer</span>
+<span class="kw">const</span> linkStyle: React.CSSProperties = {
+  color: <span class="str">"#d1d5db"</span>,
+  fontSize: <span class="str">"0.875rem"</span>,
+  transition: <span class="str">"color 0.2s"</span>,
+};
+
+<span class="cmt">// ช่องทางการชำระเงิน</span>
+<span class="cmt">// PromptPay — สีเขียวน้ำหมาก (#115e59)</span>
+<span class="cmt">// โอนเงินธนาคาร — สีฟ้า (#0369a1)</span>
+
+<span class="kw">return</span> (
+  &lt;<span class="cls">footer</span> style={footerStyle}&gt;
+    &lt;<span class="cls">div</span> className=<span class="str">"container"</span>&gt;
+      &lt;<span class="cls">div</span> style={{ display: <span class="str">"grid"</span>, gridTemplateColumns: <span class="str">"repeat(auto-fit, minmax(250px,1fr))"</span> }}&gt;
+        <span class="cmt">{/* คอลัมน์ 1: เกี่ยวกับร้าน + ข้อมูลติดต่อ */}</span>
+        <span class="cmt">{/* คอลัมน์ 2: เมนูข้อมูล */}</span>
+        <span class="cmt">{/* คอลัมน์ 3: ร้านค้า */}</span>
+        <span class="cmt">{/* คอลัมน์ 4: บัญชีของฉัน */}</span>
+      &lt;/<span class="cls">div</span>&gt;
+    &lt;/<span class="cls">div</span>&gt;
+    &lt;<span class="cls">div</span> style={bottomBarStyle}&gt;
+      สงวนลิขสิทธิ์ © 2026 สวนคุณแดง · Made with 🌿 by Khun Daeng Garden
+    &lt;/<span class="cls">div</span>&gt;
+  &lt;/<span class="cls">footer</span>&gt;
+);</pre>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────────────────
+       9. Responsive Grid Utilities
+  ──────────────────────────────────────────── -->
+        <div class="section-title">9. Responsive Grid Utilities – เลย์เอาต์ตอบสนองหน้าจอ (globals.css)</div>
+
+        <div class="code-section">
+            <div class="code-header">
+                <span class="file-name">src/app/globals.css — Responsive Classes</span>
+                <span class="lang-badge">CSS</span>
+            </div>
+            <div class="code-body">
+                <pre>
+<span class="cmt">/* .container — กล่องจัดเนื้อหากว้างสูงสุด 1280px */</span>
+<span class="cls">.container</span> {
+  <span class="prop">max-width</span>: <span class="str">1280px</span>;
+  <span class="prop">margin</span>: <span class="val">0</span> <span class="str">auto</span>;
+  <span class="prop">padding</span>: <span class="str">0 2rem</span>;
+}
+
+<span class="cmt">/* Hero Grid — 2 คอลัมน์บน Desktop */</span>
+<span class="cls">.grid-hero</span>     { <span class="prop">display</span>: <span class="str">grid</span>; <span class="prop">grid-template-columns</span>: <span class="str">1fr</span>; <span class="prop">gap</span>: <span class="str">2rem</span>; }
+<span class="cls">.grid-cart</span>     { <span class="prop">display</span>: <span class="str">grid</span>; <span class="prop">grid-template-columns</span>: <span class="str">1fr</span>; }
+<span class="cls">.grid-dashboard</span>{ <span class="prop">display</span>: <span class="str">grid</span>; <span class="prop">grid-template-columns</span>: <span class="str">1fr</span>; }
+
+<span class="kw">@media</span> (<span class="prop">min-width</span>: <span class="str">768px</span>) {
+  <span class="cls">.grid-hero</span>      { <span class="prop">grid-template-columns</span>: <span class="str">minmax(300px,1fr) 1fr</span>; <span class="prop">gap</span>: <span class="str">4rem</span>; }
+  <span class="cls">.grid-cart</span>      { <span class="prop">grid-template-columns</span>: <span class="str">2fr 1fr</span>; }
+  <span class="cls">.grid-dashboard</span> { <span class="prop">grid-template-columns</span>: <span class="str">1fr 1fr</span>; }
+  <span class="cls">.hidden-desktop</span> { <span class="prop">display</span>: <span class="str">none !important</span>; }
+}
+<span class="kw">@media</span> (<span class="prop">max-width</span>: <span class="str">767.98px</span>) {
+  <span class="cls">.hidden-mobile</span> { <span class="prop">display</span>: <span class="str">none !important</span>; }
+  <span class="cls">.container</span> { <span class="prop">padding</span>: <span class="str">0 0.75rem</span>; }
+}
+
+<span class="cmt">/* Mobile — เพิ่ม padding ล่างสำหรับ Mobile Bottom Nav */</span>
+<span class="kw">@media</span> (<span class="prop">max-width</span>: <span class="str">767px</span>) {
+  <span class="cls">body</span> { <span class="prop">padding-bottom</span>: <span class="str">5rem</span>; }
+}</pre>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────────────────
+       10. Admin Layout
+  ──────────────────────────────────────────── -->
+        <div class="section-title">10. Admin Layout – โครงสร้างหน้าผู้ดูแลระบบ (globals.css)</div>
+
+        <div class="code-section">
+            <div class="code-header">
+                <span class="file-name">src/app/globals.css — Admin Responsive Layout</span>
+                <span class="lang-badge">CSS</span>
+            </div>
+            <div class="code-body">
+                <pre>
+<span class="cmt">/* Admin Layout — Sidebar + Main content */</span>
+<span class="cls">.admin-layout</span> {
+  <span class="prop">display</span>: <span class="str">flex</span>;
+  <span class="prop">flex-direction</span>: <span class="str">column</span>;          <span class="cmt">/* Mobile: ซ้อนกัน */</span>
+  <span class="prop">min-height</span>: <span class="str">calc(100vh - 64px)</span>;
+}
+
+<span class="cls">.admin-sidebar</span> {
+  <span class="prop">width</span>: <span class="str">100%</span>;
+  <span class="prop">background-color</span>: <span class="str">#f9fafb</span>;
+  <span class="prop">border-bottom</span>: <span class="str">1px solid #e5e7eb</span>;
+}
+
+<span class="kw">@media</span> (<span class="prop">min-width</span>: <span class="str">768px</span>) {
+  <span class="cls">.admin-layout</span>  { <span class="prop">flex-direction</span>: <span class="str">row</span>; }    <span class="cmt">/* Desktop: เรียงข้าง */</span>
+  <span class="cls">.admin-sidebar</span> { <span class="prop">width</span>: <span class="str">250px</span>; <span class="prop">border-right</span>: <span class="str">1px solid #e5e7eb</span>; }
+  <span class="cls">.admin-main</span>    { <span class="prop">padding</span>: <span class="str">2rem</span>; }
+}</pre>
+            </div>
+        </div>
+
+        <!-- ────────────────────────────────────────
+       ตารางสรุปสีทั้งระบบ
+  ──────────────────────────────────────────── -->
+        <div class="section-title">11. ตารางสรุป Design Tokens – สีทั้งระบบ</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>CSS Variable</th>
+                    <th>ค่าสี</th>
+                    <th style="width:60px">ตัวอย่าง</th>
+                    <th>บทบาทในโปรเจค</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>--primary</code></td>
+                    <td><code>#d9381e</code></td>
+                    <td>
+                        <div style="width:36px;height:20px;background:#d9381e;border-radius:4px;"></div>
+                    </td>
+                    <td class="def">ปุ่ม CTA หลัก "จองต้นไม้" สีแดงส้ม</td>
+                </tr>
+                <tr>
+                    <td><code>--secondary</code></td>
+                    <td><code>#2c5530</code></td>
+                    <td>
+                        <div style="width:36px;height:20px;background:#2c5530;border-radius:4px;"></div>
+                    </td>
+                    <td class="def">หัวข้อ, โลโก้, เขียวเข้ม Forest Green</td>
+                </tr>
+                <tr>
+                    <td><code>--background</code></td>
+                    <td><code>#fdfaf6</code></td>
+                    <td>
+                        <div
+                            style="width:36px;height:20px;background:#fdfaf6;border-radius:4px;border:1px solid #e2e8e4">
+                        </div>
+                    </td>
+                    <td class="def">พื้นหลังเว็บทั้งหมด สีครีมธรรมชาติ</td>
+                </tr>
+                <tr>
+                    <td><code>--foreground</code></td>
+                    <td><code>#1c261e</code></td>
+                    <td>
+                        <div style="width:36px;height:20px;background:#1c261e;border-radius:4px;"></div>
+                    </td>
+                    <td class="def">สีข้อความหลัก (ดำอมเขียว)</td>
+                </tr>
+                <tr>
+                    <td><code>--accent</code></td>
+                    <td><code>#f4eae6</code></td>
+                    <td>
+                        <div style="width:36px;height:20px;background:#f4eae6;border-radius:4px;"></div>
+                    </td>
+                    <td class="def">พื้นหลังส่วนเน้น โทนเบจธรรมชาติ</td>
+                </tr>
+                <tr>
+                    <td>Footer BG</td>
+                    <td><code>#2d3e2d</code></td>
+                    <td>
+                        <div style="width:36px;height:20px;background:#2d3e2d;border-radius:4px;"></div>
+                    </td>
+                    <td class="def">พื้นหลัง Footer สีเขียวเข้ม</td>
+                </tr>
+                <tr>
+                    <td>Footer Bar</td>
+                    <td><code>#7fb069</code></td>
+                    <td>
+                        <div style="width:36px;height:20px;background:#7fb069;border-radius:4px;"></div>
+                    </td>
+                    <td class="def">แถบล่างสุด Footer สีเขียวอ่อน</td>
+                </tr>
+                <tr>
+                    <td>Badge Error</td>
+                    <td><code>#ef4444</code></td>
+                    <td>
+                        <div style="width:36px;height:20px;background:#ef4444;border-radius:4px;"></div>
+                    </td>
+                    <td class="def">ตัวเลขจำนวนสินค้าในตะกร้า (Badge)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ────────────────────────────────────────
+       ตารางสรุป Components
+  ──────────────────────────────────────────── -->
+        <div class="section-title">12. ตารางสรุป Components ทั้งหมดในโปรเจค</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ชื่อ Component</th>
+                    <th>ไฟล์</th>
+                    <th>หน้าที่</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="term">Navbar</td>
+                    <td><code>Navbar.tsx</code></td>
+                    <td class="def">แถบนำทางหลัก 3 ระดับ + Mobile Bottom Nav</td>
+                </tr>
+                <tr>
+                    <td class="term">Footer</td>
+                    <td><code>Footer.tsx</code></td>
+                    <td class="def">ส่วนท้ายเว็บ ข้อมูลติดต่อ + เมนูลิงก์</td>
+                </tr>
+                <tr>
+                    <td class="term">Button</td>
+                    <td><code>ui/Button.tsx</code></td>
+                    <td class="def">ปุ่มกด 4 variant, 3 ขนาด</td>
+                </tr>
+                <tr>
+                    <td class="term">Card</td>
+                    <td><code>ui/Card.tsx</code></td>
+                    <td class="def">กล่องการ์ดสำหรับแสดงต้นไม้</td>
+                </tr>
+                <tr>
+                    <td class="term">Badge</td>
+                    <td><code>ui/Badge.tsx</code></td>
+                    <td class="def">ป้ายสถานะ (โปรโมชั่น/ใหม่)</td>
+                </tr>
+                <tr>
+                    <td class="term">ImageSlider</td>
+                    <td><code>ImageSlider.tsx</code></td>
+                    <td class="def">สไลด์เดอร์แสดงต้นไม้ขายดี</td>
+                </tr>
+                <tr>
+                    <td class="term">ImageGallery</td>
+                    <td><code>ImageGallery.tsx</code></td>
+                    <td class="def">แกลเลอรีรูปต้นไม้หน้ารายละเอียด</td>
+                </tr>
+                <tr>
+                    <td class="term">PaymentModal</td>
+                    <td><code>PaymentModal.tsx</code></td>
+                    <td class="def">หน้าต่างอัปโหลดสลิปชำระเงิน</td>
+                </tr>
+                <tr>
+                    <td class="term">FavoriteButton</td>
+                    <td><code>FavoriteButton.tsx</code></td>
+                    <td class="def">ปุ่มกดรายการโปรด (ต้นไม้)</td>
+                </tr>
+                <tr>
+                    <td class="term">ScrollAnimation</td>
+                    <td><code>ScrollAnimation.tsx</code></td>
+                    <td class="def">ทำ Animation เมื่อ scroll ถึง element</td>
+                </tr>
+                <tr>
+                    <td class="term">ParallaxSection</td>
+                    <td><code>ParallaxSection.tsx</code></td>
+                    <td class="def">Parallax Effect สำหรับภาพ Hero</td>
+                </tr>
+                <tr>
+                    <td class="term">InlineEdit</td>
+                    <td><code>InlineEdit.tsx</code></td>
+                    <td class="def">แก้ไขข้อความ/สีบนหน้าเว็บโดย Admin</td>
+                </tr>
+                <tr>
+                    <td class="term">ThaiDatePicker</td>
+                    <td><code>ThaiDatePicker.tsx</code></td>
+                    <td class="def">ปฏิทินเลือกวันที่แบบไทย (พ.ศ.)</td>
+                </tr>
+                <tr>
+                    <td class="term">ReviewList</td>
+                    <td><code>ReviewList.tsx</code></td>
+                    <td class="def">แสดงรีวิวและคะแนนดาวจากลูกค้า</td>
+                </tr>
+                <tr>
+                    <td class="term">ProductDetail</td>
+                    <td><code>ProductDetail.tsx</code></td>
+                    <td class="def">หน้ารายละเอียดต้นไม้ + ปุ่มจอง</td>
+                </tr>
+                <tr>
+                    <td class="term">AdvancedFilters</td>
+                    <td><code>AdvancedFilters.tsx</code></td>
+                    <td class="def">กรองสินค้าตามหมวดหมู่/ราคา/แท็ก</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div><!-- end .page -->
+
+</body>
+
+</html>
