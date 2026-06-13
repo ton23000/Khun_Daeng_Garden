@@ -11,7 +11,7 @@ async function main() {
     update: {
       email: "admin@khundaeng.com",
       password: hashedPassword,
-      role: "ADMIN",
+      role: "admin",
     },
     create: {
       firstName: "Admin",
@@ -19,7 +19,7 @@ async function main() {
       phone: "0800000000",
       email: "admin@khundaeng.com",
       password: hashedPassword,
-      role: "ADMIN",
+      role: "admin",
       verified: true,
     },
   });
@@ -30,7 +30,7 @@ async function main() {
     update: {
       email: "user@khundaeng.com",
       password: userPassword,
-      role: "USER",
+      role: "user",
     },
     create: {
       firstName: "Test",
@@ -38,7 +38,7 @@ async function main() {
       phone: "0811111111",
       email: "user@khundaeng.com",
       password: userPassword,
-      role: "USER",
+      role: "user",
       verified: true,
     },
   });

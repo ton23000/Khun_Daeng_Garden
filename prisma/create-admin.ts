@@ -12,7 +12,7 @@ async function main() {
     where: { phone: "0999999999" },
     update: {
       password: adminPassword,
-      role: "ADMIN",
+      role: "admin",
       email: "admin.new@khundaeng.com",
       verified: true,
     },
@@ -22,7 +22,7 @@ async function main() {
       phone: "0999999999",
       email: "admin.new@khundaeng.com",
       password: adminPassword,
-      role: "ADMIN",
+      role: "admin",
       verified: true,
     },
   });

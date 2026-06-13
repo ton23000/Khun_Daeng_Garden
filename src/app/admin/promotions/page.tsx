@@ -155,7 +155,7 @@ export default function AdminPromotionsPage() {
           newPrice = discountValue;
         }
 
-        await fetch(`/api/trees/${id}`, {
+        const res = await fetch(`/api/trees/${id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -169,6 +169,11 @@ export default function AdminPromotionsPage() {
             promotionEndDate: promoEndDate || null,
           }),
         });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || `ไม่สามารถตั้งโปรโมชันสำหรับรหัสต้นไม้ ${id} ได้`);
+        }
       }
 
       await fetchTrees();
@@ -189,7 +194,7 @@ export default function AdminPromotionsPage() {
     const userId = storedUser ? JSON.parse(storedUser).id : null;
 
     try {
-      await fetch(`/api/trees/${tree.id}`, {
+      const res = await fetch(`/api/trees/${tree.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -203,9 +208,16 @@ export default function AdminPromotionsPage() {
           promotionEndDate: null,
         }),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "ไม่สามารถยกเลิกโปรโมชันได้");
+      }
+
       await fetchTrees();
     } catch (error) {
       console.error("Error removing promotion:", error);
+      alert(error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการยกเลิกโปรโมชัน");
     }
   };
 
@@ -216,28 +228,38 @@ export default function AdminPromotionsPage() {
     const storedUser = localStorage.getItem("khun_daeng_user");
     const userId = storedUser ? JSON.parse(storedUser).id : null;
 
-    for (const id of selected) {
-      const tree = trees.find((t) => t.id === id);
-      if (!tree || !tree.isPromotion) continue;
+    try {
+      for (const id of selected) {
+        const tree = trees.find((t) => t.id === id);
+        if (!tree || !tree.isPromotion) continue;
 
-      await fetch(`/api/trees/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(userId ? { "x-user-id": userId } : {}),
-        },
-        body: JSON.stringify({
-          isPromotion: false,
-          price: tree.originalPrice || tree.price,
-          originalPrice: null,
-          promotionName: null,
-          promotionEndDate: null,
-        }),
-      });
+        const res = await fetch(`/api/trees/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...(userId ? { "x-user-id": userId } : {}),
+          },
+          body: JSON.stringify({
+            isPromotion: false,
+            price: tree.originalPrice || tree.price,
+            originalPrice: null,
+            promotionName: null,
+            promotionEndDate: null,
+          }),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || `ไม่สามารถยกเลิกโปรโมชันสำหรับรหัสต้นไม้ ${id} ได้`);
+        }
+      }
+
+      await fetchTrees();
+      setSelected(new Set());
+    } catch (error) {
+      console.error("Error bulk removing promotion:", error);
+      alert(error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการยกเลิกโปรโมชัน");
     }
-
-    await fetchTrees();
-    setSelected(new Set());
   };
 
   const getDiscountPercent = (tree: Tree) => {

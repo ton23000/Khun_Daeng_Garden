@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyAdminOrStaff } from "@/lib/auth-server";
 
 // Active booking statuses that count as "reserved"
 // PENDING_APPROVAL = รอ admin อนุมัติ
@@ -10,8 +11,13 @@ const ACTIVE_STATUSES = ["PENDING_APPROVAL", "PENDING", "CONFIRMED"];
 // Pre-order statuses that count as "backorder / pre-order"
 const PREORDER_STATUSES = ["PRE_ORDER"];
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const user = await verifyAdminOrStaff(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const trees = await prisma.tree.findMany({
       orderBy: { createdAt: "desc" },
       include: {

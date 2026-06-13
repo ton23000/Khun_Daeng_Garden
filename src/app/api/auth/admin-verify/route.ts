@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { jwtVerify, SignJWT } from "jose";
 
 const getJwtSecretKey = () => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) throw new Error("JWT_SECRET environment variable is not set");
+  const secret =
+    process.env.JWT_SECRET || "fallback_secret_for_development_only_12345";
   return new TextEncoder().encode(secret);
 };
 
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       lastName: payload.lastName,
       phone: payload.phone,
       email: payload.email,
-      role: payload.role,
+      role: (payload.role as string).toLowerCase(),
     };
 
     const authToken = await new SignJWT(authData)

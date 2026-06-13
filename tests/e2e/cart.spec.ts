@@ -14,11 +14,8 @@ test.describe("Cart Flow", () => {
   }) => {
     // Add item to localStorage cart first, then check cart warning
     await page.goto("/shop");
-    // Wait for shop to load
-    await page.waitForTimeout(2000);
-
-    // Navigate directly to cart to check empty state (cart state is in context)
-    await page.goto("/cart");
+    // Click the cart link in the navbar
+    await page.locator("a[href='/cart']").first().click();
     // Either empty cart or not-logged-in warning should be visible
     const emptyCart = page.getByRole("heading", {
       name: "ตะกร้าสินค้าว่างเปล่า",

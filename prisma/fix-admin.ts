@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -16,7 +17,6 @@ async function main() {
   });
 
   // Create a brand new distinct admin user just in case
-  const bcrypt = require("bcryptjs");
   const adminPassword = await bcrypt.hash("admin1234", 10);
 
   await prisma.user.upsert({

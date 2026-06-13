@@ -542,7 +542,7 @@ export default function MyBookingsPage() {
                               <QRCodeSVG
                                 id={`qr-svg-${booking.id}`}
                                 value={generatePromptPayPayload(
-                                  "0616900908",
+                                  "0898762045",
                                   booking.deposit,
                                 )}
                                 size={200}

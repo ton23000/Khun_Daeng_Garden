@@ -16,18 +16,12 @@ export default async function TreePage({
   // Fetch from DB instead of Mock
   let treeData;
 
-  const dev = process.env.NODE_ENV !== "production";
-
-  if (dev) {
-    treeData = MOCK_TREES.find((t) => t.id === id);
-  } else {
-    try {
-      treeData = await prisma.tree.findUnique({
-        where: { id },
-      });
-    } catch (error) {
-      console.error("Database connection failed, checking mock data:", error);
-    }
+  try {
+    treeData = await prisma.tree.findUnique({
+      where: { id },
+    });
+  } catch (error) {
+    console.error("Database connection failed, checking mock data:", error);
   }
 
   // Fallback to mock data if DB fails or returns null

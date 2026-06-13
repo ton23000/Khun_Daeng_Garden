@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { verifyAdminOrStaff } from "@/lib/auth-server";
 
 const updateSchema = z.object({
   name: z.string().optional(),
@@ -24,6 +25,11 @@ export async function PUT(
   props: { params: Promise<{ id: string }> },
 ) {
   try {
+    const user = await verifyAdminOrStaff(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const params = await props.params;
     const id = params.id;
     const body = await request.json();
@@ -82,6 +88,11 @@ export async function DELETE(
   props: { params: Promise<{ id: string }> },
 ) {
   try {
+    const user = await verifyAdminOrStaff(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const params = await props.params;
     const id = params.id;
 
